@@ -13,6 +13,12 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule): void
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command('app:prepaid-look-up')->everyMinute();
+        $schedule->command('app:postpaid-look-up')->everyTwoMinutes();
+        
+
+       //Enable task scheduler logging
+       $schedule->exec('echo "Task Scheduler Ran: $(data)" >> /var/www/html/IBEDCPAY/storage/logs/scheduler.log')->everyMinute();
     }
 
     /**

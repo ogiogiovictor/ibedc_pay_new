@@ -8,6 +8,7 @@ use App\Http\Controllers\Dashboard\HomeController;
 use App\Http\Controllers\Payment\PaymentController;
 use App\Http\Controllers\Payment\CompletePayment;
 use App\Http\Controllers\History\PaymentHistory;
+use App\Http\Controllers\Help\ContactUsController;
 use App\Http\Controllers\LogoutController;
 
 /*
@@ -56,6 +57,12 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
             Route::post('get-balance', [HomeController::class, 'outBalance']);
             Route::post('show-balance', [HomeController::class, 'showBalance']);
         });
+
+        ///////////////////////// OUTSTANDING BALANCE | PREPAID //////////////////
+        Route::group(['prefix' => 'contact'], function () {  
+            Route::post('help', [ContactUsController::class, 'store']);
+        });
+
 
     });
 
