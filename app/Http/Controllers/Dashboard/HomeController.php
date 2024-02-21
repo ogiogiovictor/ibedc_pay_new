@@ -9,6 +9,7 @@ use App\Interfaces\TransactionRepositoryInterface;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\BaseAPIController;
 use Illuminate\Support\Facades\Auth;
+use App\Services\PinService;
 
 class HomeController extends BaseAPIController
 {
@@ -91,28 +92,30 @@ class HomeController extends BaseAPIController
             "account_type" => 'required'
         ]);
 
-        //Find transaction
-        $trans =  $this->mytrans->checkifexist(Auth::user()->id, $request->account_no);
-
-        if($trans){
-            $user = $this->profile->index(Auth::user()->id);
-            //create the user
-           // $user = User::create($request->all());
-           
-            $pin = strval(rand(100000, 999999));
-            $user->update(['pin' => $pin]);
-    
-            //dispatch a welcome email to the user
-            dispatch(new RegistrationJob($user));
+        $sendPin = (new PinService)->processPin(Auth::user()->email);
+           // $user = $this->profile->userprofile(Auth::user()->id);
 
             return $this->sendSuccess([
-                'user' => $user,
+                'user' => $validatedData,
              ], 'PROFILE LOADED', Response::HTTP_OK);
              
-        } else {
-            // Incorrect PIN
-            return $this->sendError('That Account No Is Not Mapped To Your Profile', 'ERROR', Response::HTTP_UNAUTHORIZED);
-        }
+
+        //Find transaction
+        // $trans =  $this->mytrans->checkifexist(Auth::user()->id, $request->account_no);
+
+        // if($trans){
+
+        //     $sendPin = (new PinService)->processPin(Auth::user()->email);
+        //    // $user = $this->profile->userprofile(Auth::user()->id);
+
+        //     return $this->sendSuccess([
+        //         'user' => $validatedData,
+        //      ], 'PROFILE LOADED', Response::HTTP_OK);
+             
+        // } else {
+        //     // Incorrect PIN
+        //     return $this->sendError('That Account No Is Not Mapped To Your Profile', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        // }
 
     }
 
@@ -129,12 +132,28 @@ class HomeController extends BaseAPIController
 
         if($checkPin){
 
-            if($validatedData['acount_type'] == 'Prepaid'){
+            if($validatedData['account_type'] == 'Prepaid'){
 
-                return $this->sendSuccess([
-                    'balance' => $this->profile->getSubAccount($validatedData['account_no']),
-                 ], 'BALANCE LOADED', Response::HTTP_OK);
+                $addBalance = 0;
+                $subAccountBal = $this->profile->getSubAccount($validatedData['account_no']);
 
+                if($subAccountBal){
+                    $subAccountBalFpUnit = $this->profile->getSubAccountFPUnit($validatedData['account_no']);
+                    $addBalance = $subAccountBal->Balance + $subAccountBalFpUnit;
+                    $subAccountBal->Balance = number_format($addBalance, 2, ".", "");
+
+                    return $this->sendSuccess([
+                        'balance' => $subAccountBal,
+                     ], 'BALANCE LOADED', Response::HTTP_OK);
+                     
+                } else {
+                    return $this->sendSuccess([
+                        'balance' => [],
+                     ], 'NO BALANCE', Response::HTTP_OK);
+    
+                }
+
+                
             } else {
                 return $this->sendError('Please visit any of our office for your Postpaid Outstanding Balance', 'ERROR', Response::HTTP_UNAUTHORIZED);
             }

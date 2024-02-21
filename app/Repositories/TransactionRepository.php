@@ -27,6 +27,6 @@ class TransactionRepository implements TransactionRepositoryInterface
     }
 
     public function checkifexist($user_id, $account_no){
-        return PaymentTransactions::where(['user_id' => $user_id, 'account_no' => $account_no])->first();
+        return PaymentTransactions::where(['user_id' => $user_id, 'account_number' => $account_no])->first();
     }
 }

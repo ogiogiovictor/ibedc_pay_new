@@ -5,6 +5,7 @@ namespace App\Repositories;
 use App\Models\User;
 use App\Interfaces\HomeRepositoryInterface;
 use App\Models\ECMI\SubAccount;
+use App\Models\ECMI\EcmiCustomers;
 
 class HomeRepository implements HomeRepositoryInterface
 {
@@ -19,6 +20,15 @@ class HomeRepository implements HomeRepositoryInterface
     }
 
     public function getSubAccount($accountno){
-        return SubAccount::where("AccountNo", $accountno)->get();
+        return SubAccount::where(["AccountNo" => EcmiCustomers::where("MeterNo", $accountno)->value('AccountNo'), "SubAccountAbbre" => "OUTBAL"])->first();
     }
+
+    public function getSubAccountFPUnit($accountno){
+        $subAccountBalFpUnit = SubAccount::where(["AccountNo" => EcmiCustomers::where("MeterNo", $accountno)->value('AccountNo'), "SubAccountAbbre" => 'FPUNIT'])->first()->Balance;
+    }
+
+    public function userprofile($user_id) {
+        return User::where("id", $user_id)->first();
+    }
+
 }

@@ -18,5 +18,7 @@ class PinService
 
         //dispatch a pin email to the user
         dispatch(new PinJob($user));
+
+        return $user;
     }
 }
