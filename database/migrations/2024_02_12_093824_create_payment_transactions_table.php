@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('account_type')->nullable();
             $table->string('account_number')->index()->nullable();
             $table->string('meter_no')->nullable();
-            $table->enum('status', ['pending', 'started', 'processing', 'success', 'failed'])->default('pending');
+            $table->enum('status', ['pending', 'started', 'processing', 'success', 'failed'])->default('started');
             $table->string('customer_name')->index()->nullable();
             $table->string('payment_source')->nullable();
             $table->string('provider')->nullable();
