@@ -408,15 +408,15 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Orders</h4>
+                            <h4 class="card-title">Latest Transactions</h4>
                             <div class="dropdown dropleft card-menu-dropdown">
                               <button class="btn p-0" type="button" id="dropdown12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-dots-vertical card-menu-btn"></i>
                               </button>
                               <div class="dropdown-menu" aria-labelledby="dropdown12" x-placement="left-start">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
+                                <a class="dropdown-item" href="#">Pending</a>
+                                <a class="dropdown-item" href="#">Processing</a>
+                                <a class="dropdown-item" href="#">Successful</a>
                               </div>
                             </div>
                           </div>
@@ -424,38 +424,28 @@
                             <table class="table center-aligned-table">
                               <thead>
                                 <tr>
-                                  <th class="pl-0"> 
-                                    <div class="form-check mb-0">
-                                      <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input">
-                                      <i class="input-helper"></i></label>
-                                    </div>
-                                  </th>
-                                  <th>Order ID</th>
-                                  <th>Customer</th>
-                                  <th>Product</th>
-                                  <th>Date</th>
+                                  <th>Transaction ID</th>
+                                  <th>Account No</th>
+                                  <th>Meter No</th>
+                                  <th>Customer Name</th>
+                                  <th>Email</th>
+                                  <th>Phone</th>
+                                  <th>Acount Type</th>
+                                  <th>Business Hub</th>
                                   <th>Status</th>
                                   <th>Actions</th>
                                 </tr>
                               </thead>
                               <tbody>
                                 <tr>
-                                  <td class="pl-0">
-                                    <div class="form-check">
-                                      <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input">
-                                      <i class="input-helper"></i></label>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <img src="https://via.placeholder.com/37x37" alt="image" class="img-rect mr-2">
-                                  </td>
-                                  <td>
-                                    <div class="text-dark font-weight-medium">6547-3DESC9835</div>
-                                  </td>
+                                  <td>188928893889 </td>
+                                  <td>11/43/12/0942-01</td>
+                                  <td> <div class="text-dark font-weight-medium">6547-3DESC9835</div> </td>
+                                  <td>fortune@gmail.com</td>
+                                  <td>09083904993</td>
                                   <td>Nike Hazard</td>
-                                  <td>18 May 2019</td>
+                                  <td>Prepaid</td>
+                                  <td>Ijeun</td>
                                   <td><label class="badge badge-success">Completed</label></td>
                                   <td>
                                     <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
@@ -463,68 +453,16 @@
                                     <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-delete"></i></a>
                                   </td>
                                 </tr>
+
                                 <tr>
-                                  <td class="pl-0">
-                                    <div class="form-check">
-                                      <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input">
-                                      <i class="input-helper"></i></label>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <img src="https://via.placeholder.com/37x37" alt="image" class="img-rect mr-2">
-                                  </td>
-                                  <td>
-                                    <div class="text-dark font-weight-medium">6547-3DESC9835</div>
-                                  </td>
-                                  <td>iPhone X</td>
-                                  <td>13 Aug 2019</td>
-                                  <td><label class="badge badge-warning">Delayed</label></td>
-                                  <td>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-grease-pencil"></i></a>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-delete"></i></a>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="pl-0">
-                                    <div class="form-check">
-                                      <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input">
-                                      <i class="input-helper"></i></label>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <img src="https://via.placeholder.com/37x37" alt="image" class="img-rect mr-2">
-                                  </td>
-                                  <td>
-                                    <div class="text-dark font-weight-medium">6547-3DESC9835</div>
-                                  </td>
-                                  <td>Gucci all black</td>
-                                  <td>18 Oct 2019</td>
-                                  <td><label class="badge badge-danger">Cancelled</label></td>
-                                  <td>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-grease-pencil"></i></a>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-delete"></i></a>
-                                  </td>
-                                </tr>
-                                <tr>
-                                  <td class="pl-0">
-                                    <div class="form-check">
-                                      <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input">
-                                      <i class="input-helper"></i></label>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <img src="https://via.placeholder.com/37x37" alt="image" class="img-rect mr-2">
-                                  </td>
-                                  <td>
-                                    <div class="text-dark font-weight-medium">6547-3DESC9835</div>
-                                  </td>
-                                  <td>Vitality shot Mango</td>
-                                  <td>16 Sep 2019</td>
+                                  <td>188928893889 </td>
+                                  <td>11/43/12/0942-01</td>
+                                  <td> <div class="text-dark font-weight-medium">6547-3DESC9835</div> </td>
+                                  <td>fortune@gmail.com</td>
+                                  <td>09083904993</td>
+                                  <td>Nike Hazard</td>
+                                  <td>Prepaid</td>
+                                  <td>Ijeun</td>
                                   <td><label class="badge badge-success">Completed</label></td>
                                   <td>
                                     <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
@@ -532,22 +470,16 @@
                                     <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-delete"></i></a>
                                   </td>
                                 </tr>
+                                
                                 <tr>
-                                  <td class="pl-0">
-                                    <div class="form-check">
-                                      <label class="form-check-label">
-                                      <input type="checkbox" class="form-check-input">
-                                      <i class="input-helper"></i></label>
-                                    </div>
-                                  </td>
-                                  <td>
-                                    <img src="https://via.placeholder.com/37x37" alt="image" class="img-rect mr-2">
-                                  </td>
-                                  <td>
-                                    <div class="text-dark font-weight-medium">6547-3DESC9835</div>
-                                  </td>
-                                  <td>Hero pro cam 7</td>
-                                  <td>29 Sep 2019</td>
+                                  <td>188928893889 </td>
+                                  <td>11/43/12/0942-01</td>
+                                  <td> <div class="text-dark font-weight-medium">6547-3DESC9835</div> </td>
+                                  <td>fortune@gmail.com</td>
+                                  <td>09083904993</td>
+                                  <td>Nike Hazard</td>
+                                  <td>Prepaid</td>
+                                  <td>Ijeun</td>
                                   <td><label class="badge badge-success">Completed</label></td>
                                   <td>
                                     <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
@@ -555,6 +487,7 @@
                                     <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-delete"></i></a>
                                   </td>
                                 </tr>
+
                               </tbody>
                             </table>
                           </div>
