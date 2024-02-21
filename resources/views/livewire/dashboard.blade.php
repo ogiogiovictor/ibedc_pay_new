@@ -23,15 +23,16 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Sales</h4>
+                            <h4 class="card-title">Transactions</h4>
                             <div class="dropdown dropleft card-menu-dropdown">
                               <button class="btn p-0" type="button" id="dropdown1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-dots-vertical card-menu-btn"></i>
                               </button>
                               <div class="dropdown-menu" aria-labelledby="dropdown1" x-placement="left-start">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
+                                <a class="dropdown-item" href="#">Started</a>
+                                <a class="dropdown-item" href="#">Pending</a>
+                                <a class="dropdown-item" href="#">Processing</a>
+                                <a class="dropdown-item" href="#">Successful</a>
                               </div>
                             </div>
                           </div>
@@ -39,11 +40,10 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">$ 27632</h2>
-                                  <h3 class="text-danger">+2.3%</h3>
+                                  <h2 class="mr-3"> 27,632</h2>
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">North Ludwig <span class=" font-weight-normal">($2643M last month)</span></p>
+                                  <p class="text-muted font-weight-bold text-small">Today <span class=" font-weight-normal">&nbsp;</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -54,11 +54,10 @@
                               </div>
                               <div class="carousel-item">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">$ 27632</h2>
-                                  <h3 class="text-danger">+2.3%</h3>
+                                  <h2 class="mr-3">632</h2>
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold  text-small">North Ludwig <span class=" font-weight-normal">($2643M last month)</span></p>
+                                  <p class="text-muted font-weight-bold  text-small">Yesterday <span class=" font-weight-normal">&nbsp;</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -69,11 +68,10 @@
                               </div>
                               <div class="carousel-item">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">$ 27632</h2>
-                                  <h3 class="text-danger">+2.3%</h3>
+                                  <h2 class="mr-3">1,900</h2>
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold  text-small">North Ludwig <span class=" font-weight-normal">($2643M last month)</span></p>
+                                  <p class="text-muted font-weight-bold  text-small">This Month <span class=" font-weight-normal">&nbsp;</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -99,15 +97,14 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Purchases</h4>
+                            <h4 class="card-title">Sales</h4>
                             <div class="dropdown dropleft card-menu-dropdown">
                               <button class="btn p-0" type="button" id="dropdown2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-dots-vertical card-menu-btn"></i>
                               </button>
                               <div class="dropdown-menu" aria-labelledby="dropdown2" x-placement="left-start">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
+                                <a class="dropdown-item" href="#">Processing</a>
+                                <a class="dropdown-item" href="#">Successful</a>
                               </div>
                             </div>
                           </div>
@@ -115,11 +112,11 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">$ 27632</h2>
+                                  <h2 class="mr-3">₦ 1,632</h2>
                                   <h3 class="text-success">+2.3%</h3>
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold  text-small">North Ludwig <span class=" font-weight-normal">($2643M last month)</span></p>
+                                  <p class="text-muted font-weight-bold  text-small">Today's <span class=" font-weight-normal">(Sales)</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -130,11 +127,11 @@
                               </div>
                               <div class="carousel-item">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">$ 27632</h2>
+                                  <h2 class="mr-3">₦ 27,632</h2>
                                   <h3 class="text-success">+2.3%</h3>
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">North Ludwig <span class=" font-weight-normal">($2643M last month)</span></p>
+                                  <p class="text-muted font-weight-bold text-small">Yesterday <span class=" font-weight-normal">(Sales)</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -145,11 +142,11 @@
                               </div>
                               <div class="carousel-item">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">$ 27632</h2>
+                                  <h2 class="mr-3">₦ 90,093,32</h2>
                                   <h3 class="text-success">+2.3%</h3>
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">North Ludwig <span class=" font-weight-normal">($2643M last month)</span></p>
+                                  <p class="text-muted font-weight-bold text-small">This Month <span class=" font-weight-normal">(Sales)</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -175,15 +172,13 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Returns</h4>
+                            <h4 class="card-title">Users</h4>
                             <div class="dropdown dropleft card-menu-dropdown">
                               <button class="btn p-0" type="button" id="dropdown3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-dots-vertical card-menu-btn"></i>
                               </button>
                               <div class="dropdown-menu" aria-labelledby="dropdown3" x-placement="left-start">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
+                                <a class="dropdown-item" href="#">All Users</a>
                               </div>
                             </div>
                           </div>
@@ -191,11 +186,11 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">$ 32086</h2>
+                                  <h2 class="mr-3">10,000</h2>
                                   <h3 class="text-danger">+2.3%</h3>
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">North Ludwig <span class=" font-weight-normal">($2643M last month)</span></p>
+                                  <p class="text-muted font-weight-bold text-small">All <span class=" font-weight-normal">(users)</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -204,36 +199,8 @@
                                 </span>
                                 </button>
                               </div>
-                              <div class="carousel-item">
-                                <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">$ 32086</h2>
-                                  <h3 class="text-danger">+2.3%</h3>
-                                </div>
-                                <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">North Ludwig <span class=" font-weight-normal">($2643M last month)</span></p>
-                                </div>
-                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
-                                <i class="mdi mdi-calendar mr-1"></i>
-                                <span class="text-left">
-                                Oct
-                                </span>
-                                </button>
-                              </div>
-                              <div class="carousel-item">
-                                <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">$ 232086</h2>
-                                  <h3 class="text-danger">+2.3%</h3>
-                                </div>
-                                <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">North Ludwig <span class=" font-weight-normal">($2643M last month)</span></p>
-                                </div>
-                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
-                                <i class="mdi mdi-calendar mr-1"></i>
-                                <span class="text-left">
-                                Oct
-                                </span>
-                                </button>
-                              </div>
+                              
+                             
                             </div>
                             <a class="carousel-control-prev" href="#returns" role="button" data-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -251,15 +218,13 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Marketing</h4>
+                            <h4 class="card-title">Complaint</h4>
                             <div class="dropdown dropleft card-menu-dropdown">
                               <button class="btn p-0" type="button" id="dropdown4" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-dots-vertical card-menu-btn"></i>
                               </button>
                               <div class="dropdown-menu" aria-labelledby="dropdown4" x-placement="left-start">
-                                <a class="dropdown-item" href="#">Action</a>
-                                <a class="dropdown-item" href="#">Another action</a>
-                                <a class="dropdown-item" href="#">Something else here</a>
+                                <a class="dropdown-item" href="#">All Complaint</a>
                               </div>
                             </div>
                           </div>
@@ -267,11 +232,11 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">$ 27632</h2>
+                                  <h2 class="mr-3">10,200</h2>
                                   <h3 class="text-success">+2.3%</h3>
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">North Ludwig <span class=" font-weight-normal">($2643M last month)</span></p>
+                                  <p class="text-muted font-weight-bold text-small">Today's  <span class=" font-weight-normal">(complain)</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -282,11 +247,11 @@
                               </div>
                               <div class="carousel-item">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">$ 27632</h2>
+                                  <h2 class="mr-3">29,000</h2>
                                   <h3 class="text-success">+2.3%</h3>
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">North Ludwig <span class=" font-weight-normal">($2643M last month)</span></p>
+                                  <p class="text-muted font-weight-bold text-small">This Month <span class=" font-weight-normal">(complain)</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -295,21 +260,7 @@
                                 </span>
                                 </button>
                               </div>
-                              <div class="carousel-item">
-                                <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">$ 27632</h2>
-                                  <h3 class="text-success">+2.3%</h3>
-                                </div>
-                                <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">North Ludwig <span class=" font-weight-normal">($2643M last month)</span></p>
-                                </div>
-                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
-                                <i class="mdi mdi-calendar mr-1"></i>
-                                <span class="text-left">
-                                Oct
-                                </span>
-                                </button>
-                              </div>
+                             
                             </div>
                             <a class="carousel-control-prev" href="#marketing" role="button" data-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>

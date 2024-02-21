@@ -24,50 +24,7 @@
               </a>
             </div>
           </li>
-          <li class="nav-item dropdown align-items-center d-lg-flex d-none">
-            <a class="dropdown-toggle btn btn-outline-secondary btn-fw"  href="#" data-toggle="dropdown" id="appDropdown">
-            <span class="nav-profile-name">Apps</span>
-            </a>
-            <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
-              <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="https://via.placeholder.com/36x36" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal">David Grey
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    The meeting is cancelled
-                  </p>
-                </div>
-              </a>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="https://via.placeholder.com/36x36" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal">Tim Cook
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    New product launch
-                  </p>
-                </div>
-              </a>
-              <a class="dropdown-item preview-item">
-                <div class="preview-thumbnail">
-                    <img src="https://via.placeholder.com/36x36" alt="image" class="profile-pic">
-                </div>
-                <div class="preview-item-content flex-grow">
-                  <h6 class="preview-subject ellipsis font-weight-normal"> Johnson
-                  </h6>
-                  <p class="font-weight-light small-text text-muted mb-0">
-                    Upcoming board meeting
-                  </p>
-                </div>
-              </a>
-            </div>
-          </li>
+         
         </ul>
         <ul class="navbar-nav navbar-nav-right">
             <li class="nav-item nav-search d-none d-lg-flex">
@@ -93,9 +50,9 @@
                     </div>
                   </div>
                   <div class="preview-item-content">
-                    <h6 class="preview-subject font-weight-normal">Application Error</h6>
+                    <h6 class="preview-subject font-weight-normal">Tosin Abayomi</h6>
                     <p class="font-weight-light small-text mb-0 text-muted">
-                      Just now
+                      Just bought 2,000
                     </p>
                   </div>
                 </a>
@@ -106,9 +63,9 @@
                     </div>
                   </div>
                   <div class="preview-item-content">
-                    <h6 class="preview-subject font-weight-normal">Settings</h6>
+                    <h6 class="preview-subject font-weight-normal">Abigail</h6>
                     <p class="font-weight-light small-text mb-0 text-muted">
-                      Private message
+                      just bought 3400
                     </p>
                   </div>
                 </a>
@@ -119,9 +76,9 @@
                     </div>
                   </div>
                   <div class="preview-item-content">
-                    <h6 class="preview-subject font-weight-normal">New user registration</h6>
+                    <h6 class="preview-subject font-weight-normal">Sandra Agudosi</h6>
                     <p class="font-weight-light small-text mb-0 text-muted">
-                      2 days ago
+                      bought 500 naira
                     </p>
                   </div>
                 </a>
@@ -143,25 +100,14 @@
                     <img src="https://via.placeholder.com/36x36" alt="image" class="profile-pic">
                   </div>
                   <div class="preview-item-content flex-grow">
-                    <h6 class="preview-subject ellipsis font-weight-normal">David Grey
+                    <h6 class="preview-subject ellipsis font-weight-normal">From Fortune
                     </h6>
                     <p class="font-weight-light small-text text-muted mb-0">
-                      The meeting is cancelled
+                      please help put forward
                     </p>
                   </div>
                 </a>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <img src="https://via.placeholder.com/36x36" alt="image" class="profile-pic">
-                  </div>
-                  <div class="preview-item-content flex-grow">
-                    <h6 class="preview-subject ellipsis font-weight-normal">Tim Cook
-                    </h6>
-                    <p class="font-weight-light small-text text-muted mb-0">
-                      New product launch
-                    </p>
-                  </div>
-                </a>
+                
                 <a class="dropdown-item preview-item">
                   <div class="preview-thumbnail">
                     <img src="https://via.placeholder.com/36x36" alt="image" class="profile-pic">
@@ -170,7 +116,7 @@
                     <h6 class="preview-subject ellipsis font-weight-normal"> Johnson
                     </h6>
                     <p class="font-weight-light small-text text-muted mb-0">
-                      Upcoming board meeting
+                     Frank is coming to the office
                     </p>
                   </div>
                 </a>
