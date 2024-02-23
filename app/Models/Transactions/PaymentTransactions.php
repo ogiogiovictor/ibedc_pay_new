@@ -33,6 +33,10 @@ class PaymentTransactions extends Model
         'latitude',
         'longitude',
         'source_type',
-        'user_id'
+        'user_id',
+        'units',
+        'costOfUnits',
+        'VAT'
     ];
 }
+

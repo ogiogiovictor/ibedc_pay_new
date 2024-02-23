@@ -10,6 +10,7 @@ use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Wallet\WalletUser;
+use App\Models\VirtualAccount;
 
 class User extends Authenticatable
 {
@@ -53,6 +54,10 @@ class User extends Authenticatable
 
     public function wallet(): HasOne {
         return $this->hasOne(WalletUser::class, "user_id");
+    }
+
+    public function virtualAccount() : HasOne {
+        return $this->hasOne(VirtualAccount::class, 'user_id');
     }
 
 }

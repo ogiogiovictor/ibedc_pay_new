@@ -42,7 +42,6 @@ class PrepaidLookUp extends Command
             $prepaidTransaction = PaymentTransactions::whereNull('receiptno')
                 ->where('account_type', 'Prepaid')
                 ->where('status', 'processing')
-                ->orWhere('status', 'pending')
                 ->whereNotNull('providerRef')
                 ->chunk(30, function($prepaidpayments) use (&$paymentData) {
 

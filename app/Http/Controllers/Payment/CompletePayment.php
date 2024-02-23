@@ -57,6 +57,7 @@ class CompletePayment extends BaseAPIController
         $payment->pay();
 
        // return $payment->pay()['data']['status'];
+      //return $request->account_type;
 
         if($payment->pay() && $payment->pay()['data']['status'] == 'successful') {
 

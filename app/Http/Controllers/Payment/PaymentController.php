@@ -152,6 +152,11 @@ class PaymentController extends BaseAPIController
 
         $zoneECMI = EcmiCustomers::where("MeterNo", $request->MeterNo)->first();
 
+        if (!$zoneECMI) {
+            return $this->sendError('ERROR', "Meter number does not exist", Response::HTTP_BAD_REQUEST);
+        }
+
+
         if(strlen($request->MeterNo) == '16') {
             return $this->sendError('Error', "Non STS Customer Cannot use this platform. Please visit our office", Response::HTTP_BAD_REQUEST);
         }
@@ -174,11 +179,6 @@ class PaymentController extends BaseAPIController
                 }
         }
 
-
-       // If Customer record is not found in the database return error message
-       if(!$zoneECMI){
-        return $this->sendError('Error', "No Record Found", Response::HTTP_BAD_REQUEST);
-        }
 
         $transactionID = StringHelper::generateUUIDReference();
         DB::beginTransaction();

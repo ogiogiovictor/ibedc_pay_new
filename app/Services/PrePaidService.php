@@ -7,15 +7,13 @@ use App\Http\Controllers\BaseAPIController;
 use Illuminate\Support\Facades\Http;
 use App\Models\ECMI\EcmiCustomers;
 use App\Models\Transactions\PaymentTransactions;
-use App\Jobs\PostPaidJob;
+use App\Jobs\PrepaidJob;
 
 
 class PrePaidService extends BaseAPIController
 {
     public function processService($checkRef, $request, $payment)
     {
-
-        
 
          $baseUrl = env('MIDDLEWARE_URL');
          $zoneECMI = EcmiCustomers::where("MeterNo", $request->account_id)->first();
@@ -46,7 +44,7 @@ class PrePaidService extends BaseAPIController
                 'status' => "processing",
             ]);
 
-            dispatch(new PostPaidJob($payment))->delay(2);
+            dispatch(new PrepaidJob($payment))->delay(2);
 
             return $this->sendSuccess($payment, "Payment Successfully Token will be sent to your email", Response::HTTP_OK);
 

@@ -10,7 +10,7 @@ use App\Http\Controllers\BaseAPIController;
 use App\Http\Requests\RegisterRequest;
 use App\Jobs\RegistrationJob;
 use Illuminate\Support\Facades\Auth;
-
+use App\Events\VirtualAccount;
 
 class RegisterController extends BaseAPIController
 {
@@ -43,6 +43,8 @@ class RegisterController extends BaseAPIController
 
         //dispatch a welcome email to the user
         dispatch(new RegistrationJob($user));
+
+        event(new VirtualAccount($user));
 
         return $this->sendSuccess( [
             'payload' => $user,

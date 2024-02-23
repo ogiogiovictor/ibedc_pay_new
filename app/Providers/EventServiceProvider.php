@@ -23,6 +23,10 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\ContactUs' => [
             'App\Listeners\SendContactUsEmail'
         ],
+        'App\Events\VirtualAccount' => [
+            'App\Listeners\SendVirtualAccount'
+        ],
+
     ];
 
     /**

@@ -85,7 +85,7 @@ class StringHelper
     {
         $length = 6;
         //$characters = '9876543210ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-        $characters = '9876182ABCDEF';
+        $characters = '1234567890';
         $charactersLenth = strlen($characters);
         $generatedTransactionReference = '';
         for ($i = 0; $i < $length; $i++) {
@@ -98,7 +98,7 @@ class StringHelper
         // Generate UUID Transaction Reference for Each Transaction
         $uuid = str_replace("-", "", Str::uuid()->toString());
         //return $limitedUuid = "106-".strtoupper(substr($uuid, 0, 12).Carbon::now()->format('His'));
-        return $limitedUuid = strtoupper(substr($uuid, 0, 12).Carbon::now()->format('His'));
+        return $limitedUuid = strtoupper(substr($uuid, 0, 10).Carbon::now()->format('His'));
     }
 
     

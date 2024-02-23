@@ -303,6 +303,18 @@
         <td class="container">
           <div class="content">
 
+          <table style="width:100%;max-width:620px;margin:0 auto;">
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center; padding-bottom:25px">
+                                    <a href="#"><img style="height: 40px" src="https://www.ibedc.com/assets/img/logo.png" alt="logo"></a>
+                                   
+                                </td>
+                            </tr>
+                        </tbody>
+            </table>
+
+
             <!-- START CENTERED WHITE CONTAINER -->
             <span class="preheader">WELCOME TO IBEDCPAY</span>
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
@@ -311,7 +323,8 @@
               <tr>
                 <td class="wrapper">
                   <p>Hi {{ $name }}</p>
-                  <p>Your payment of {{ $amount }} has been sucessfully Confirmed.</p><br/>
+                  <p>Congratulations, A virtual account has been open for you to with Polaris Bank. You can now fund your account and use it to buy energy or 
+                    pay bills. Please find below your account information</p><br/>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
@@ -319,10 +332,13 @@
                           <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                             <tbody>
                               <tr>
-                                <td> <h3>Transaction Reference  {{ $transaction_id }}</h3> </td>
+                                <td> <h3>Bank  {{ $bank_name }}</h3> </td>
                               </tr>
                               <tr>
-                                <td> <h3>Token  {{ $token }}</h3> </td>
+                                <td> <h3>Account No  {{ $account_number }}</h3> </td>
+                              </tr>
+                              <tr>
+                                <td> <h3>Account Name  {{ $account_name }}</h3> </td>
                               </tr>
                             </tbody>
                           </table>
@@ -334,7 +350,7 @@
                 </td>
               </tr>
 
-              <!-- END MAIN CONTENT AREA -->CMS
+              <!-- END MAIN CONTENT AREA -->
               </table>
 
             <!-- START FOOTER -->
@@ -347,7 +363,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="content-block powered-by">
+                  <td class="content-block powered-by">CMS
                     Powered by <a href="#">IBEDC</a>
                   </td>
                 </tr>
