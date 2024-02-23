@@ -12,6 +12,7 @@ use App\Jobs\RegistrationJob;
 use Illuminate\Support\Facades\Auth;
 use App\Events\VirtualAccount;
 
+
 class RegisterController extends BaseAPIController
 {
     /**

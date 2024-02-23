@@ -28,6 +28,6 @@ class SendVirtualAccount implements ShouldQueue
        Log::info('Virtual Account event triggered for user: ' . json_encode($event->user));
 
         $user = $event->user;
-        (new CreateVitualAccountService)->createAccount($user);
+        (new CreateVitualAccountService)->createAccount($event->user);
     }
 }

@@ -16,18 +16,21 @@ class CreateVitualAccountService
     {
 
         $requestRef = StringHelper::generateUUIDReference();
-        $signauture = $requestRef.";".env('POLARIS_VIRTUAL_SECURE');
+        $signauture = $requestRef.";CQcQrCeeLdmkP5ME"; //env('POLARIS_VIRTUAL_SECURE');
+        $baseURL = "https://api.openbanking.vulte.ng/v2/transact";
         
         \Log::info('Virtual Account Signature: ' .  $signauture);
 
         $getData = $this->polarisdata($user, $requestRef);
        
-        $newResponse = Http::withHeaders([
-            'Authorization' => "Bearer ta0bfAcIrJYm72g7uVKl_7c911c9e6ed64509b49498b7f94eb06b", //env('POLARIS_VIRTUAL'),
-            "Signature" => md5($signauture)
-        ])->post("https://api.openbanking.vulte.ng/v2/transact", $getData);
+        // $newResponse = Http::withHeaders([
+        //     "Authorization" => "Bearer ta0bfAcIrJYm72g7uVKl_7c911c9e6ed64509b49498b7f94eb06b", 
+        //     "Signature" => md5($signauture),
+        // ])->post($baseURL, $getData);
 
-        $response =  $newResponse->json();
+        // //Http::withoutVerifying()->withHeaders([
+
+        // $response =  $newResponse->json();
 
         \Log::info('Request URL: ' . "https://api.openbanking.vulte.ng/v2/transact");
         \Log::info('Request Headers: ' . json_encode([
@@ -35,27 +38,27 @@ class CreateVitualAccountService
             "Signature" => md5($signauture)
         ]));
         \Log::info('Request Data: ' . json_encode($getData));
-        \Log::info('Virtual Account Response: ' . $response->body());
+      //  \Log::info('Virtual Account Response: ' . $response->body());
 
-        if($response->status == "Successful") {
+        // if($response->status == "Successful") {
 
-            VirtualAccount::create([
-                'transaction_ref' => $response->data->provider_response->reference, 
-                'account_no' => $response->data->provider_response->account_number, 
-                 'contract_code' => $response->data->provider_response->contract_code, 
-                 'account_reference' => $response->data->provider_response->account_reference, 
-                 'account_name'=> $response->data->provider_response->account_name,  
-                 'customer_email' => $response->data->provider_response->customer_email,   
-                 'bank_name' => $response->data->provider_response->bank_name,   
-                'bank_code' => $response->data->provider_response->bank_code,   
-                'account_type' => $response->data->provider_response->account_type,   
-                'status' => $response->data->provider_response->status,  
-                'user_id' => $user->id
-            ]);
+        //     VirtualAccount::create([
+        //         'transaction_ref' => $response->data->provider_response->reference, 
+        //         'account_no' => $response->data->provider_response->account_number, 
+        //          'contract_code' => $response->data->provider_response->contract_code, 
+        //          'account_reference' => $response->data->provider_response->account_reference, 
+        //          'account_name'=> $response->data->provider_response->account_name,  
+        //          'customer_email' => $response->data->provider_response->customer_email,   
+        //          'bank_name' => $response->data->provider_response->bank_name,   
+        //         'bank_code' => $response->data->provider_response->bank_code,   
+        //         'account_type' => $response->data->provider_response->account_type,   
+        //         'status' => $response->data->provider_response->status,  
+        //         'user_id' => $user->id
+        //     ]);
 
-            dispatch(new VirtualAccountJob($getData, $user));
+        //     dispatch(new VirtualAccountJob($getData, $user));
 
-        }
+        // }
 
        
     }

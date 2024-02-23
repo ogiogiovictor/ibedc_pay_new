@@ -8,6 +8,8 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Support\Facades\Event;
 use App\Models\User;
 use App\Observers\RegisterObserver;
+use App\Events\VirtualAccount;
+use App\Listeners\SendVirtualAccount;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -23,9 +25,9 @@ class EventServiceProvider extends ServiceProvider
         'App\Events\ContactUs' => [
             'App\Listeners\SendContactUsEmail'
         ],
-        'App\Events\VirtualAccount' => [
-            'App\Listeners\SendVirtualAccount'
-        ],
+        VirtualAccount::class => [
+            SendVirtualAccount::class,
+        ]
 
     ];
 
