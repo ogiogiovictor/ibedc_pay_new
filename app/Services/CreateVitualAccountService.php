@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Http;
 use App\Helpers\StringHelper;
 use App\Jobs\VirtualAccountJob;
 use App\Models\VirtualAccount;
+use Illuminate\Support\Facades\Log;
 
 class CreateVitualAccountService
 {
@@ -15,14 +16,26 @@ class CreateVitualAccountService
     {
 
         $requestRef = StringHelper::generateUUIDReference();
-        $signaute = $requestRef.";".env('POLARIS_VIRTUAL_SECURE');
+        $signauture = $requestRef.";".env('POLARIS_VIRTUAL_SECURE');
+        
+        \Log::info('Virtual Account Signature: ' .  $signauture);
 
         $getData = $this->polarisdata($user, $requestRef);
+       
+        $newResponse = Http::withHeaders([
+            'Authorization' => "Bearer ta0bfAcIrJYm72g7uVKl_7c911c9e6ed64509b49498b7f94eb06b", //env('POLARIS_VIRTUAL'),
+            "Signature" => md5($signauture)
+        ])->post("https://api.openbanking.vulte.ng/v2/transact", $getData);
 
-        $response = Http::withoutVerifying()->withHeaders([
-            'Authorization' => env('POLARIS_VIRTUAL'),
-            "Signature" => md5($signaute)
-        ])->post(env('POLARIS_VIRTUAL_URL'), $getData);
+        $response =  $newResponse->json();
+
+        \Log::info('Request URL: ' . "https://api.openbanking.vulte.ng/v2/transact");
+        \Log::info('Request Headers: ' . json_encode([
+            'Authorization' => "Bearer ta0bfAcIrJYm72g7uVKl_7c911c9e6ed64509b49498b7f94eb06b",
+            "Signature" => md5($signauture)
+        ]));
+        \Log::info('Request Data: ' . json_encode($getData));
+        \Log::info('Virtual Account Response: ' . $response->body());
 
         if($response->status == "Successful") {
 

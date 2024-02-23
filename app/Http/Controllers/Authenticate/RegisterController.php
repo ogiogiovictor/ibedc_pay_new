@@ -44,7 +44,9 @@ class RegisterController extends BaseAPIController
         //dispatch a welcome email to the user
         dispatch(new RegistrationJob($user));
 
-        event(new VirtualAccount($user));
+        VirtualAccount::dispatch($user);
+
+       // event(new VirtualAccount($user));
 
         return $this->sendSuccess( [
             'payload' => $user,

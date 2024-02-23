@@ -11,8 +11,9 @@ use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\BaseAPIController;
+use Illuminate\Contracts\Queue\ShouldQueue;
 
-class VirtualAccount
+class VirtualAccount implements ShouldQueue
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 
