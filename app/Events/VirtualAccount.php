@@ -12,6 +12,7 @@ use Illuminate\Queue\SerializesModels;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\BaseAPIController;
 use Illuminate\Contracts\Queue\ShouldQueue;
+use Illuminate\Support\Facades\Log;
 
 class VirtualAccount implements ShouldQueue
 {
@@ -24,6 +25,9 @@ class VirtualAccount implements ShouldQueue
     public function __construct($user)
     {
         $this->user =  $user;
+          // Log information about the event when it's instantiated
+          Log::info('VirtualAccount event created for user: ' . $this->user->id);
+          Log::info('User details: ' . json_encode($this->user->toArray()));
     }
 
     /**
