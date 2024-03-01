@@ -322,7 +322,7 @@
               <tr>
                 <td class="wrapper">
                   <p>Hi {{ $name }}</p>
-                  <p>Thank you for registrating with IBECPay you can now pay bills and buy energy seemlessly.</p>
+                  <p>Thank you for registering with IBECPay, you can now pay bills and buy energy seamlessly.</p>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
