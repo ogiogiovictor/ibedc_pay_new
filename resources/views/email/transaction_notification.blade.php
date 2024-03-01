@@ -316,15 +316,14 @@
 
 
             <!-- START CENTERED WHITE CONTAINER -->
-            <span class="preheader">WELCOME TO IBEDCPAY</span>
+            <span class="preheader">PAYMENT NOTIFICATION - IBEDCPAY</span>
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
 
               <!-- START MAIN CONTENT AREA -->
               <tr>
                 <td class="wrapper">
                   <p>Hi {{ $name }}</p>
-                  <p>Congratulations, A virtual account has been open for you to with Polaris Bank. You can now fund your account and use it to buy energy or 
-                    pay bills. Please find below your account information</p><br/>
+                  <p>Please find below your payment details:</p><br/>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
@@ -332,13 +331,13 @@
                           <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                             <tbody>
                               <tr>
-                                <td> <h3>Bank :  </h3> {{ $bank_name }}</td>
+                                <td> <h3>Reference :  </h3> {{ $request_ref }}</td>
                               </tr>
                               <tr>
-                                <td> <h3>Account No :  </h3> {{ $account_number }}</td>
+                                <td> <h3>Amount :  </h3> {{ $amount }}</td>
                               </tr>
                               <tr>
-                                <td> <h3>Account Name : </h3> {{ $account_name }}</td>
+                                <td> <h3>Narration : </h3> {{ $Narration }}</td>
                               </tr>
                             </tbody>
                           </table>

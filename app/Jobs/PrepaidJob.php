@@ -48,6 +48,8 @@ class PrepaidJob implements ShouldQueue
 
         ];
 
+        $checkifTokenExist = PaymentTransactions::where("transaction_id", $this->payment['transaction_id'])->first();
+
 
         if($checkifTokenExist->status == 'processing' && $checkifTokenExist->providerRef != "" && $checkifTokenExist->receiptno == 'NULL' ){
 
@@ -64,7 +66,8 @@ class PrepaidJob implements ShouldQueue
                     $update = PaymentTransactions::where("transaction_id", $this->payment['transaction_id'])->update([
                         'status' => $newResponse['status'] == "true" ?  'success' : 'failed', //"resp": "00",
                         'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] : $newResponse['data']['recieptNumber'],  //Carbon::now()->format('YmdHis').time()
-                        'Descript' =>  isset($newResponse['message']) ? $newResponse['message'] : $newResponse['transaction_status'],
+                        'Descript' =>  isset($newResponse['message']) ? $newResponse['message'] : $newResponse['transactionStatus'],
+                        'units' => $newResponse['Units'], 
                     ]);
 
                      //Send SMS to User

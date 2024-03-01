@@ -51,26 +51,59 @@ class CompletePayment extends BaseAPIController
 
         // Open & Closed Principle // Extend the functionality of a system by adding new code instead of changing the existing ones
         //Factory Pattern is Used Here(Open & Closed Principle)
-
         $paymentFactory = new PaymentFactory();
-        $payment = $paymentFactory->initializePayment($request->provider, $checkTrans);
+        $payment = $paymentFactory->initializePayment($request->provider, $checkTrans, $request);
         $payment->pay();
 
        // return $payment->pay()['data']['status'];
-      //return $request->account_type;
+      //return $request->provider;
+    
+      if($request->provider == 'Polaris' && $payment->pay() && $payment->pay()['data']['status'] == 'successful'){
 
-        if($payment->pay() && $payment->pay()['data']['status'] == 'successful') {
+        return $this->checkSwitch($request->account_type, $request, $checkTrans, $payment->pay());
 
-            switch($request->account_type){  
-                case TransactionEnum::Postpaid()->value :
-                    return (new PostPaidService)->processService($checkTrans, $request, $payment->pay());
-                case TransactionEnum::Prepaid()->value :
-                    return (new PrePaidService)->processService($checkTrans, $request, $payment->pay());
-                default :
-                return $this->sendError('Invalid Payment Type', "Error!", Response::HTTP_BAD_REQUEST);
+      } else if($request->provider == 'FCMB' && $payment->pay()['data']['transactionStatus'] == "Success"){   //$fcmbResponse->data->transactionStatus != "Success"
+
+      //  return $this->checkSwitch($request->account_type, $request, $checkTrans, $payment->pay());
+
+      } else if($request->provider == 'Wallet') { 
+         $paymentResponse = $payment->pay();
+         $payload = $paymentResponse->getData(true)['message']; 
+            if($payload == 'Error'){
+                return $paymentResponse->getData(true);
+            } else {
+                $npayload =   $paymentResponse->getData(true)['payload'];
+                return $this->checkSwitch($request->account_type, $request, $checkTrans, $npayload);
             }
-        }
+
+      }else  {
+        return $this->sendError('Invalid Payment Type', "Error!", Response::HTTP_BAD_REQUEST);
+      }
+
+        // if($payment->pay() && $payment->pay()['data']['status'] == 'successful') {
+
+        //     switch($request->account_type){  
+        //         case TransactionEnum::Postpaid()->value :
+        //             return (new PostPaidService)->processService($checkTrans, $request, $payment->pay());
+        //         case TransactionEnum::Prepaid()->value :
+        //             return (new PrePaidService)->processService($checkTrans, $request, $payment->pay());
+        //         default :
+        //         return $this->sendError('Invalid Payment Type', "Error!", Response::HTTP_BAD_REQUEST);
+        //     }
+        // }
         
+    }
+
+    private function checkSwitch($accountType, $request, $checkTrans, $payment) {
+
+        switch($accountType){  
+            case TransactionEnum::Postpaid()->value :
+                return (new PostPaidService)->processService($checkTrans, $request, $payment);
+            case TransactionEnum::Prepaid()->value :
+                return (new PrePaidService)->processService($checkTrans, $request, $payment);
+            default :
+            return $this->sendError('Invalid Payment Type', "Error!", Response::HTTP_BAD_REQUEST);
+        }
     }
 
 

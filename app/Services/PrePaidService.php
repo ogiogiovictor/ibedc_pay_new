@@ -29,7 +29,7 @@ class PrePaidService extends BaseAPIController
             $payment = [
                 'meterNo' => $request->account_id,
                 'account_type' => $request->account_type,
-                'amount' => $payment['data']['amount'],
+                'amount' => $request->amount, //$payment['data']['amount'],
                 'disco_name' => "IBEDC",
                 'customerName' => $zoneECMI->Surname. ' '. $zoneECMI->OtherNames,
                 'BUID' => $zoneECMI->BUID,

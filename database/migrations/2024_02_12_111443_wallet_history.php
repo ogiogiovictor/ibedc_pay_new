@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('payment_channel')->index()->nullable();
             $table->float('price')->default(0);
             $table->string('status')->default("pending");
-            $table->string('transactionId')->index();
+            $table->string('transactionId')->unique()->index();
             $table->timestamps();
       });
     }

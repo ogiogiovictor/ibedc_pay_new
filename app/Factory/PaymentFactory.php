@@ -11,19 +11,19 @@ use App\Enums\PaymentEnum;
 
 class  PaymentFactory extends BaseAPIController {
 
-    public function initializePayment($type, $checkTrans)
+    public function initializePayment($type, $checkTrans, $request)
     {
         if($type == PaymentEnum::Polaris()->value){
 
-            return new PolarisPaymentRepository($type, $checkTrans);
+            return new PolarisPaymentRepository($type, $checkTrans, $request);
 
         } else if($type == PaymentEnum::FCMB()->value){
 
-            return new FcmbPaymentRepository($type, $checkTrans);
+            return new FcmbPaymentRepository($type, $checkTrans, $request);
 
         } else if($type == PaymentEnum::Wallet()->value){
 
-            return new WalletPaymentRepository($type, $checkTrans);
+            return new WalletPaymentRepository($type, $checkTrans, $request);
 
         } else {
             return $this->sendError('Unsupported Payment Method', 'Error!', Response::HTTP_UNAUTHORIZED);

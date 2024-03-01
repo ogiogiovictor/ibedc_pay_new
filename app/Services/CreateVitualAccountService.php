@@ -69,6 +69,11 @@ class CreateVitualAccountService
     private function polarisdata($user, $requestRef){
 
         $nameArray = explode(' ', $user->name);
+
+        // "meta": {
+        //     "single_deposit_limit": "3000000",
+        //     "sub_partner_id": "4091359503"
+        //  }
         
         return [
             "request_ref" => $requestRef,
@@ -93,8 +98,8 @@ class CreateVitualAccountService
                     "mobile_no" => $user->phone
                 ],
                 "meta" => [
-                    "a_key" => $user->id,
-                    "b_key" => $user->meter_no_primary
+                    "a_key" => "", //$user->id,  // should be empty
+                    "b_key" => "" //$user->meter_no_primary // should be empty
                 ],
                 "details" => [
                     "name_on_account" => "",

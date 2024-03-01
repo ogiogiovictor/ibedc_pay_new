@@ -11,6 +11,7 @@ use App\Http\Controllers\BaseAPIController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Wallet\WalletUser;
 
+
 class LoginController extends BaseAPIController
 {
     /**
@@ -52,11 +53,11 @@ class LoginController extends BaseAPIController
             $user = Auth::user();
            
             // You can customize the response based on your needs
-           
             return $this->sendSuccess([
                 'user' => $user,
                 'token' => $user->createToken('Authorization')->plainTextToken,
                 'wallet' => $user->wallet,
+                'account' => $user->virtualAccount,
             ], 'LOGIN SUCCESSFUL', Response::HTTP_OK);
         }
 

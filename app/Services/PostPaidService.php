@@ -25,7 +25,7 @@ class PostPaidService extends BaseAPIController
      $data = [
         'meterno' => $request->account_id,
         'vendtype' => $checkRef->account_type,
-        'amount' => $payment['data']['amount'], 
+        'amount' => $request->amount, //$payment['data']['amount'], 
         "custname" => $checkRef->customer_name,
         "businesshub" => isset($buCode) ? $buCode : $custInfo->BUID,
         "custphoneno" => $request->phone,

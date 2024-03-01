@@ -11,10 +11,12 @@ class PolarisPaymentRepository extends BaseApiController implements PayableInter
 {
     public $checkTrans;
     public $type;
+    public $request;
 
-    public function __construct($type, $checkTrans) {
+    public function __construct($type, $checkTrans, $request) {
         $this->checkTrans = $checkTrans;
         $this->type = $type;
+        $this->request = $request;
     }
 
     public function pay()
@@ -39,7 +41,7 @@ class PolarisPaymentRepository extends BaseApiController implements PayableInter
                 'providerRef' => $flutterResponse['data']['flwref'],
                 'Descript' => $flutterResponse['data']['status'],
                 'response_status' => 1,
-                'provider' => $this->type,
+                'provider' => $this->request->provider,
             ]);
         }
 

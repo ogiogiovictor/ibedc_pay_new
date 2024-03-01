@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\BaseAPIController;
 use Illuminate\Support\Facades\Auth;
 use App\Services\PinService;
+use App\Models\VirtualAccount;
 
 class HomeController extends BaseAPIController
 {
@@ -32,6 +33,7 @@ class HomeController extends BaseAPIController
         return $this->sendSuccess([
 
            'user' => $this->profile->index($user->id),
+           'account' => VirtualAccount::where('user_id', $user->id)->first(),
         ], 'PROFILE LOADED', Response::HTTP_OK);
     }
 
@@ -155,11 +157,11 @@ class HomeController extends BaseAPIController
 
                 
             } else {
-                return $this->sendError('Please visit any of our office for your Postpaid Outstanding Balance', 'ERROR', Response::HTTP_UNAUTHORIZED);
+                return $this->sendError('ERROR', 'Please visit any of our office for your Postpaid Outstanding Balance', Response::HTTP_UNAUTHORIZED);
             }
 
         } else {
-            return $this->sendError('Invalid Pin for Retriving Outstanding Balance', 'ERROR', Response::HTTP_UNAUTHORIZED);
+            return $this->sendError('ERROR', 'Invalid Pin for Retriving Outstanding Balance',  Response::HTTP_UNAUTHORIZED);
         }
 
 
