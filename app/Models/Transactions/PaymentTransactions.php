@@ -4,6 +4,8 @@ namespace App\Models\Transactions;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class PaymentTransactions extends Model
 {
@@ -38,5 +40,23 @@ class PaymentTransactions extends Model
         'costOfUnits',
         'VAT'
     ];
+
+    
+    public function sumTodaySales() {
+        $today = Carbon::today();
+        return $this->whereDate('created_at', $today)
+            ->whereIn('status', ['success', 'processing'])
+            ->select(DB::raw('SUM(amount) as amount'))
+            ->first()->amount;
+    }
+
+    public function countTodaysTransaction() {
+        $today = Carbon::today();
+        return $this->whereDate('created_at', $today)
+                ->whereIn('status', ['success', 'processing'])
+                ->count();
+    }
 }
+
+
 

@@ -23,7 +23,7 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Transactions</h4>
+                            <h4 class="card-title">Today's Transactions</h4>
                             <div class="dropdown dropleft card-menu-dropdown">
                               <button class="btn p-0" type="button" id="dropdown1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-dots-vertical card-menu-btn"></i>
@@ -40,10 +40,10 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3"> 27,632</h2>
+                                  <h2 class="mr-3"> {{ $count_transactions }}</h2>
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">Today <span class=" font-weight-normal">&nbsp;</span></p>
+                                  <p class="text-muted font-weight-bold text-small"><?= date('Y-m-d')?> <span class=" font-weight-normal">&nbsp;</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -52,34 +52,7 @@
                                 </span>
                                 </button>
                               </div>
-                              <div class="carousel-item">
-                                <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">632</h2>
-                                </div>
-                                <div class="mb-3">
-                                  <p class="text-muted font-weight-bold  text-small">Yesterday <span class=" font-weight-normal">&nbsp;</span></p>
-                                </div>
-                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
-                                <i class="mdi mdi-calendar mr-1"></i>
-                                <span class="text-left">
-                                Oct
-                                </span>
-                                </button>
-                              </div>
-                              <div class="carousel-item">
-                                <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">1,900</h2>
-                                </div>
-                                <div class="mb-3">
-                                  <p class="text-muted font-weight-bold  text-small">This Month <span class=" font-weight-normal">&nbsp;</span></p>
-                                </div>
-                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
-                                <i class="mdi mdi-calendar mr-1"></i>
-                                <span class="text-left">
-                                Oct
-                                </span>
-                                </button>
-                              </div>
+                              
                             </div>
                             <a class="carousel-control-prev" href="#sales" role="button" data-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -112,7 +85,7 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">₦ 1,632</h2>
+                                  <h2 class="mr-3">₦ {{ number_format($transactions, 2) }}</h2>
                                   <h3 class="text-success">+2.3%</h3>
                                 </div>
                                 <div class="mb-3">
@@ -125,36 +98,7 @@
                                 </span>
                                 </button>
                               </div>
-                              <div class="carousel-item">
-                                <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">₦ 27,632</h2>
-                                  <h3 class="text-success">+2.3%</h3>
-                                </div>
-                                <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">Yesterday <span class=" font-weight-normal">(Sales)</span></p>
-                                </div>
-                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
-                                <i class="mdi mdi-calendar mr-1"></i>
-                                <span class="text-left">
-                                Oct
-                                </span>
-                                </button>
-                              </div>
-                              <div class="carousel-item">
-                                <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">₦ 90,093,32</h2>
-                                  <h3 class="text-success">+2.3%</h3>
-                                </div>
-                                <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">This Month <span class=" font-weight-normal">(Sales)</span></p>
-                                </div>
-                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
-                                <i class="mdi mdi-calendar mr-1"></i>
-                                <span class="text-left">
-                                Oct
-                                </span>
-                                </button>
-                              </div>
+                            
                             </div>
                             <a class="carousel-control-prev" href="#purchases" role="button" data-slide="prev">
                             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
@@ -245,21 +189,7 @@
                                 </span>
                                 </button>
                               </div>
-                              <div class="carousel-item">
-                                <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">29,000</h2>
-                                  <h3 class="text-success">+2.3%</h3>
-                                </div>
-                                <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">This Month <span class=" font-weight-normal">(complain)</span></p>
-                                </div>
-                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
-                                <i class="mdi mdi-calendar mr-1"></i>
-                                <span class="text-left">
-                                Oct
-                                </span>
-                                </button>
-                              </div>
+                              
                              
                             </div>
                             <a class="carousel-control-prev" href="#marketing" role="button" data-slide="prev">
@@ -495,110 +425,10 @@
                       </div>
                     </div>
                   </div>
-                  <div class="row">
-                    <div class="col-12">
-                      <div class="card">
-                        <div class="card-body">
-                          <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Tasks</h4>
-                            <div class="dropdown">
-                              <button class="btn btn-outline-secondary dropdown-toggle" type="button" id="dropdownMenuSizeButton3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                              2019
-                              </button>
-                              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="dropdownMenuSizeButton3" data-x-placement="bottom-end">
-                                <a class="dropdown-item" href="#">2015</a>
-                                <a class="dropdown-item" href="#">2016</a>
-                                <a class="dropdown-item" href="#">2017</a>
-                                <a class="dropdown-item" href="#">2018</a>
-                              </div>
-                            </div>
-                          </div>
-                          <div class="container-fluid">
-                            <div class="row ticket-card mt-3 pb-2 border-bottom pb-3 mb-3">
-                              <div class="col-md-1">
-                                <img class="img-sm rounded-circle mb-4 mb-md-0" src="https://via.placeholder.com/37x37" alt="profile image">
-                              </div>
-                              <div class="ticket-details col-md-9">
-                                <div class="d-md-flex">
-                                  <h4 class="text-dark mr-2 no-wrap">Dustin Lucas</h4>
-                                  <h5 class="mr-1 text-primary">[#46687]</h5>
-                                  <p class="font-weight-medium ellipsis">Will The Democrats Be Able To Reverse The Online Gambling Ban</p>
-                                </div>
-                                <p class="text-gray font-weight-medium">People who have a ticket reservation of the event is automatically mark as interested. Harness The Power Of Words In</p>
-                                <div class="row text-muted d-md-flex d-none">
-                                  <div class="col-12 d-flex">
-                                    <p class="mb-0 mr-2 text-gray text-small">30 Min ago - Due in 1 days</p>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="ticket-actions col-md-2 text-lg-right pr-md-0">
-                                <div class="btn-group dropdown">
-                                  <button type="button" class="btn btn-success btn-md d-flex">Action</button>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row ticket-card mt-3 pb-2 border-bottom pb-3 mb-3">
-                              <div class="col-md-1">
-                                <img class="img-sm rounded-circle mb-4 mb-md-0" src="https://via.placeholder.com/37x37" alt="profile image">
-                              </div>
-                              <div class="ticket-details col-md-9">
-                                <div class="d-md-flex">
-                                  <h4 class="text-dark mr-2 no-wrap">Ida Manning</h4>
-                                  <h5 class="mr-1 text-primary">[#23135]</h5>
-                                  <p class="font-weight-medium mb-0 ellipsis">Choosing The Best Audio Player Software For Your Computer</p>
-                                </div>
-                                <p class="text-muted font-weight-medium">People who have a ticket reservation of the event is automatically mark as interested. Harness The Power Of Words In</p>
-                                <div class="row text-muted d-md-flex d-none">
-                                  <div class="col-12 d-flex">
-                                    <p class="mb-0 mr-2 text-gray text-small">30 Min ago - Due in 2 days</p>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="ticket-actions col-md-2 text-lg-right pr-md-0">
-                                <div class="btn-group dropdown">
-                                  <button type="button" class="btn btn-success btn-md d-flex">Action</button>
-                                </div>
-                              </div>
-                            </div>
-                            <div class="row ticket-card mt-3 pb-2 pb-3 mb-3">
-                              <div class="col-md-1">
-                                <img class="img-sm rounded-circle mb-4 mb-md-0" src="https://via.placeholder.com/37x37" alt="profile image">
-                              </div>
-                              <div class="ticket-details col-md-9">
-                                <div class="d-md-flex">
-                                  <h4 class="text-dark mr-2 no-wrap">Flora Hunter</h4>
-                                  <h5 class="mr-1 text-primary">[#23135]</h5>
-                                  <p class="font-weight-medium mb-0 ellipsis">A Discount Toner Cartridge Is Better Than Ever And You Will Save 50 Or More</p>
-                                </div>
-                                <p class="text-muted mb-2 font-weight-medium">People who have a ticket reservation of the event is automatically mark as interested. Harness The Power Of Words In</p>
-                                <div class="row text-muted d-md-flex d-none">
-                                  <div class="col-12 d-flex">
-                                    <p class="mb-0 mr-2 text-gray text-small">30 Min ago - Due in 8 days</p>
-                                  </div>
-                                </div>
-                              </div>
-                              <div class="ticket-actions col-md-2 text-lg-right pr-md-0">
-                                <div class="btn-group dropdown">
-                                  <button type="button" class="btn btn-success btn-md d-flex">Action</button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                 
                 </div>
-                <div class="tab-pane fade" id="users" role="tabpanel" aria-labelledby="users-tab">
-                  Tab Item
-                </div>
-                <div class="tab-pane fade" id="returns-1" role="tabpanel" aria-labelledby="returns-tab">
-                  Tab Item
-                </div>
-                <div class="tab-pane fade" id="more" role="tabpanel" aria-labelledby="more-tab">
-                  Tab Item
-                </div>
-              </div> 
+              
+              </div>
                     
                                     
 
