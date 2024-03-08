@@ -40,6 +40,14 @@ class WalletPaymentRepository extends BaseApiController implements PayableInterf
 
        // deduct the money from the wallet
        $authUser->wallet->decrement('wallet_amount', $this->checkTrans->amount);
+
+          //update the transaction reference
+          $update = PaymentTransactions::where("transaction_id", $this->checkTrans->transaction_id)->update([
+            'providerRef' => StringHelper::generateUUIDReference(),
+            'Descript' => "Wallet Fund Sucessfully Deducted",
+            'response_status' => 1,
+            'provider' => "Wallet",
+        ]);
        
       $walletDeducted =  WalletHistory::create([
         'user_id' => $authUser->id,
@@ -50,14 +58,6 @@ class WalletPaymentRepository extends BaseApiController implements PayableInterf
         'entry' => 'DR'
         ]);
        
-       //update the transaction reference
-       $update = PaymentTransactions::where("transaction_id", $this->checkTrans->transaction_id)->update([
-        'providerRef' => StringHelper::generateUUIDReference(),
-        'Descript' => "Wallet Fund Sucessfully Deducted",
-        'response_status' => 1,
-        'provider' => "Wallet",
-    ]);
-
        //send token to the user
        return $this->sendSuccess($this->checkTrans, "PaymentSource Successfully Loaded", Response::HTTP_OK);
       
