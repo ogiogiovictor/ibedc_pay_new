@@ -33,7 +33,7 @@
             </a>
             <div class="collapse" id="ui-basic">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/ui-features/accordions.html">All Customers</a></li>
+                <li class="nav-item"> <a class="nav-link"  href="/customers"  wire:navigate>All Customers</a></li>
                 <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Oustanding Balances</a></li>
               </ul>
             </div>
@@ -49,7 +49,7 @@
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="pages/ui-features/notifications.html">
+            <a class="nav-link"  href="/users"  wire:navigate>
             <i class="mdi mdi-bell menu-icon"></i>
             <span class="menu-title">Users</span>
             </a>

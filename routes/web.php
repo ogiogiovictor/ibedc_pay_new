@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Livewire\Login;
 use App\Livewire\Dashboard;
 use App\Livewire\Transactions;
+use App\Livewire\Users;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,3 +19,4 @@ use App\Livewire\Transactions;
 Route::get('/', Login::class);
 Route::get('/dashboard', Dashboard::class);
 Route::get('/transactions', Transactions::class);
+Route::get('/users', Users::class);
