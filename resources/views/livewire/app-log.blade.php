@@ -47,37 +47,57 @@
                                   <th>Ajax </th>
                                   <th>URL </th>
                                   <th>Method </th>
-                                  <th>UserAgent</th>
+                                  <th>IP Address</th>
                                   <th>Status</th>
                                   <th>Action</th>
                                 </tr>
                               </thead>
                               <tbody>
 
-                              @if(count($all_logs['data']) > 0)
+                              @if(count($all_logs['links']) > 0)
+                            
 
-                              @foreach($all_logs['data'] as $logs)
-                                <tr>
-                                  <td>{{ \Carbon\Carbon::parse($logs['created_at'])->format('Y-m-d H:i:s')}} </td>
-                                  <td>{{ $logs['id'] }} </td>
-                                  <td> {{ $logs['user_id'] }} </td>
-                                  <td>{{ $logs['ajax'] }} </td>
-                                  <td>{{ $logs['url'] }} </td>
-                                  <td><div class="text-dark font-weight-medium badge badge-warning"> {{ $logs['method'] }} </div></td>
-                                  <td>{{ $logs['user_agent'] }} </td>
-                                  <td><div class="text-dark font-weight-medium badge badge-primary"> {{ $logs['status_code'] }} </div> </td>
-                                
-                                  <td>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
-                                  </td>
-                                </tr>
+                                @foreach($all_logs['data'] as $logs)
+                                    <tr>
+                                    <td>{{ \Carbon\Carbon::parse($logs['created_at'])->format('Y-m-d H:i:s')}} </td>
+                                    <td>{{ $logs['id'] }} </td>
+                                    <td> {{ $logs['user_id'] }} </td>
+                                    <td>{{ $logs['ajax'] }} </td>
+                                    <td>{{ $logs['url'] }} </td>
+                                    <td><div class="text-dark font-weight-medium badge badge-warning"> {{ $logs['method'] }} </div></td>
+                                    <td>{{ $logs['ip_address'] }} </td>
+                                    <td><div class="text-dark font-weight-medium badge badge-success"> {{ $logs['status_code'] }} </div> </td>
+                                    
+                                    <td>
+                                        <!-- <a href="#" class="btn btn-primary btn-xs">View</a> -->
+                                        <button  wire:click="showDetails({{ $logs['id'] }})" class="btn btn-primary btn-xs">View</button>
+                                    </td>
+                                    </tr>
 
-                                @endforeach
+                                    @endforeach
+
+                               
+                                  <!-- Output pagination links -->
+                                <nav>
+                                    <ul class="pagination">
+                                        @foreach($all_logs['links'] as $link)
+                                            <li class="page-item {{ $link['active'] ? 'active' : '' }}">
+                                                <!-- <a class="page-link" href="{{ $link['url'] }}">{{ $link['label'] }}</a> -->
+                                                <a href="{{ $link['url'] }}" class="page-link">{!! $link['label'] !!}</a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </nav>
                                 @else
                                 <tr>
                                   <td colspan="10" class="text-center">No Log Found </td>
                                 </tr>
+
+                               
+
                                 @endif
+
+                                
 
                               </tbody>
                             </table>
@@ -102,5 +122,9 @@
         </div>
 
     </div>
+
+
+    <!-- Add the wire:poll directive to trigger periodic refresh -->
+    <livewire:app-log wire:poll.10s />
 
 </div>
