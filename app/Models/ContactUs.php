@@ -12,4 +12,8 @@ class ContactUs extends Model
     protected $fillable = [
         'name', 'message', 'email', 'subject', 'account_type', 'unique_code', 'status', 'phone'
     ];
+
+    public static function userComplains(): string {
+        return number_format(self::count());
+    }
 }

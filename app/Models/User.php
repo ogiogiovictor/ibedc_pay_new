@@ -60,4 +60,13 @@ class User extends Authenticatable
         return $this->hasOne(VirtualAccount::class, 'user_id');
     }
 
+    public static function userCount(): int {
+        return self::count();
+    }
+
+    public static function userCountFormatted(): string {
+        return number_format(self::count());
+    }
+    
+
 }

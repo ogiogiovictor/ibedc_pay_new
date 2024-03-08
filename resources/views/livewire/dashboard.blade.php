@@ -85,8 +85,8 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">₦ {{ number_format($transactions, 2) }}</h2>
-                                  <h3 class="text-success">+2.3%</h3>
+                                  <h2 class="mr-3 text-success">₦ {{ number_format($transactions, 2) }}</h2>
+                                  <!-- <h3 class="text-success">+2.3%</h3> -->
                                 </div>
                                 <div class="mb-3">
                                   <p class="text-muted font-weight-bold  text-small">Today's <span class=" font-weight-normal">(Sales)</span></p>
@@ -130,8 +130,8 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">10,000</h2>
-                                  <h3 class="text-danger">+2.3%</h3>
+                                  <h2 class="mr-3 text-danger">{{ $users }}</h2>
+                                  <!-- <h3 class="text-danger">+2.3%</h3> -->
                                 </div>
                                 <div class="mb-3">
                                   <p class="text-muted font-weight-bold text-small">All <span class=" font-weight-normal">(users)</span></p>
@@ -176,11 +176,11 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">10,200</h2>
-                                  <h3 class="text-success">+2.3%</h3>
+                                  <h2 class="mr-3 text-primary">{{ $complaints }}</h2>
+                                  <!-- <h3 class="text-success">+2.3%</h3> -->
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">Today's  <span class=" font-weight-normal">(complain)</span></p>
+                                  <p class="text-muted font-weight-bold text-small">&nbsp;<span class=" font-weight-normal">(complain)</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -244,42 +244,8 @@
                                 </div>
                                 <i class="remove mdi mdi-delete"></i>
                               </li>
-                              <li>
-                                <div class="form-check">
-                                  <label class="form-check-label text-muted font-weight-medium">
-                                  <input class="checkbox" type="checkbox">
-                                  Buy Pizza on the way to work on web design
-                                  <i class="input-helper"></i></label>
-                                </div>
-                                <i class="remove mdi mdi-delete"></i>
-                              </li>
-                              <li>
-                                <div class="form-check">
-                                  <label class="form-check-label text-muted font-weight-medium">
-                                  <input class="checkbox" type="checkbox">
-                                  Upload the draft design for admin dashboard
-                                  <i class="input-helper"></i></label>
-                                </div>
-                                <i class="remove mdi mdi-delete"></i>
-                              </li>
-                              <li class="completed">
-                                <div class="form-check">
-                                  <label class="form-check-label text-muted font-weight-medium">
-                                  <input class="checkbox" type="checkbox" checked="">
-                                  This morning,be sure to get up early to eat breakfast!
-                                  <i class="input-helper"></i></label>
-                                </div>
-                                <i class="remove mdi mdi-delete"></i>
-                              </li>
-                              <li>
-                                <div class="form-check">
-                                  <label class="form-check-label text-muted font-weight-medium">
-                                  <input class="checkbox" type="checkbox">
-                                  Accompany her to thr theater to see the musical.
-                                  <i class="input-helper"></i></label>
-                                </div>
-                                <i class="remove mdi mdi-delete"></i>
-                              </li>
+                            
+                             
                             </ul>
                           </div>
                         </div>
@@ -289,7 +255,7 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Sales</h4>
+                            <h4 class="card-title">IBEDCPay Summary</h4>
                             <div class="dropdown dropleft card-menu-dropdown">
                               <button class="btn p-0" type="button" id="dropdown11" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-dots-vertical card-menu-btn"></i>
@@ -299,7 +265,7 @@
                               </div>
                             </div>
                           </div>
-                          <p class="text-muted">People who have a ticket reservation of the event is automatically mark as interested.</p>
+                          <p class="text-muted">IBEDC pay summary for the current and previous months for both successfully and failed transactions.</p>
                           <div class="border pt-2 pb-2 mt-4 mb-3 border-radius-widget">
                             <ul class="d-md-flex flex-wrap align-items-baseline justify-content-center list-unstyled text-center mb-0 sales-legend">
                               <li class="border-right-sm">
