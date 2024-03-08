@@ -6,6 +6,7 @@ use App\Livewire\Dashboard;
 use App\Livewire\Transactions;
 use App\Livewire\Users;
 use App\Livewire\Wallets;
+use App\Livewire\AppLog;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,3 +23,4 @@ Route::get('/dashboard', Dashboard::class);
 Route::get('/transactions', Transactions::class);
 Route::get('/users', Users::class);
 Route::get('/wallet_users', Wallets::class);
+Route::get('/syslog', AppLog::class);

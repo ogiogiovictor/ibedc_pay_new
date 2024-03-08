@@ -63,7 +63,7 @@
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="pages/ui-features/notifications.html">
+            <a class="nav-link" href="/syslog" wire:navigate>
             <i class="mdi mdi-emoticon-excited-outline menu-icon"></i>
             <span class="menu-title">Audit Logs</span>
             </a>
