@@ -5,6 +5,7 @@ use App\Livewire\Login;
 use App\Livewire\Dashboard;
 use App\Livewire\Transactions;
 use App\Livewire\Users;
+use App\Livewire\Wallets;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,3 +21,4 @@ Route::get('/', Login::class);
 Route::get('/dashboard', Dashboard::class);
 Route::get('/transactions', Transactions::class);
 Route::get('/users', Users::class);
+Route::get('/wallet_users', Wallets::class);

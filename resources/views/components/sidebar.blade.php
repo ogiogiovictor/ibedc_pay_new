@@ -56,7 +56,7 @@
           </li>
 
           <li class="nav-item">
-            <a class="nav-link" href="pages/apps/todo.html">
+            <a class="nav-link" href="/wallet_users"  wire:navigate>
             <i class="mdi mdi-checkbox-marked-outline menu-icon"></i>
             <span class="menu-title">Wallets</span>
             </a>
