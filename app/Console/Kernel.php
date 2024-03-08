@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
         $schedule->command('app:prepaid-look-up')->everyMinute();
         $schedule->command('app:postpaid-look-up')->everyTwoMinutes();
+        $schedule->command('app:payment-look-up')->everyTwoMinutes();
         
 
        //Enable task scheduler logging

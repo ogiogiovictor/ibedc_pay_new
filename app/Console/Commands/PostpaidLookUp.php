@@ -39,7 +39,7 @@ class PostpaidLookUp extends Command
             $checkTransaction = PaymentTransactions::whereNull('receiptno')
             ->where('account_type', 'Postpaid')
             ->where('status', 'processing')
-            ->orWhere('status', 'pending')
+            //->orWhere('status', 'pending')
             ->whereNotNull('providerRef')
             ->chunk(10, function ($paymentLogs) use (&$paymentData) {
 
