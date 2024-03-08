@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Livewire\Login;
 use App\Livewire\Dashboard;
+use App\Livewire\Transactions;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -15,3 +17,4 @@ use App\Livewire\Dashboard;
 */
 Route::get('/', Login::class);
 Route::get('/dashboard', Dashboard::class);
+Route::get('/transactions', Transactions::class);

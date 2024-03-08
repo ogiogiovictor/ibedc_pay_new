@@ -1,0 +1,122 @@
+<div>
+    
+    <x-navbar />
+
+    <div class="container-fluid page-body-wrapper">
+        <x-sidebar />
+
+        <div class="main-panel">
+
+            <div class="content-wrapper">
+                <div class="row">
+                    <div class="col-md-12">
+
+
+                  
+                    <x-topbar />
+
+                 
+            <div class="tab-content tab-transparent-content pb-0">
+                <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                 
+
+                  <div class="row">
+                    <div class="col-12 grid-margin">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="d-flex flex-wrap justify-content-between">
+                            <h4 class="card-title">Latest Transactions</h4>
+                            <div class="dropdown dropleft card-menu-dropdown">
+                              <button class="btn p-0" type="button" id="dropdown12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                <i class="mdi mdi-dots-vertical card-menu-btn"></i>
+                              </button>
+                              <div class="dropdown-menu" aria-labelledby="dropdown12" x-placement="left-start">
+                                <a class="dropdown-item" href="#">Pending</a>
+                                <a class="dropdown-item" href="#">Processing</a>
+                                <a class="dropdown-item" href="#">Successful</a>
+                              </div>
+                            </div>
+                          </div>
+                          <div class="table-responsive">
+                            <table class="table center-aligned-table">
+                              <thead>
+                                <tr>
+                                  <th>Date</th>
+                                  <th>Transaction ID</th>
+                                  <th>Account No</th>
+                                  <th>Meter No</th>
+                                  <th>Customer Name</th>
+                                  <th>Email</th>
+                                  <th>Phone</th>
+                                  <th>Acount Type</th>
+                                  <th>Business Hub</th>
+                                  <th>Status</th>
+                                  <th>Actions</th>
+                                </tr>
+                              </thead>
+                              <tbody>
+
+                              @if($all_transactions->count() > 0)
+
+                              @foreach($all_transactions as $transaction)
+                                <tr>
+                                  <td>{{ $transaction->created_at }} </td>
+                                  <td>{{ $transaction->transaction_id }} </td>
+                                  <td>{{ $transaction->account_number }}</td>
+                                  <td>{{ $transaction->meter_no }}</td>
+                                  <td> <div class="text-dark font-weight-medium">{{ $transaction->customer_name }}</div> </td>
+                                  <td>{{ $transaction->email }}</td>
+                                  <td>{{ $transaction->phone }}</td>
+                                  <td>{{ $transaction->account_type }}</td>
+                                  <td>{{ $transaction->BUID }}</td>
+                                  <td>
+                                    @if($transaction->status == "started")
+                                    <label class="badge badge-default">Pending</label>
+                                    @elseif($transaction->status == "processing")
+                                    <label class="badge badge-warning">Processing</label>
+                                    @elseif($transaction->status == "success")
+                                    <label class="badge badge-success">Successful</label>
+                                    @else
+                                    <label class="badge badge-danger">Failed</label>
+                                    @endif
+                                  
+                                  </td>
+                                  <td>
+                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
+                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-grease-pencil"></i></a>
+                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-delete"></i></a>
+                                  </td>
+                                </tr>
+
+                                @endforeach
+                                @else
+                                <tr>
+                                  <td colspan="10" class="text-center">No Transaction Found</td>
+                                </tr>
+                                @endif
+
+                              </tbody>
+                            </table>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                 
+                </div>
+              
+              </div>
+                    
+                                    
+
+                    </div>
+                </div>
+             </div>
+
+        <x-footer />
+
+        </div>
+
+    </div>
+
+</div>

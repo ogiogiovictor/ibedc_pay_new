@@ -3,7 +3,7 @@
 <div class="row">
                         <div class="col-sm-6 mb-4 mb-xl-0">
                         <h3>Congrats Administrator!</h3>
-                        <h6 class="font-weight-normal mb-0 text-muted">You have done 4 sales today.</h6>
+                        <h6 class="font-weight-normal mb-0 text-muted">Welcome Back!.</h6>
                         </div>
                         <div class="col-sm-6">
                         <div class="d-flex align-items-center justify-content-md-end">
@@ -31,16 +31,16 @@
                             <div class="col-12 col-sm-6 mb-xs-4  pt-2 pb-2 mb-xl-0">
                             <ul class="nav nav-tabs tab-transparent" role="tablist">
                                 <li class="nav-item">
-                                <a class="nav-link active" id="overview-tab" data-toggle="tab" href="#" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
+                                <a  href="/dashboard"  wire:navigate class="nav-link active" id="overview-tab" data-toggle="tab" href="#" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
                                 </li>
                                 <li class="nav-item">
-                                <a class="nav-link" id="users-tab" data-toggle="tab" href="#" role="tab" aria-controls="users" aria-selected="false">Transactions</a>
+                                <a  href="/transactions"  wire:navigate class="nav-link" id="users-tab" data-toggle="tab" href="#" role="tab" aria-controls="users" aria-selected="false">Transactions</a>
                                 </li>
                                 <li class="nav-item">
-                                <a class="nav-link" id="returns-tab" data-toggle="tab" href="#" role="tab" aria-controls="returns" aria-selected="false">Users</a>
+                                <a  href="/users"  wire:navigate class="nav-link" id="returns-tab" data-toggle="tab" href="#" role="tab" aria-controls="returns" aria-selected="false">Users</a>
                                 </li>
                                 <li class="nav-item">
-                                <a class="nav-link" id="more-tab" data-toggle="tab" href="#" role="tab" aria-controls="more" aria-selected="false">System Logs</a>
+                                <a  href="/syslog"  wire:navigate class="nav-link" id="more-tab" data-toggle="tab" href="#" role="tab" aria-controls="more" aria-selected="false">System Logs</a>
                                 </li>
                             </ul>
                             </div>

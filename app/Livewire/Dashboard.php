@@ -14,6 +14,7 @@ class Dashboard extends Component
     public $count_transactions;
     public $users;
     public $complaints;
+    public $all_transactions;
 
     public function mount()
     {
@@ -24,6 +25,9 @@ class Dashboard extends Component
         //User Information on Dashboard
         $this->users = User::userCountFormatted(); // Call the static method directly on the User model
         $this->complaints = ContactUs::userComplains(); // Call the static method directly on the ContactUs model
+
+        //All Transactions
+        $this->all_transactions = $transaction->orderby("id", "desc")->get();
 
 
     }

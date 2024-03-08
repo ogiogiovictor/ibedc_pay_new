@@ -19,7 +19,7 @@
             </div>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="index.html">
+            <a class="nav-link"  href="/dashboard"  wire:navigate>
             <i class="mdi mdi-shield-check menu-icon"></i>
             <span class="menu-title">Dashboard</span>
             </a>
@@ -42,7 +42,7 @@
 
 
           <li class="nav-item">
-            <a class="nav-link" href="pages/ui-features/popups.html">
+            <a class="nav-link" href="/transactions" wire:navigate>
             <i class="mdi mdi-drawing-box menu-icon"></i>
             <span class="menu-title">All Transaction</span>
             </a>

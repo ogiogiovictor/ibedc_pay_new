@@ -270,8 +270,8 @@
                             <ul class="d-md-flex flex-wrap align-items-baseline justify-content-center list-unstyled text-center mb-0 sales-legend">
                               <li class="border-right-sm">
                                 <h6 class="font-weight-normal">Today's Sale</h6>
-                                <h2 class="text-primary">2584</h2>
-                                <p class="text-primary pl-md-4 pr-md-4">56.04 % Total</p>
+                                <h2 class="text-primary">{{ number_format($transactions, 2) }}</h2>
+                                <p class="text-primary pl-md-4 pr-md-4">6.04 % Total</p>
                               </li>
                               <li class="border-right-sm">
                                 <h6 class="font-weight-normal">This Months </h6>
@@ -320,6 +320,7 @@
                             <table class="table center-aligned-table">
                               <thead>
                                 <tr>
+                                  <th>Date</th>
                                   <th>Transaction ID</th>
                                   <th>Account No</th>
                                   <th>Meter No</th>
@@ -333,16 +334,32 @@
                                 </tr>
                               </thead>
                               <tbody>
+
+                              @if($all_transactions->count() > 0)
+
+                              @foreach($all_transactions as $transaction)
                                 <tr>
-                                  <td>188928893889 </td>
-                                  <td>11/43/12/0942-01</td>
-                                  <td> <div class="text-dark font-weight-medium">6547-3DESC9835</div> </td>
-                                  <td>fortune@gmail.com</td>
-                                  <td>09083904993</td>
-                                  <td>Nike Hazard</td>
-                                  <td>Prepaid</td>
-                                  <td>Ijeun</td>
-                                  <td><label class="badge badge-success">Completed</label></td>
+                                  <td>{{ $transaction->created_at }} </td>
+                                  <td>{{ $transaction->transaction_id }} </td>
+                                  <td>{{ $transaction->account_number }}</td>
+                                  <td>{{ $transaction->meter_no }}</td>
+                                  <td> <div class="text-dark font-weight-medium">{{ $transaction->customer_name }}</div> </td>
+                                  <td>{{ $transaction->email }}</td>
+                                  <td>{{ $transaction->phone }}</td>
+                                  <td>{{ $transaction->account_type }}</td>
+                                  <td>{{ $transaction->BUID }}</td>
+                                  <td>
+                                    @if($transaction->status == "started")
+                                    <label class="badge badge-default">Pending</label>
+                                    @elseif($transaction->status == "processing")
+                                    <label class="badge badge-warning">Processing</label>
+                                    @elseif($transaction->status == "success")
+                                    <label class="badge badge-success">Successful</label>
+                                    @else
+                                    <label class="badge badge-danger">Failed</label>
+                                    @endif
+                                  
+                                  </td>
                                   <td>
                                     <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
                                     <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-grease-pencil"></i></a>
@@ -350,39 +367,12 @@
                                   </td>
                                 </tr>
 
+                                @endforeach
+                                @else
                                 <tr>
-                                  <td>188928893889 </td>
-                                  <td>11/43/12/0942-01</td>
-                                  <td> <div class="text-dark font-weight-medium">6547-3DESC9835</div> </td>
-                                  <td>fortune@gmail.com</td>
-                                  <td>09083904993</td>
-                                  <td>Nike Hazard</td>
-                                  <td>Prepaid</td>
-                                  <td>Ijeun</td>
-                                  <td><label class="badge badge-success">Completed</label></td>
-                                  <td>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-grease-pencil"></i></a>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-delete"></i></a>
-                                  </td>
+                                  <td colspan="10" class="text-center">No Transaction Found</td>
                                 </tr>
-                                
-                                <tr>
-                                  <td>188928893889 </td>
-                                  <td>11/43/12/0942-01</td>
-                                  <td> <div class="text-dark font-weight-medium">6547-3DESC9835</div> </td>
-                                  <td>fortune@gmail.com</td>
-                                  <td>09083904993</td>
-                                  <td>Nike Hazard</td>
-                                  <td>Prepaid</td>
-                                  <td>Ijeun</td>
-                                  <td><label class="badge badge-success">Completed</label></td>
-                                  <td>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-grease-pencil"></i></a>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-delete"></i></a>
-                                  </td>
-                                </tr>
+                                @endif
 
                               </tbody>
                             </table>
