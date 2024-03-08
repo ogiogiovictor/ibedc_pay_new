@@ -1,4 +1,4 @@
-<div>
+<div wire:poll>
     
     <x-navbar />
 
@@ -124,7 +124,6 @@
     </div>
 
 
-    <!-- Add the wire:poll directive to trigger periodic refresh -->
-    <livewire:app-log wire:poll.10s />
+   
 
 </div>

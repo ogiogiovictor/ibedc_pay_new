@@ -1,4 +1,4 @@
-<div>
+<div wire:poll>
     
     <x-navbar />
 

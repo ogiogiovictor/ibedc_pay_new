@@ -3,22 +3,22 @@
 namespace App\Livewire;
 
 use Livewire\Component;
+use App\Models\Logs\AppLog; 
 
 class LogDetails extends Component
 {
-    public $receivedMessage;
+   
+    public $details;
 
-    protected $listeners = ['showDetails'];
-
-
-    public function showDetails($message)
+    public function mount($id)
     {
-        $this->receivedMessage = $message;
+        $this->details = AppLog::findOrFail($id); // Fetch details based on ID
+        
     }
 
 
     public function render()
     {
-        return view('livewire.log-details', ['receivedMessage' => $this->receivedMessage]);
+        return view('livewire.log-details');
     }
 }
