@@ -304,14 +304,15 @@
           <div class="content">
 
             <!-- START CENTERED WHITE CONTAINER -->
-            <span class="preheader">WELCOME TO IBEDCPAY</span>
+            <span class="preheader">Your IBECPay Postpaid Bill Payment Confirmation</span>
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
 
               <!-- START MAIN CONTENT AREA -->
               <tr>
                 <td class="wrapper">
                   <p>Hi {{ $name }}</p>
-                  <p>Your payment of {{ $amount }} has been sucessfully Confirmed.</p><br/>
+                  <p>We're pleased to inform you that your postpaid bill payment has been successfully processed through IBECPay.</p><br/>
+                  <p><b>Payment Details</b></p>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
@@ -321,6 +322,23 @@
                               <tr>
                                 <td> <h3>Transaction Reference  {{ $transaction_id }}</h3> </td>
                               </tr>
+                              <tr>
+                                <td> <h3>Amount Paid  {{ $amount }}</h3> </td>
+                              </tr>
+
+                              <tr>
+                                <td> <p>Your payment has been credited to your account, ensuring continued access to uninterrupted electricity services.</p> </td>
+                              </tr>
+
+                              <tr>
+                                <td> <p>If you have any questions or require further assistance regarding your bill or payment, please don't hesitate to contact our dedicated support team.</p> </td>
+                              </tr>
+
+                              <tr>
+                                <td> <p>Thank you for choosing IBECPay for your energy management needs. We appreciate your continued trust and look forward to serving you in the future.</p> </td>
+                              </tr>
+
+
                             </tbody>
                           </table>
                         </td>

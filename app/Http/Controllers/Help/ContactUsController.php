@@ -6,8 +6,10 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\BaseAPIController;
-use App\Events\ContactUs;
+use App\Events\ContactUsEvent;
 use Illuminate\Support\Facades\Auth;
+use App\Models\ContactUs;
+use Illuminate\Support\Facades\Http;
 
 class ContactUsController extends BaseAPIController
 {
@@ -47,7 +49,7 @@ class ContactUsController extends BaseAPIController
         ])->post(env('CRM_URL'), $idata);
 
 
-        event(new ContactUs($createResponse));
+        event(new ContactUsEvent($createResponse));
       
 
         return $this->sendSuccess($createResponse, "Successfully Sent", Response::HTTP_OK);

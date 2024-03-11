@@ -304,14 +304,15 @@
           <div class="content">
 
             <!-- START CENTERED WHITE CONTAINER -->
-            <span class="preheader">WELCOME TO IBEDCPAY</span>
+            <span class="preheader">Your IBECPay Prepaid Token Confirmation</span>
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
 
               <!-- START MAIN CONTENT AREA -->
               <tr>
                 <td class="wrapper">
                   <p>Hi {{ $name }}</p>
-                  <p>Your payment of {{ $amount }} has been sucessfully Confirmed.</p><br/>
+                  <p>We're thrilled to confirm that a prepaid token has been successfully generated for your IBECPay account.</p><br/>
+                  <p>Token Details:</p>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
@@ -322,7 +323,21 @@
                                 <td> <h3>Transaction Reference  {{ $transaction_id }}</h3> </td>
                               </tr>
                               <tr>
-                                <td> <h3>Token  {{ $token }}</h3> </td>
+                                <td> <h3>Token Number  {{ $token }}</h3> </td>
+                              </tr>
+                              <tr>
+                                <td> <h3>Amount  {{ $amount }}</h3> </td>
+                              </tr>
+                              <tr>
+                                <td> <p>With this token, you now have the power to efficiently manage your energy consumption. Simply input the token into your meter to top up your prepaid balance and enjoy uninterrupted access to electricity.<br/></p> </td>
+                              </tr>
+
+                              <tr>
+                                <td> <p>Should you have any questions or need assistance regarding the token or your prepaid account, feel free to reach out to our dedicated support team.<br/></p> </td>
+                              </tr>
+
+                              <tr>
+                                <td> <p>Thank you for choosing IBECPay for your energy needs. We're committed to providing you with a seamless and reliable service.<br/></p> </td>
                               </tr>
                             </tbody>
                           </table>
@@ -334,8 +349,9 @@
                 </td>
               </tr>
 
-              <!-- END MAIN CONTENT AREA -->CMS
+              <!-- END MAIN CONTENT AREA -->
               </table>
+
 
             <!-- START FOOTER -->
             <div class="footer">

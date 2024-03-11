@@ -315,14 +315,14 @@
             </table>
 
             <!-- START CENTERED WHITE CONTAINER -->
-            <span class="preheader">IBEDCPAY SECURE PIN</span>
+            <span class="preheader">Welcome to IBECPay - Your Virtual Account is Ready!</span>
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
 
               <!-- START MAIN CONTENT AREA -->
               <tr>
                 <td class="wrapper">
                   <p>Hi {{ $name }}</p>
-                  <p>Your IBEDC Secure PIN.</p>
+                  <p>we're pleased to inform you that an OTP (One-Time Password) has been sent to your registered email address to ensure secure access to your IBECPay account.<br/></p>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
@@ -331,6 +331,7 @@
                             <tbody>
                               <tr>
                                 <td> <h3>Pin:  {{ $pin }}</h3> </td>
+                                
                               </tr>
                             </tbody>
                           </table>
@@ -344,6 +345,21 @@
 
               <!-- END MAIN CONTENT AREA -->
               </table>
+              <p>
+
+              With this unique code, you can securely log in to your account and enjoy uninterrupted access to our range of energy management services, including bill payments and energy purchases.<br/>
+
+              Please ensure to keep this OTP confidential and do not share it with anyone for your account's security.<br/>
+
+Should you encounter any issues or need further assistance, our support team is here to help.<br/>
+
+Thank you for trusting IBECPay for your energy management needs. We're committed to providing you with a seamless and secure experience every time. <br/>
+              </p>
+
+              <p>Best regards,</p>
+              Ibadan Electricity Distribution Company (IBEDC)
+
+
     <br/>
             <!-- START FOOTER -->
             <div class="footer">

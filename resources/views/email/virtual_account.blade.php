@@ -323,8 +323,10 @@
               <tr>
                 <td class="wrapper">
                   <p>Hi {{ $name }}</p>
-                  <p>Congratulations, A virtual account has been open for you to with Polaris Bank. You can now fund your account and use it to buy energy or 
-                    pay bills. Please find below your account information</p><br/>
+                  <p>Congratulations on the successful creation of your virtual account with IBECPay in collaboration with Polaris Bank!<br/><br/>
+                  We are excited to inform you that your account is now active and ready for use. With this virtual account, you gain seamless access to convenient bill payments and energy purchases, all at your fingertips.
+                </p><br/>
+                <p>Below are your account details:</p>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
@@ -346,12 +348,32 @@
                       </tr>
                     </tbody>
                   </table>
+
+                  <p><br/>Feel free to fund your account and start enjoying the ease and flexibility it offers for managing your energy needs.<br/></p>
+                  <p>Should you require any assistance or have inquiries regarding your virtual account, please don't hesitate to reach out to our dedicated support team.<br/></p>
                  
+                  <p>Thank you for choosing IBECPay for your energy management solutions. We are committed to providing you with a superior experience every step of the way.<br/></p>
+
+                  <p><b>OUR CONTACT INFORMATION</b> <br/>
+              Facebook: www.facebook.com/ibedc.ng <br/>
+              Instagram: www.instagram.com/ibedc.ng <br/>
+              Twitter: www.twitter.com/ibedc_ng <br/>
+              YouTube: https://www.youtube.com/@IBEDC <br/> 
+              Email: customercare@ibedc.com <br/>
+              Phone Number: 07001239999 <br/>
+              </p>
+
+              <p>Best regards,</p>
+                  Ibadan Electricity Distribution Company (IBEDC)<br/>
+                  
                 </td>
               </tr>
 
               <!-- END MAIN CONTENT AREA -->
               </table>
+
+             
+
 
             <!-- START FOOTER -->
             <div class="footer">

@@ -9,10 +9,10 @@ use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
-use App\Events\ContactUs;
+use App\Models\ContactUs;
 
 
-class ContactUs
+class ContactUsEvent
 {
     use Dispatchable, InteractsWithSockets, SerializesModels;
 

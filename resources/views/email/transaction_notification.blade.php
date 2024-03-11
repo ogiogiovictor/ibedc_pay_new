@@ -316,14 +316,15 @@
 
 
             <!-- START CENTERED WHITE CONTAINER -->
-            <span class="preheader">PAYMENT NOTIFICATION - IBEDCPAY</span>
+            <span class="preheader">Payment Received - Transaction Notification</span>
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
 
               <!-- START MAIN CONTENT AREA -->
               <tr>
                 <td class="wrapper">
                   <p>Hi {{ $name }}</p>
-                  <p>Please find below your payment details:</p><br/>
+                  <p>We're excited to inform you that a payment has been successfully transferred into your virtual account with IBECPay.:</p><br/>
+                  <p>Transaction Details:</p>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
@@ -331,10 +332,10 @@
                           <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                             <tbody>
                               <tr>
-                                <td> <h3>Reference :  </h3> {{ $request_ref }}</td>
+                                <td> <h3>Transaction Reference :  </h3> {{ $request_ref }}</td>
                               </tr>
                               <tr>
-                                <td> <h3>Amount :  </h3> {{ $amount }}</td>
+                                <td> <h3>Amount Received :  </h3> {{ $amount }}</td>
                               </tr>
                               <tr>
                                 <td> <h3>Narration : </h3> {{ $Narration }}</td>
@@ -351,6 +352,18 @@
 
               <!-- END MAIN CONTENT AREA -->
               </table>
+
+              <p>Your virtual account balance has been updated accordingly, and you can now conveniently utilize these funds to purchase energy or pay bills hassle-free.<br/>
+
+Should you have any questions or require further assistance regarding this transaction or your virtual account, please don't hesitate to reach out to our dedicated support team.<br/>
+
+Thank you for choosing IBECPay for your energy management solutions. We look forward to serving you with excellence.</p>
+
+                <p>
+
+                Best regards,<br/>
+Ibadan Electricity Distribution Company (IBEDC)
+                </p>
 
             <!-- START FOOTER -->
             <div class="footer">

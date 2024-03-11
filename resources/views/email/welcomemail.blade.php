@@ -322,7 +322,17 @@
               <tr>
                 <td class="wrapper">
                   <p>Hi {{ $name }}</p>
-                  <p>Thank you for registering with IBECPay, you can now pay bills and buy energy seamlessly.</p>
+                  <div style="text-align:justify">
+                 <p>Warm greetings from Ibadan Electricity Distribution Company (IBEDC)!</p>
+
+                    <p>Thank you for choosing to register with IBECPay, your one-stop solution for effortless bill payments and seamless energy management. We are delighted to welcome you aboard!<br/>
+
+                    <br/>With IBECPay, you now have the power to manage your energy needs conveniently, right at your fingertips. Whether it's paying bills or purchasing energy, we've got you covered every step of the way.<br/></p>
+
+                    <p>As a valued member of our community, your satisfaction is our top priority. 
+                      Should you have any questions or require assistance, our dedicated support team is here to help.</p>
+                  </div>
+
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
@@ -330,7 +340,15 @@
                           <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                             <tbody>
                               <tr>
-                                <td> <h3>Your Pin is  {{ $pin }}</h3> </td>
+                                <td> 
+                              
+<p>Your PIN for accessing our platform is: <b>412695</b></p>
+
+<p>Once again, thank you for entrusting IBECPay with your energy management needs. We look forward to serving you and ensuring a smooth, hassle-free experience.</p>
+
+<p>Best regards</p>   
+<div> Ibadan Electricity Distribution Company (IBEDC)</div>
+                              </td>
                               </tr>
                             </tbody>
                           </table>
