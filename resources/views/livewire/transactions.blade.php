@@ -71,7 +71,7 @@
                                   <td>{{ $transaction->BUID }}</td>
                                   <td>
                                     @if($transaction->status == "started")
-                                    <label class="badge badge-default">Pending</label>
+                                    <label class="badge badge-default">Started</label>
                                     @elseif($transaction->status == "processing")
                                     <label class="badge badge-warning">Processing</label>
                                     @elseif($transaction->status == "success")
@@ -83,8 +83,6 @@
                                   </td>
                                   <td>
                                     <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-grease-pencil"></i></a>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-delete"></i></a>
                                   </td>
                                 </tr>
 
