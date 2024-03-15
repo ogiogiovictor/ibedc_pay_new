@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\BaseAPIController;
 use App\Jobs\PinJob;
 use App\Helpers\StringHelper;
+use Illuminate\Support\Facades\Hash;
+
 
 class ForgotController extends BaseAPIController
 {
@@ -85,11 +87,14 @@ class ForgotController extends BaseAPIController
             $user->password = Hash::make($validatedData['password']); // Hash the new password
             $user->save();
 
+            return $this->sendSuccess( [
+                'payload' => $user,
+                'message' => 'Password changed successfully',
+            ], 'Successful', Response::HTTP_OK);
             // Password changed successfully
-            return response()->json(['message' => 'Password changed successfully'], 200);
         } else {
             // User not found
-            return response()->json(['error' => 'User not found'], 404);
+            return $this->sendError('User not found', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
     }
 }

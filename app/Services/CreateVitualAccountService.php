@@ -93,7 +93,7 @@ class CreateVitualAccountService
                 "customer" => [
                     "customer_ref" => $user->user_code,
                     "firstname" => $nameArray[0],
-                    "surname" => $nameArray[1],
+                    "surname" => isset($nameArray[1]) ? $nameArray[1] : $nameArray[0],
                     "email" => $user->email,
                     "mobile_no" => $user->phone
                 ],

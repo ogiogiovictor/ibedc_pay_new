@@ -342,7 +342,7 @@
                               <tr>
                                 <td> 
                               
-<p>Your PIN for accessing our platform is: <b>412695</b></p>
+                          <p>Your PIN for accessing our platform is: <b>{{ $pin }}</b></p>
 
 <p>Once again, thank you for entrusting IBECPay with your energy management needs. We look forward to serving you and ensuring a smooth, hassle-free experience.</p>
 

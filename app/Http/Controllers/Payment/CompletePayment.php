@@ -64,7 +64,7 @@ class CompletePayment extends BaseAPIController
 
       } else if($request->provider == 'FCMB' && $payment->pay()['data']['transactionStatus'] == "Success"){   //$fcmbResponse->data->transactionStatus != "Success"
 
-      //  return $this->checkSwitch($request->account_type, $request, $checkTrans, $payment->pay());
+       // return $this->checkSwitch($request->account_type, $request, $checkTrans, $payment->pay());
 
       } else if($request->provider == 'Wallet') { 
          $paymentResponse = $payment->pay();

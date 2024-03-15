@@ -29,7 +29,8 @@ class User extends Authenticatable
         'status',
         'phone',
         'authority',
-        'meter_no_primary'
+        'meter_no_primary',
+        'agency'
     ];
 
     /**
