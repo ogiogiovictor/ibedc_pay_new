@@ -385,7 +385,7 @@
                   </td>
                 </tr>
                 <tr>
-                  <td class="content-block powered-by">CMS
+                  <td class="content-block powered-by">
                     Powered by <a href="#">IBEDC</a>
                   </td>
                 </tr>

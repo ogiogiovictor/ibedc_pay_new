@@ -9,6 +9,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\BaseAPIController;
 use App\Models\EMS\ZoneCustomers;
 use App\Models\ECMI\EcmiCustomers;
+use App\Http\Resources\CustomerResource;
 
 class AgencySearchController extends BaseAPIController
 {
