@@ -13,6 +13,7 @@ use App\Http\Controllers\Help\ContactUsController;
 use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\Notification\PolarisPaymentNotification;
 use App\Http\Controllers\Wallet\WalletController;
+use App\Http\Controllers\Remove\DeleteController;
 
 /*
 |--------------------------------------------------------------------------
@@ -53,6 +54,7 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
         Route::group(['prefix' => 'payment'], function () {  
             Route::resource('initiate-payment', PaymentController::class);
             Route::post('complete-payment', [CompletePayment::class, 'CompletePayment']);
+            Route::get('get-token-notification', [CompletePayment::class, 'TokenNotifications']);
         });
 
          ///////////////////////// PAYMENT INITIATION FOR POSTPAID | PREPAID //////////////////
@@ -75,6 +77,11 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
         ///////////////////////// OUTSTANDING BALANCE | PREPAID //////////////////
         Route::group(['prefix' => 'wallet'], function () {  
             Route::get('wallet-balance-history', [WalletController::class, 'retrieve']);
+        });
+
+          ///////////////////////// DELETE ACCOUNT //////////////////
+          Route::group(['prefix' => 'delete'], function () {  
+            Route::resource('remove-account', DeleteController::class);
         });
 
 

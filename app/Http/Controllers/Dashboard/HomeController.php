@@ -123,6 +123,12 @@ class HomeController extends BaseAPIController
 
     public function showBalance(Request $request) {
 
+        $checkAccountNo = Auth::user()->meter_no_primary;
+
+        if($request->account_no !=  $checkAccountNo){
+            return $this->sendError('You are not authorize to check outstanding balance of another customer', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        }
+
         $validatedData = $request->validate([
             'email' => 'required',
             "account_no" => 'required',

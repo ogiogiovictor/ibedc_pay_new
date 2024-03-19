@@ -14,6 +14,7 @@ use App\Services\PostPaidService;
 use App\Services\PrePaidService;
 use App\Enums\TransactionEnum;
 use App\Http\Requests\CompletePaymentRequest;
+use Illuminate\Support\Facades\Auth;
 
 class CompletePayment extends BaseAPIController
 {
@@ -104,6 +105,13 @@ class CompletePayment extends BaseAPIController
             default :
             return $this->sendError('Invalid Payment Type', "Error!", Response::HTTP_BAD_REQUEST);
         }
+    }
+
+
+    public function TokenNotifications(){
+
+       return $checkTrans = $this->transaction->usernotification(Auth::user()->id);
+
     }
 
 

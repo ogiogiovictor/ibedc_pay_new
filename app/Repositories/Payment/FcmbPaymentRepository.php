@@ -30,6 +30,10 @@ class FcmbPaymentRepository extends BaseApiController implements PayableInterfac
 
         $FULL_LINK = $FCMB_LINK."".$this->request->payRef."?sof=true";
 
+        //LIVE LINK
+        //https://liveapi.fcmb.com/paymentgatewaymiddleware-callback-prod/api/transactions/verify/{transRef}?subscription-key=1ac401806abe49efb0dd98f2489acca9
+
+        //TEST LINK
         //https://paymentgatewaymiddleware.fcmb-azr-msase.p.azurewebsites.net/api/transactions/verify/93FA7FB22F64DFBE?sof=true
         //https://paymentgatewaymiddleware.fcmb-azr-msase.p.azurewebsites.net/api/transactions/verify/16AB8E72A6F6508E?sof=true
         //https://paymentgatewaymiddleware.fcmb-azr-msase.p.azurewebsites.net/api/transactions/verify/

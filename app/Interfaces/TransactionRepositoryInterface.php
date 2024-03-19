@@ -10,4 +10,5 @@ interface TransactionRepositoryInterface
     public function show($transaction_id);
     public function mytransactions($user_id);
     public function  checkifexist($user_id, $account_no);
+    public function usernotification($user_id);
 }
