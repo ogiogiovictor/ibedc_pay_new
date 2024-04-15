@@ -14,6 +14,7 @@ use App\Http\Controllers\LogoutController;
 use App\Http\Controllers\Notification\PolarisPaymentNotification;
 use App\Http\Controllers\Wallet\WalletController;
 use App\Http\Controllers\Remove\DeleteController;
+use App\Http\Controllers\Token\TokenController;
 
 /*
 |--------------------------------------------------------------------------
@@ -28,16 +29,31 @@ use App\Http\Controllers\Remove\DeleteController;
 
 Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth'], function () {
 
-    Route::resource('registration', RegisterController::class)->only(['index', 'store', 'show']);
-    Route::post('verify-pin', [RegisterController::class, 'verifyPin']);
-    Route::post('retry-verification-code', [RegisterController::class, 'retyCode']);
-    Route::post('add-meter', [RegisterController::class, 'addMeter']);
+    // Route::resource('registration', RegisterController::class)->only(['index', 'store', 'show']);
+    // Route::post('verify-pin', [RegisterController::class, 'verifyPin']);
+    // Route::post('retry-verification-code', [RegisterController::class, 'retyCode']);
+    // Route::post('add-meter', [RegisterController::class, 'addMeter']);
+    // Route::post('authenticate', [LoginController::class, 'store']);
+
+    Route::controller(RegisterController::class)->group(function() {
+        Route::resource('registration', RegisterController::class)->only(['index', 'store', 'show']);
+        Route::post('verify-pin', 'verifyPin')->name('verify-pin');
+        Route::post('retry-verification-code', 'retyCode')->name('retry-verification-code');
+        Route::post('add-meter', 'addMeter')->name('add-meter');
+    });
+
     Route::post('authenticate', [LoginController::class, 'store']);
 
     /////////////////////////// FORGOT PASSWORD IMPLEMENTATION ///////////////////////////////////
-    Route::post('forgot-password', [ForgotController::class, 'forgotPass']);
-    Route::post('verify-password', [ForgotController::class, 'verifyPass']);
-    Route::post('change-password', [ForgotController::class, 'changePass']);
+    // Route::post('forgot-password', [ForgotController::class, 'forgotPass']);
+    // Route::post('verify-password', [ForgotController::class, 'verifyPass']);
+    // Route::post('change-password', [ForgotController::class, 'changePass']);
+
+    Route::controller(ForgotController::class)->group(function() {
+        Route::post('forgot-password', 'forgotPass')->name('forgot-password');
+        Route::post('verify-password', 'verifyPass')->name('verify-password');
+        Route::post('change-password', 'changePass')->name('change-password');
+    });
     
 
     Route::middleware('auth:sanctum')->group(function() {
@@ -47,14 +63,20 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
         //////////////////////// HOME AND PROFILE INFORMATION /////////////////////////////
         Route::group(['prefix' => 'dashboard'], function () {  
             Route::resource('get-details', HomeController::class);
+            Route::post('update-profile', [HomeController::class, 'profileUpdate']);
         });
  
 
         ///////////////////////// PAYMENT INITIATION FOR POSTPAID | PREPAID //////////////////
         Route::group(['prefix' => 'payment'], function () {  
             Route::resource('initiate-payment', PaymentController::class);
-            Route::post('complete-payment', [CompletePayment::class, 'CompletePayment']);
-            Route::get('get-token-notification', [CompletePayment::class, 'TokenNotifications']);
+           // Route::post('complete-payment', [CompletePayment::class, 'CompletePayment']);
+           // Route::get('get-token-notification', [CompletePayment::class, 'TokenNotifications']);
+
+            Route::controller(CompletePayment::class)->group(function() {
+                Route::post('complete-payment', 'CompletePayment')->name('complete-payment');
+                Route::get('get-token-notification', 'TokenNotifications')->name('get-token-notification');
+            });
         });
 
          ///////////////////////// PAYMENT INITIATION FOR POSTPAID | PREPAID //////////////////
@@ -63,9 +85,14 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
         });
 
          ///////////////////////// OUTSTANDING BALANCE | PREPAID //////////////////
-         Route::group(['prefix' => 'outstanding'], function () {  
-            Route::post('get-balance', [HomeController::class, 'outBalance']);
-            Route::post('show-balance', [HomeController::class, 'showBalance']);
+        //  Route::group(['prefix' => 'outstanding'], function () {  
+        //     Route::post('get-balance', [HomeController::class, 'outBalance']);
+        //     Route::post('show-balance', [HomeController::class, 'showBalance']);
+        // });
+
+        Route::prefix('outstanding')->controller(HomeController::class)->group(function () {
+            Route::post('get-balance', 'outBalance')->name('get-balance');
+            Route::post('show-balance', 'showBalance')->name('show-balance');
         });
 
         ///////////////////////// OUTSTANDING BALANCE | PREPAID //////////////////
@@ -75,14 +102,25 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
 
 
         ///////////////////////// OUTSTANDING BALANCE | PREPAID //////////////////
-        Route::group(['prefix' => 'wallet'], function () {  
-            Route::get('wallet-balance-history', [WalletController::class, 'retrieve']);
+        // Route::group(['prefix' => 'wallet'], function () {  
+        //     Route::get('wallet-balance-history', [WalletController::class, 'retrieve']);
+        //     Route::get('wallet-summary', [WalletController::class, 'walletSummary']);
+        // });
+
+        Route::prefix('wallet')->controller(WalletController::class)->group(function () {
+            Route::get('wallet-balance-history', 'retrieve')->name('wallet-balance-history');
+            Route::get('wallet-summary', 'walletSummary')->name('wallet-summary');
         });
 
           ///////////////////////// DELETE ACCOUNT //////////////////
           Route::group(['prefix' => 'delete'], function () {  
             Route::resource('remove-account', DeleteController::class);
-        });
+          });
+
+          ///////////////////////////TOKEN NOTIFICATION //////////////////////
+          Route::prefix('token')->controller(TokenController::class)->group(function () {
+            Route::get('notification', 'GetNotification')->name('notification');
+          });
 
 
     });

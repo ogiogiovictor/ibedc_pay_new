@@ -10,7 +10,13 @@
               </div>
               <h4>Welcome back!</h4>
               <h6 class="font-weight-light">Happy to see you again!</h6>
-              <form class="pt-3">
+              <form class="pt-3" wire:submit.prevent="submit">
+
+                 <!-- Error message display -->
+                 @if (session()->has('error'))
+                    <div class="alert alert-danger">{{ session('error') }}</div>
+                @endif
+
                 <div class="form-group">
                   <label for="exampleInputEmail">Username</label>
                   <div class="input-group">
@@ -19,7 +25,8 @@
                         <i class="mdi mdi-account-outline text-primary"></i>
                       </span>
                     </div>
-                    <input type="text" class="form-control form-control-lg border-left-0" id="exampleInputEmail" placeholder="Username">
+                    <input type="text" wire:model="form.email" class="form-control form-control-lg border-left-0" id="exampleInputEmail" placeholder="email">
+                    @error('form.email')<div  class="alert alert-danger">{{ $message}}</div> @enderror
                   </div>
                 </div>
                 <div class="form-group">
@@ -30,7 +37,8 @@
                         <i class="mdi mdi-lock-outline text-primary"></i>
                       </span>
                     </div>
-                    <input type="password" class="form-control form-control-lg border-left-0" id="exampleInputPassword" placeholder="Password">                        
+                    <input type="password" wire:model="form.password" class="form-control form-control-lg border-left-0" id="exampleInputPassword" placeholder="Password">   
+                    @error('form.password')<div class="alert alert-danger">{{ $message}}</div> @enderror                     
                   </div>
                 </div>
                 <div class="my-2 d-flex justify-content-between align-items-center">
@@ -40,20 +48,19 @@
                       Keep me signed in
                     </label>
                   </div>
-                  <a href="#" class="auth-link text-black">Forgot password?</a>
+                  <!-- <a href="#" class="auth-link text-black">Forgot password?</a> -->
                 </div>
                 <div class="my-3">
-                  <a class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" href="../../index.html">LOGIN</a>
+                  <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">LOGIN</button>
+                  <!-- <a class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" href="../../index.html">LOGIN</a> -->
                 </div>
                 
-                <div class="text-center mt-4 font-weight-light">
-                  Don't have an account? <a href="register-2.html" class="text-primary">Create</a>
-                </div>
+               
               </form>
             </div>
           </div>
           <div class="col-lg-6 login-half-bg d-flex flex-row">
-            <p class="text-white font-weight-medium text-center flex-grow align-self-end">Copyright &copy; 2018  All rights reserved.</p>
+            <p class="text-white font-weight-medium text-center flex-grow align-self-end">Copyright &copy; <?php echo date('Y'); ?>  All rights reserved.</p>
           </div>
         </div>
     </div>

@@ -95,14 +95,14 @@ class AgencyController extends BaseAPIController
 
     public function authenticate(LoginRequest $request){
 
-        if (!isset($request->authority) || $request->authority !== "agent") {
+        if (!isset($request->authority) || $request->authority != "agent") {
             return $this->sendError('User do not have access to this app', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
     
 
         $user_status = User::where(["email" => $request->email, "authority" => "agent"])->first();
 
-        if($user_status != 1 || !$user_status){
+        if(!$user_status || $user_status->status != 1){
             return $this->sendError('User Not Activated Or User Does Not Exists' , 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
 
@@ -120,7 +120,7 @@ class AgencyController extends BaseAPIController
             return $this->sendSuccess([
                 'user' => $user,
                 'token' => $user->createToken('Authorization')->plainTextToken,
-                'wallet' => $user->wallet,
+               // 'wallet' => $user->wallet,
               //  'account' => $user->virtualAccount,
             ], 'LOGIN SUCCESSFUL', Response::HTTP_OK);
         }

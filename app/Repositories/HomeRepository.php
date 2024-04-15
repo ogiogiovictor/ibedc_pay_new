@@ -31,4 +31,25 @@ class HomeRepository implements HomeRepositoryInterface
         return User::where("id", $user_id)->first();
     }
 
+    public function updateProfile($userRequest, $userid){
+        
+      // Retrieve the user
+        $user = User::find($userid);
+
+        if (!$user) {
+            // User not found
+            return null; // Or handle this case as appropriate
+        }
+
+        // Update user attributes based on the request
+        $user->meter_no_primary = isset($userRequest->meter_no_primary) ? $userRequest->meter_no_primary : $user->meter_no_primary;
+        $user->password = isset($userRequest->password) ? bcrypt($userRequest->password) : $user->password;
+
+        // Save the changes
+        $user->save();
+
+        return $user;
+
+    }
+
 }

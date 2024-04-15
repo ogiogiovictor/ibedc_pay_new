@@ -167,15 +167,18 @@ class PaymentController extends BaseAPIController
 
          // Check Customer Eligibility for Payment
          $eligibilityCheck = SubAccount::where('AccountNo', $zoneECMI->AccountNo)
-        ->whereIn('SubAccountAbbre', ['OUTBAL', 'LOSREV'])
+        ->whereIn('SubAccountAbbre', ['OUTBAL', 'OUTBAL2',  'LOSREV', 'PENCHG'])
         ->whereIn('ModeOfPayment', ['MONTHLY PAYMENT', 'One-off'])
         ->first();
 
     
             // If Customer have outstanding return the error message
         if($eligibilityCheck){
-                if($request->amount < $eligibilityCheck->PaymentAmount){
-                    return $this->sendError('Error', "Transaction Amount cannot by less than $eligibilityCheck->PaymentAmount due to your pending outstanding", Response::HTTP_BAD_REQUEST);
+            $balance = floatval($eligibilityCheck->Balance);
+                if($request->amount < $eligibilityCheck->PaymentAmount && $balance != 0.00){
+                    $formatCurrency = number_format($eligibilityCheck->PaymentAmount);
+
+                    return $this->sendError('Error', "Transaction Amount cannot by less than ₦$formatCurrency due to your pending outstanding", Response::HTTP_BAD_REQUEST);
                 }
         }
 

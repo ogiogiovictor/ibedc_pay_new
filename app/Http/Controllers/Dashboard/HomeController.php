@@ -177,6 +177,20 @@ class HomeController extends BaseAPIController
 
 
 
+    public function profileUpdate(Request $request){
+
+        $user = Auth::user();
+
+       $profileUpdate =  $this->profile-> updateProfile($request, $user->id);
+
+       if($profileUpdate) {
+        return $this->sendSuccess([
+            'user' => $profileUpdate,
+         ], 'PROFILE UPDATED', Response::HTTP_OK);
+
+       }
+
+    }
 
 
 

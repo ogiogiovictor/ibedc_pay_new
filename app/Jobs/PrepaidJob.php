@@ -106,43 +106,14 @@ class PrepaidJob implements ShouldQueue
 
 
                 } else {
-
-                    $baseUrl = env('SMS_MESSAGE');
-                    $amount = $this->payment['amount'];
-                    $transactionID = $this->payment['transaction_id'];
-                    $meterNo = $this->payment['meterNo'];
         
-                    $smsdata = [
-                        'token' => "p42OVwe8CF2Sg6VfhXAi8aBblMnADKkuOPe65M41v7jMzrEynGQoVLoZdmGqBQIGFPbH10cvthTGu0LK1duSem45OtA076fLGRqX",
-                        'sender' => "IBEDC",
-                        'to' => $this->payment['phone'],
-                        "message" => "Meter Token: $checkifTokenExist->receiptno Your payment of $amount for Meter No $meterNo was successful. REF: $transactionID. For Support: 07001239999",
-                        "type" => 0,
-                        "routing" => 3,
-                    ];
-        
-                    Log::info('NULL RESPONSE: - ', ['SMS Response' =>    $smsdata ]);
+                    Log::info('MIDDLEWARE RESPONSE: - ', ['Middleware Response' =>     $newResponse ]);
                 }
 
 
         } else {
 
-            // do other things here
-            $baseUrl = env('SMS_MESSAGE');
-            $amount = $this->payment['amount'];
-            $transactionID = $this->payment['transaction_id'];
-            $meterNo = $this->payment['meterNo'];
-
-            $smsdata = [
-                'token' => "p42OVwe8CF2Sg6VfhXAi8aBblMnADKkuOPe65M41v7jMzrEynGQoVLoZdmGqBQIGFPbH10cvthTGu0LK1duSem45OtA076fLGRqX",
-                'sender' => "IBEDC",
-                'to' => $this->payment['phone'],
-                "message" => "Meter Token: $checkifTokenExist->receiptno Your payment of $amount for Meter No $meterNo was successful. REF: $transactionID. For Support: 07001239999",
-                "type" => 0,
-                "routing" => 3,
-            ];
-
-            Log::info('NULL RESPONSE: - ', ['SMS Response' =>    $smsdata ]);
+            Log::info('IBEDCPAY RESPONSE: - ', ['IBEDC-PAY Response' =>     $checkifTokenExist ]);
         }
 
     }

@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\BaseAPIController;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Wallet\WalletUser;
+use App\Jobs\PinJob;
 
 
 class LoginController extends BaseAPIController
@@ -36,9 +37,26 @@ class LoginController extends BaseAPIController
     public function store(LoginRequest $request)
     {
 
-        $user_status = User::where("email", $request->email)->value("status");
+        $user_status = User::where("email", $request->email)->first();
 
-        if($user_status != 1){
+        if(!$user_status) {
+            // User not found with the provided email
+            return $this->sendError('User not found', 'ERROR', Response::HTTP_NOT_FOUND);
+        }
+        
+
+        if($user_status->status == 0 && $user_status->pin){
+
+            $pin = strval(rand(100000, 999999));
+            $user_status->update(['pin' => $pin]);
+
+             //dispatch a welcome email to the user
+              dispatch(new PinJob($user_status));
+
+            return $this->sendError('Enter Pin To Activate', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        }
+
+        if($user_status->status != 1){
             return $this->sendError('User Not Activated', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
 

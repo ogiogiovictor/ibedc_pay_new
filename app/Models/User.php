@@ -68,6 +68,17 @@ class User extends Authenticatable
     public static function userCountFormatted(): string {
         return number_format(self::count());
     }
+
+    public function isAdmin()
+    {
+        return $this->authority === 'admin'; // Assuming 'role' is a column in your users table that indicates the user's role
+    }
+
+    public function isSuperAdmin()
+    {
+        return $this->authority === 'super_admin'; // Assuming 'role' is a column in your users table that indicates the user's role
+    }
+
     
 
 }

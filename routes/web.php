@@ -20,9 +20,15 @@ use App\Livewire\LogDetails;
 |
 */
 Route::get('/', Login::class);
-Route::get('/dashboard', Dashboard::class);
-Route::get('/transactions', Transactions::class);
-Route::get('/users', Users::class);
-Route::get('/wallet_users', Wallets::class);
-Route::get('/syslog', AppLog::class);
-Route::get('/details/{id}', LogDetails::class)->name('details.show');
+Route::get('/login', Login::class)->name('login');
+
+
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/dashboard', Dashboard::class)->name('dashboard');
+    Route::get('/transactions', Transactions::class)->name('transactions');
+    Route::get('/users', Users::class)->name('users');
+    Route::get('/wallet_users', Wallets::class)->name('wallet_users');
+    Route::get('/syslog', AppLog::class)->name('syslog');
+    Route::get('/details/{id}', LogDetails::class)->name('details.show');
+});

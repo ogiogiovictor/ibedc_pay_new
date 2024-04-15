@@ -85,7 +85,7 @@ class CreateVitualAccountService
                 "route_mode" => null
             ],
             "transaction" => [
-                "mock_mode" => "Inspect",
+                "mock_mode" => "Live",
                 "transaction_ref" => StringHelper::generateTransactionReference(),
                 "transaction_desc" => "Creation of Virtual Account For". $user->name,
                 "transaction_ref_parent" => null,

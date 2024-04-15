@@ -23,4 +23,20 @@ class WalletController extends BaseAPIController
             'balance_history' => WalletHistory::where('user_id', $auth->id)->get(),
          ], 'PROFILE LOADED', Response::HTTP_OK);
     }
+
+
+    public function walletSummary(){
+
+
+        // Example: Get monthly summary for March 2024
+        $year = date('Y');
+        $month = date('m');
+
+        $monthlySummary = WalletHistory::monthlySummary($year, $month);
+
+        return $this->sendSuccess([
+            'wallet' => $monthlySummary,
+         ], 'WALLET INFORMATION', Response::HTTP_OK);
+        
+    }
 }

@@ -26,6 +26,6 @@ class SendVirtualAccount implements ShouldQueue
     public function handle(VirtualAccount $event): void
     {
         $user = $event->user;
-        (new CreateVitualAccountService)->createAccount($event->user);
+       // (new CreateVitualAccountService)->createAccount($event->user); // uncomment when you want to go to live
     }
 }
