@@ -21,8 +21,11 @@ class AuthorizeTransactions extends Component
             return $transaction->ibedcpayTransactions();
         } elseif (Gate::forUser($user)->allows(RoleEnum::manager()->value)) {
             $transaction = new PayTransactions();
-            return $transaction->agencyTransaction($user->agency);
+            return $transaction->agencyTransaction($user->agency);  // This should be the region or bhub or hq
         } elseif (Gate::forUser($user)->allows(RoleEnum::supervisor()->value)) {
+            $transaction = new PayTransactions();
+            return $transaction->agencyTransaction($user->agency); // This should be the region or bhub or hq
+        } elseif (Gate::forUser($user)->allows(RoleEnum::agent()->value)) {
             $transaction = new PayTransactions();
             return $transaction->agencyTransaction($user->agency);
         } else {

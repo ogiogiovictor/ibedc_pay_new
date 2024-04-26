@@ -81,8 +81,39 @@
                           <div class="d-flex flex-wrap justify-content-between">
                             <h4 class="card-title">Add Roles</h4>
                           </div>
-                          <div class="table-responsive">
-                            Add Role Input Fields Here
+
+
+                          
+                    
+                    <div class="col-12 grid-margin">
+                            
+                          <form class="form-sample">
+                    <p class="card-description">
+                      <!-- Error Information is Displayed Here -->
+                    </p>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group row">
+                          <label class="col-sm-3 col-form-label">Role Name</label>
+                          <div class="col-sm-9">
+                            <input type="text" class="form-control" />
+                          </div>
+                        </div>
+                      </div>
+                      
+                    </div>
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group row">
+                          <button class="btn btn-block btn-primary">Submit</button>
+                          
+                        </div>
+                      </div>
+                     
+                    </div>
+                  </form>
+
+
                           </div>
                         </div>
                       </div>

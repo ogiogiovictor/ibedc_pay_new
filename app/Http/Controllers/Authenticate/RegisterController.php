@@ -11,6 +11,7 @@ use App\Http\Requests\RegisterRequest;
 use App\Jobs\RegistrationJob;
 use Illuminate\Support\Facades\Auth;
 use App\Events\VirtualAccount;
+use Spatie\Permission\Models\Role;
 
 
 class RegisterController extends BaseAPIController
@@ -36,11 +37,14 @@ class RegisterController extends BaseAPIController
      */
     public function store(RegisterRequest $request)
     {
+        
         //create the user
         $user = User::create($request->all());
 
         $pin = strval(rand(100000, 999999));
         $user->update(['pin' => $pin]);
+
+        isset($request->authority) ? $user->assignRole($request->authority) : '';
 
         //dispatch a welcome email to the user
         dispatch(new RegistrationJob($user));
