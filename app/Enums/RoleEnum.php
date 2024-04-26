@@ -11,6 +11,7 @@ use \Spatie\Enum\Enum;
  * @method static self manager()
  * @method static self customer()
  * @method static self agent()
+ * @method static self super_admin()
  */
 
 class RoleEnum extends Enum
@@ -29,6 +30,7 @@ class RoleEnum extends Enum
             'manager' => 'manager',
             'customer' => 'customer',
             'agent' => 'agent',
+            'super_admin' => 'super_admin'
         ];
     }
 
@@ -46,6 +48,7 @@ class RoleEnum extends Enum
             'manager' => 'manager',
             'customer' => 'customer',
             'agent' => 'agent',
+            'super_admin' => 'super_admin'
         ];
     }
 }

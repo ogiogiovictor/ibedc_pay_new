@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Models\Wallet\WalletUser;
 use App\Models\VirtualAccount;
+use App\Enums\RoleEnum;
 
 class User extends Authenticatable
 {
@@ -71,12 +72,32 @@ class User extends Authenticatable
 
     public function isAdmin()
     {
-        return $this->authority === 'admin'; // Assuming 'role' is a column in your users table that indicates the user's role
+        return $this->authority === RoleEnum::admin()->value; 
     }
 
     public function isSuperAdmin()
     {
-        return $this->authority === 'super_admin'; // Assuming 'role' is a column in your users table that indicates the user's role
+        return $this->authority === RoleEnum::super_admin()->value;
+    }
+
+    public function isManager()
+    {
+        return $this->authority === RoleEnum::manager()->value;
+    }
+
+    public function isSupervisor()
+    {
+        return $this->authority === RoleEnum::supervisor()->value;
+    }
+
+    public function isCustomer()
+    {
+        return $this->authority === RoleEnum::customer()->value;
+    }
+
+    public function isAgent()
+    {
+        return $this->authority === RoleEnum::agent()->value;
     }
 
     

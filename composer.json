@@ -12,6 +12,7 @@
         "laravel/telescope": "^5.0",
         "laravel/tinker": "^2.8",
         "livewire/livewire": "^3.4",
+        "phpoffice/phpspreadsheet": "^2.0",
         "spatie/laravel-enum": "^3.0"
     },
     "require-dev": {

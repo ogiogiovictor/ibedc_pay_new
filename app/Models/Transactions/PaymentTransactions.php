@@ -38,7 +38,8 @@ class PaymentTransactions extends Model
         'user_id',
         'units',
         'costOfUnits',
-        'VAT'
+        'VAT',
+        'agency'
     ];
 
     

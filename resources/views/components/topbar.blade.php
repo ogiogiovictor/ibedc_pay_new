@@ -37,6 +37,9 @@
                                 <a  href="/transactions"  wire:navigate class="nav-link" id="users-tab" data-toggle="tab" href="#" role="tab" aria-controls="users" aria-selected="false">Transactions</a>
                                 </li>
                                 <li class="nav-item">
+                                <a  href="/log_transactions"  wire:navigate class="nav-link" id="users-tab" data-toggle="tab" href="#" role="tab" aria-controls="users" aria-selected="false">Transactions - (v1)</a>
+                                </li>
+                                <li class="nav-item">
                                 <a  href="/users"  wire:navigate class="nav-link" id="returns-tab" data-toggle="tab" href="#" role="tab" aria-controls="returns" aria-selected="false">Users</a>
                                 </li>
                                 <li class="nav-item">

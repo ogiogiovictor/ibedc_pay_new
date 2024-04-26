@@ -29,7 +29,7 @@ class Login extends Component
                 return redirect()->back();
             }
 
-            if ($user->isSuperAdmin()) {
+            if ($user->isSuperAdmin() || $user->isAdmin() || $user->isManager() || $user->isSupervisor() || $user->isAgent()) {
                 // Redirect admin user to the dashboard
                 return redirect()->route('dashboard');
             } else {

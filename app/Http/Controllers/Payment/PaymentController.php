@@ -115,6 +115,7 @@ class PaymentController extends BaseAPIController
                 'longitude' => isset($request->longitude) ? $request->longitude : 'null',
                 'source_type' => isset($request->source_type) ? $request->source_type : 'null',
                 "user_id" => $auth->id,
+                'agency' => $auth->agency
             ]);
 
             if($payment){
@@ -165,22 +166,48 @@ class PaymentController extends BaseAPIController
             return $this->sendError('Error', "Non STS Customer Cannot use this platform. Please visit our office", Response::HTTP_BAD_REQUEST);
         }
 
+          // Check if transfer amount exceeds 25 million
+          if($request->amount > 25000000) {
+            return $this->sendError('Error', "Transaction Amount cannot be more than 25000000", Response::HTTP_BAD_REQUEST);
+        }
+
+        $data = [
+            "meter_number" => $request->MeterNo,
+            "vendtype" => "Prepaid"
+        ];
+
+        
+        $response = Http::withoutVerifying()->withHeaders([
+            'Authorization' => 'Bearer LIVEKEY_711E5A0C138903BBCE202DF5671D3C18',
+        ])->post("https://middleware3.ibedc.com/api/v1/verifymeter", $data);
+
+        $newResponse =  $response->json();
+
+       // \Log::info('VERIFICATION REPONSE: ' . json_encode($newResponse['data']));
+
+        $minimumPurchase = isset($newResponse['data']['minimumPurchase']) ? $newResponse['data']['minimumPurchase'] : 0;
+
+        if($request->amount < $minimumPurchase) {
+            return $this->sendError('Error', "Transaction Amount cannot by less than ₦$minimumPurchase due to your pending outstanding", Response::HTTP_BAD_REQUEST);
+        }
+
+
          // Check Customer Eligibility for Payment
-         $eligibilityCheck = SubAccount::where('AccountNo', $zoneECMI->AccountNo)
-        ->whereIn('SubAccountAbbre', ['OUTBAL', 'OUTBAL2',  'LOSREV', 'PENCHG'])
-        ->whereIn('ModeOfPayment', ['MONTHLY PAYMENT', 'One-off'])
-        ->first();
+        //  $eligibilityCheck = SubAccount::where('AccountNo', $zoneECMI->AccountNo)
+        // ->whereIn('SubAccountAbbre', ['OUTBAL', 'OUTBAL2',  'LOSREV', 'PENCHG'])
+        // ->whereIn('ModeOfPayment', ['MONTHLY PAYMENT', 'One-off'])
+        // ->first();
 
     
             // If Customer have outstanding return the error message
-        if($eligibilityCheck){
-            $balance = floatval($eligibilityCheck->Balance);
-                if($request->amount < $eligibilityCheck->PaymentAmount && $balance != 0.00){
-                    $formatCurrency = number_format($eligibilityCheck->PaymentAmount);
+        // if($eligibilityCheck){
+        //     $balance = floatval($eligibilityCheck->Balance);
+        //         if($request->amount < $eligibilityCheck->PaymentAmount && $balance != 0.00){
+        //             $formatCurrency = number_format($eligibilityCheck->PaymentAmount);
 
-                    return $this->sendError('Error', "Transaction Amount cannot by less than ₦$formatCurrency due to your pending outstanding", Response::HTTP_BAD_REQUEST);
-                }
-        }
+        //             return $this->sendError('Error', "Transaction Amount cannot by less than ₦$formatCurrency due to your pending outstanding", Response::HTTP_BAD_REQUEST);
+        //         }
+        // }
 
 
         $transactionID = StringHelper::generateUUIDReference();
@@ -207,6 +234,7 @@ class PaymentController extends BaseAPIController
                 'longitude' => isset($request->longitude) ? $request->longitude : 'null',
                 'source_type' => isset($request->source_type) ? $request->source_type : 'null',
                 "user_id" => $auth->id,
+                'agency' => $auth->agency
             ]);
 
             if($payment){
