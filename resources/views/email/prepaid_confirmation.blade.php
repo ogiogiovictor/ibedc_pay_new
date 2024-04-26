@@ -337,7 +337,10 @@
                               </tr>
 
                               <tr>
-                                <td> <p>Thank you for choosing IBECPay for your energy needs. We're committed to providing you with a seamless and reliable service.<br/></p> </td>
+                                <td> <p>Thank you for choosing IBECPay for your energy needs. We're committed to providing you with a seamless and reliable service.<br/></p> 
+                              
+                                <p><b>You can vend or pay bills using https://pay.ibedc.com</b></p>
+                              </td>
                               </tr>
                             </tbody>
                           </table>

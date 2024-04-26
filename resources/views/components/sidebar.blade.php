@@ -34,7 +34,7 @@
             <div class="collapse" id="ui-basic">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"> <a class="nav-link"  href="/customers"  wire:navigate>All Customers</a></li>
-                <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Oustanding Balances</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/outstanding_balances">Oustanding Balances</a></li>
               </ul>
             </div>
           </li>
@@ -79,7 +79,9 @@
             </a>
             <div class="collapse" id="maps">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/maps/mapael.html">App Setting</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/roles">Create Role</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/assign_role">Assign Role</a></li>
+                <li class="nav-item"> <a class="nav-link" href="pages/maps/vector-map.html">App Setting</a></li>
                 <li class="nav-item"> <a class="nav-link" href="pages/maps/vector-map.html">API Keys</a></li>
               </ul>
             </div>

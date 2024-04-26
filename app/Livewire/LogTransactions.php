@@ -24,25 +24,6 @@ class LogTransactions extends Component
         $user = Auth::user();
 
         $this->transactions = AuthorizeTransactions::authorizeTransaction($user);
-       
-        // if($this->authorize(RoleEnum::super_admin()->value)){
-        //     $transaction = new PayTransactions();
-        //     $this->transactions = $transaction->ibedcpayTransactions();
-        // } else if($this->authorize(RoleEnum::admin()->value)) {
-        //     $transaction = new PayTransactions();
-        //     $this->transactions = $transaction->ibedcpayTransactions();
-        // }else if($this->authorize(RoleEnum::manager()->value)) {
-        //     $transaction = new PayTransactions();
-        //     $this->transactions = $transaction->agencyTransaction($user->agency);
-        // }else if($this->authorize(RoleEnum::supervisor()->value)) {
-        //     $transaction = new PayTransactions();
-        //     $this->transactions = $transaction->agencyTransaction($user->agency);
-        // } else {
-        //     abort(403);
-        // }
-
-        
-       
 
     }
 

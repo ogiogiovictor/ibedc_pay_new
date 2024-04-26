@@ -9,6 +9,7 @@ use App\Livewire\Wallets;
 use App\Livewire\AppLog;
 use App\Livewire\LogDetails;
 use App\Livewire\LogTransactions;
+use App\Livewire\CreateRole;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,4 +34,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/syslog', AppLog::class)->name('syslog');
     Route::get('/details/{id}', LogDetails::class)->name('details.show');
     Route::get('log_transactions', LogTransactions::class)->name('log_transactions');
+    Route::get('roles', CreateRole::class)->name('roles');
 });

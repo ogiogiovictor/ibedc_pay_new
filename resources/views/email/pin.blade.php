@@ -356,6 +356,8 @@ Should you encounter any issues or need further assistance, our support team is 
 Thank you for trusting IBECPay for your energy management needs. We're committed to providing you with a seamless and secure experience every time. <br/>
               </p>
 
+              <p><b>You can vend or pay bills using https://pay.ibedc.com</b></p>
+
               <p>Best regards,</p>
               Ibadan Electricity Distribution Company (IBEDC)
 

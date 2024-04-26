@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('sub_menu_name')->nullable();
             $table->string('menu_id')->nullable();
+            $table->string('sub_menu_url')->nullable();
 
             $table->index(['sub_menu_name', 'menu_id']);
             $table->timestamps();

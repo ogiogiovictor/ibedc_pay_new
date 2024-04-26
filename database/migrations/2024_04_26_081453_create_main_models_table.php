@@ -17,6 +17,8 @@ return new class extends Migration
             $table->string('menu_url')->nullable();
             $table->string('menu_status')->nullable();
             $table->string('menu_icon')->nullable();
+            $table->string('menu_side')->default("left");
+
 
             $table->index('menu_name');
             $table->timestamps();

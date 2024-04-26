@@ -363,6 +363,8 @@
               Phone Number: 07001239999 <br/>
               </p>
 
+              <p><b>You can vend or pay bills using https://pay.ibedc.com</b></p>
+
               <p>Best regards,</p>
                   Ibadan Electricity Distribution Company (IBEDC)<br/>
                   
