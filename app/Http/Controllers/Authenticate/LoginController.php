@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Authenticate;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Http\Requests\LoginRequest;
+use App\Http\Requests\AccountLoginRequest;
 use App\Models\User;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\BaseAPIController;
@@ -85,6 +86,33 @@ class LoginController extends BaseAPIController
         }else {
             return $this->sendError("Error", "Error Loading Data, Something went wrong(NOT JSON())", Response::HTTP_INTERNAL_SERVER_ERROR);
         }
+    }
+
+    public function authLogin(AccountLoginRequest $request){
+
+        $userdetails = User::where(["meter_no" => $request->meter_no, 'account_type' => $request->account_type])->first();
+
+        if(!$userdetails) {
+            // User not found with the provided email
+            return $this->sendError('You account is not fully provisioned on IBEDCPay, Kindly register your account', 'ERROR', Response::HTTP_NOT_FOUND);
+        }
+
+        // if($userdetails->status == 0 && $userdetails->pin){
+
+        //     $pin = strval(rand(100000, 999999));
+        //     $user_status->update(['pin' => $pin]);
+
+        //      //dispatch a welcome email to the user
+        //       dispatch(new PinJob($user_status));
+
+        //     return $this->sendError('Enter Pin To Activate', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        // }
+        if($userdetails->status != 1){
+            return $this->sendError('User Not Activated', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        }
+
+
+        
     }
 
     /**

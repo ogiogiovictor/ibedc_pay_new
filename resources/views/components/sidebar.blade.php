@@ -1,4 +1,8 @@
 <div>
+@php
+        $user = auth()->user();
+        $main_menu = \App\Models\MainMenu::where("menu_side", "left")->get();
+    @endphp
 
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
@@ -10,10 +14,10 @@
               </div>
               <div class="profile-name">
                 <p class="name">
-                  Welcome Victor
+                 {{ $user->name }}
                 </p>
                 <p class="designation">
-                  Administrator
+                  {{ strtoupper(str_replace('_', ' ', $user->authority)) }}
                 </p>
               </div>
             </div>
@@ -80,7 +84,7 @@
             <div class="collapse" id="maps">
               <ul class="nav flex-column sub-menu">
                 <li class="nav-item"> <a class="nav-link" href="/roles">Create Role</a></li>
-                <li class="nav-item"> <a class="nav-link" href="/assign_role">Assign Role</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/assign_role">Access Control List</a></li>
                 <li class="nav-item"> <a class="nav-link" href="pages/maps/vector-map.html">App Setting</a></li>
                 <li class="nav-item"> <a class="nav-link" href="pages/maps/vector-map.html">API Keys</a></li>
               </ul>
@@ -88,16 +92,10 @@
           </li>
           
           <li class="nav-item">
-            <a class="nav-link" data-toggle="collapse" href="#error" aria-expanded="false" aria-controls="error">
+            <a class="nav-link" data-toggle="collapse" href="/contact" aria-expanded="false" aria-controls="error">
             <i class="mdi mdi-alert-circle menu-icon"></i>
             <span class="menu-title">Contact Us</span>
-            <i class="menu-arrow"></i>
             </a>
-            <div class="collapse" id="error">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="pages/samples/error-404.html"> Complains </a></li>
-              </ul>
-            </div>
           </li>
 
 

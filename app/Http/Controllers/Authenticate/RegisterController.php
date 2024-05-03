@@ -157,14 +157,14 @@ class RegisterController extends BaseAPIController
 
     public function addMeter(Request $request){
 
-        if(!$request->email || !$request->meter_no){
-            return $this->sendError('Please send important parameters needed', 'ERROR', Response::HTTP_UNAUTHORIZED);  //meter_no_primary
+        if(!$request->email || !$request->meter_no || !$request->account_type){
+            return $this->sendError('Please enter your meter or account number and Select Account Type', 'ERROR', Response::HTTP_UNAUTHORIZED);  //meter_no_primary
         }
 
         $checkForMeter = User::where('email', $request->email)->first();
 
         if(!$checkForMeter->meter_no_primary) {
-            $checkForMeter->update(['meter_no_primary' => $request->meter_no]);
+            $checkForMeter->update(['meter_no_primary' => $request->meter_no, 'account_type' => $request->account_type]);
 
             return $this->sendSuccess([
                 'user' => $checkForMeter,

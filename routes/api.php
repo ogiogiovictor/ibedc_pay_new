@@ -43,6 +43,7 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
     });
 
     Route::post('authenticate', [LoginController::class, 'store']);
+    Route::post('meter_authenticate', [LoginController::class, 'authLogin']);
 
     /////////////////////////// FORGOT PASSWORD IMPLEMENTATION ///////////////////////////////////
     // Route::post('forgot-password', [ForgotController::class, 'forgotPass']);

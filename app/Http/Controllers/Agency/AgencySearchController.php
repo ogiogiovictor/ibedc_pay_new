@@ -11,6 +11,7 @@ use App\Models\EMS\ZoneCustomers;
 use App\Models\ECMI\EcmiCustomers;
 use App\Http\Resources\CustomerResource;
 
+
 class AgencySearchController extends BaseAPIController
 {
     public function searchCustomers(Request $request){
@@ -50,7 +51,7 @@ class AgencySearchController extends BaseAPIController
     private function postpaidServices($request){
 
         try {
-            $returnRequest = EMSCustomers::where("AccountNo", $request->account_id)->firstOrFail();
+            $returnRequest = ZoneCustomers::where("AccountNo", $request->account_id)->firstOrFail();
 
             return $this->sendSuccess($returnRequest, "SUCCESS", Response::HTTP_OK);
 

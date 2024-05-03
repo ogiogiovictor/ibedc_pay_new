@@ -9,22 +9,65 @@ use App\Enums\RoleEnum;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Auth;
 use App\Livewire\AuthorizeTransactions;
+use Illuminate\Support\Facades\DB;
 
 class LogTransactions extends Component
 {
     use WithPagination;
 
-    public $transactions;
+    public $transactions = [];
     public $clearOption;
     public $clearValue;
+    public $monthlyCollection;
+    public $today;
+    public $totalCollection;
 
     public function mount()
     {
 
-        $user = Auth::user();
+       
+        $this->loadData();
 
-        $this->transactions = AuthorizeTransactions::authorizeTransaction($user);
+    }
 
+    public function loadData(){
+
+        try {
+            $user = Auth::user();
+            $today = now()->toDateString();
+    
+            $this->transactions = AuthorizeTransactions::authorizeTransaction($user);
+    
+            $this->today = PayTransactions::whereDate('created_at', $today)
+                ->whereIn('status', ['pending', 'success'])
+                ->whereNotNull('providerRef')
+                ->select(DB::raw('CAST(SUM(CAST(amount AS DECIMAL(10, 2))) AS DECIMAL(10, 2)) AS sum_amount'))
+                ->first()
+                ->sum_amount;
+    
+            $startDate = now()->startOfMonth()->toDateString();
+            $endDate = now()->endOfMonth()->toDateString();
+    
+            $this->monthlyCollection = PayTransactions::whereBetween('created_at', [$startDate, $endDate])
+                ->whereIn('status', ['pending', 'success'])
+                ->whereNotNull('providerRef')
+                ->select(DB::raw('CAST(SUM(CAST(amount AS DECIMAL(18, 2))) AS DECIMAL(18, 2)) AS sum_amount'))
+                ->first()
+                ->sum_amount;
+    
+            $this->monthlyCollection = (float) $this->monthlyCollection;
+    
+            $this->totalCollection = PayTransactions::whereIn('status', ['pending', 'success'])
+                ->whereNotNull('providerRef')
+                ->select(DB::raw('CAST(SUM(CAST(amount AS DECIMAL(18, 2))) AS DECIMAL(18, 2)) AS sum_amount'))
+                ->first()
+                ->sum_amount;
+    
+            $this->totalCollection = (float) $this->totalCollection;
+        } catch (\Exception $e) {
+            // Log or handle the exception appropriately
+            logger()->error('Error loading data: ' . $e->getMessage());
+        }
     }
 
     public function searchTransactions()

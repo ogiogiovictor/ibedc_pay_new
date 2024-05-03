@@ -38,7 +38,7 @@ class SubMenuSeeder extends Seeder
         ],
 
         [
-            "sub_menu_name" => "Assign Role",
+            "sub_menu_name" => "Access Control List",
             "sub_menu_url" => "assign_role",
             "menu_id" => "6"
         ],
@@ -50,11 +50,6 @@ class SubMenuSeeder extends Seeder
             "menu_id" => "6"
         ],
 
-        [
-            "sub_menu_name" => "Complaints",
-            "sub_menu_url" => "complaints",
-            "menu_id" => "7"
-        ],
 
         [
             "sub_menu_name" => "Pending Jobs",

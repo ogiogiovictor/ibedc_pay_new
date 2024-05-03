@@ -19,6 +19,127 @@
             <div class="tab-content tab-transparent-content pb-0">
                 <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
                  
+                <div class="row">
+                    <div class="col-12 col-sm-6 col-md-6 col-xl-3 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="d-flex flex-wrap justify-content-between">
+                            <h4 class="card-title">Total IBEDCPay Collections</h4>
+                            
+                          </div>
+                          <div id="sales" class="carousel slide dashboard-widget-carousel position-static pt-2" data-ride="carousel">
+                            <div class="carousel-inner">
+                              <div class="carousel-item active">
+                                <div class="d-flex flex-wrap align-items-baseline">
+                                  <h2 class="mr-3" wire:poll>₦ {{ number_format($totalCollection, 2) }}</h2>
+                                </div>
+                                <div class="mb-3">
+                                  <p class="text-muted font-weight-bold text-small">Total Collection<span class=" font-weight-normal">&nbsp;</span></p>
+                                </div>
+                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
+                                <i class="mdi mdi-calendar mr-1"></i>
+                                <span class="text-left">
+                                <!-- Oct -->
+                                </span>
+                                </button>
+                              </div>
+                              
+                            </div>
+                            <a class="carousel-control-prev" href="#sales" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#sales" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6 col-md-6 col-xl-3 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="d-flex flex-wrap justify-content-between">
+                            <h4 class="card-title">Monthly Collection</h4>
+                           
+                          </div>
+                          <div id="purchases" class="carousel slide dashboard-widget-carousel position-static pt-2" data-ride="carousel">
+                            <div class="carousel-inner">
+                              <div class="carousel-item active">
+                                <div class="d-flex flex-wrap align-items-baseline">
+                                  <h2 class="mr-3 text-success" wire:poll>₦ {{ number_format($monthlyCollection, 2) }}</h2>
+                                  <!-- <h3 class="text-success">+2.3%</h3> -->
+                                </div>
+                                <div class="mb-3">
+                                  <p class="text-muted font-weight-bold  text-small"><?php echo date('F'); ?> Collection  <span class=" font-weight-normal"></span></p>
+                                </div>
+                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
+                                <i class="mdi mdi-calendar mr-1"></i>
+                                <span class="text-left">
+                                <!-- Oct -->
+                                </span>
+                                </button>
+                              </div>
+                            
+                            </div>
+                            <a class="carousel-control-prev" href="#purchases" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#purchases" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="col-12 col-sm-6 col-md-6 col-xl-3 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="d-flex flex-wrap justify-content-between">
+                            <h4 class="card-title">Today's Collection</h4>
+                           
+                          </div>
+                          <div id="purchases" class="carousel slide dashboard-widget-carousel position-static pt-2" data-ride="carousel">
+                            <div class="carousel-inner">
+                              <div class="carousel-item active">
+                                <div class="d-flex flex-wrap align-items-baseline">
+                                  <h2 class="mr-3 text-success" wire:poll>₦ {{ number_format($today, 2) }}</h2>
+                                  <!-- <h3 class="text-success">+2.3%</h3> -->
+                                </div>
+                                <div class="mb-3">
+                                  <p class="text-muted font-weight-bold  text-small">Collection for <span class=" font-weight-normal"><?php echo date('Y-m-d'); ?></span></p>
+                                </div>
+                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
+                                <i class="mdi mdi-calendar mr-1"></i>
+                                <span class="text-left">
+                                <!-- Oct -->
+                                </span>
+                                </button>
+                              </div>
+                            
+                            </div>
+                            <a class="carousel-control-prev" href="#purchases" role="button" data-slide="prev">
+                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Previous</span>
+                            </a>
+                            <a class="carousel-control-next" href="#purchases" role="button" data-slide="next">
+                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                            <span class="sr-only">Next</span>
+                            </a>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+
+
+
 
                   <div class="row">
                     <div class="col-12 grid-margin">
@@ -75,7 +196,7 @@
                                   <th>Email</th>
                                   <th>Amount</th>
                                   <th>Acount Type</th>
-                                  <th>Business Hub</th>
+                                  <!-- <th>Business Hub</th> -->
                                   <th>Status</th>
                                   <th>Actions</th>
                                 </tr>
@@ -87,7 +208,7 @@
 
                               @foreach($transactions as $transaction)
                                 <tr>
-                                  <td>{{ $transaction->created_at }} </td>
+                                  <td>{{ $transaction->created_at->format('Y-m-d') }} </td>
                                   <td>{{ $transaction->transaction_id }} </td>
                                   <td>{{ $transaction->account_number }}</td>
                                   <td>{{ $transaction->meter_no }}</td>
@@ -95,7 +216,7 @@
                                   <td>{{ $transaction->email }}</td>
                                   <td>{{ number_format($transaction->amount, 2) }}</td>
                                   <td>{{ $transaction->account_type }}</td>
-                                  <td>{{ $transaction->BUID }}</td>
+                                  <!-- <td>{{ $transaction->BUID }}</td> -->
                                   <td>
                                     @if($transaction->status == "started")
                                     <label class="badge badge-default">Started</label>
@@ -111,7 +232,12 @@
                                   
                                   </td>
                                   <td>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
+                                    <a href="/view_transactions/{{ $transaction->transaction_id }}" wire:navigate class="mr-1 p-2 btn btn-xs btn-primary">View</a>
+                                    &nbsp;
+                                    @can('super_admin')
+                                    <!-- <a href="#" class="mr-1 p-2 btn btn-xs btn-danger">Retry</a> &nbsp;&nbsp; -->
+                                    <a href="#" wire:navigate class="mr-1 p-2 btn btn-xs btn-danger">Edit</a>
+                                    @endcan
                                   </td>
                                 </tr>
 
@@ -147,3 +273,12 @@
     </div>
 
 </div>
+
+ <!-- JavaScript for real-time updates -->
+ <script>
+        document.addEventListener('livewire:load', function () {
+            setInterval(function () {
+                @this.call('loadData');
+            }, 30000); // Refresh data every 30 seconds (adjust as needed)
+        });
+</script>

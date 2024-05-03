@@ -20,6 +20,7 @@ use App\Helpers\StringHelper;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Http;
 
 class PaymentController extends BaseAPIController
 {
@@ -167,7 +168,7 @@ class PaymentController extends BaseAPIController
         }
 
           // Check if transfer amount exceeds 25 million
-          if($request->amount > 25000000) {
+        if($request->amount > 25000000) {
             return $this->sendError('Error', "Transaction Amount cannot be more than 25000000", Response::HTTP_BAD_REQUEST);
         }
 
