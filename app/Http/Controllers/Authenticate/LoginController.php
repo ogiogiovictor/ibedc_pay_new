@@ -90,23 +90,26 @@ class LoginController extends BaseAPIController
 
     public function authLogin(AccountLoginRequest $request){
 
-        $userdetails = User::where(["meter_no" => $request->meter_no, 'account_type' => $request->account_type])->first();
+        //First check if the meter no / account number is a customer of IBEDC
+
+        //If the customer is not a Customer of IBEDC just return that the account number does not exist or no record found
+
+        //the use the account number to check if it exist in IBEDCPay or if the user if fully registered.
+
+        //If the user is not registered, redirect the user to the registration page to get the user information to complete the process
+
+        //If the user exist, use the user email to login the user.
+
+        //Then send a message to the user that an activity has been performed in the user account and if the user is not the person send a flag
+        
+        $userdetails = User::where(["meter_no_primary" => $request->meter_no, 'account_type' => $request->account_type])->first();
 
         if(!$userdetails) {
             // User not found with the provided email
             return $this->sendError('You account is not fully provisioned on IBEDCPay, Kindly register your account', 'ERROR', Response::HTTP_NOT_FOUND);
         }
 
-        // if($userdetails->status == 0 && $userdetails->pin){
-
-        //     $pin = strval(rand(100000, 999999));
-        //     $user_status->update(['pin' => $pin]);
-
-        //      //dispatch a welcome email to the user
-        //       dispatch(new PinJob($user_status));
-
-        //     return $this->sendError('Enter Pin To Activate', 'ERROR', Response::HTTP_UNAUTHORIZED);
-        // }
+        
         if($userdetails->status != 1){
             return $this->sendError('User Not Activated', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }

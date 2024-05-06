@@ -30,7 +30,7 @@ class PolarisPaymentRepository extends BaseApiController implements PayableInter
             "txref" => $this->checkTrans->transaction_id
          ]);
 
-         $flutterResponse = $iresponse->json(); 
+        $flutterResponse = $iresponse->json(); 
 
          if (!isset($flutterResponse['status']) || ($flutterResponse['status'] != "success" && (!isset($flutterResponse['data']['status']) || $flutterResponse['data']['status'] != 'successful'))) {
             return $this->sendError('Invalid Payment', "Error Verifying Payment", Response::HTTP_BAD_REQUEST);

@@ -11,6 +11,8 @@ use App\Livewire\LogDetails;
 use App\Livewire\LogTransactions;
 use App\Livewire\CreateRole;
 use App\Livewire\ViewTransaction;
+use App\Livewire\AccessControl;
+use App\Livewire\ViewContrologs;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,4 +39,6 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/log_transactions', LogTransactions::class)->name('log_transactions');
     Route::get('/roles', CreateRole::class)->name('roles');
     Route::get('/view_transactions/{transactions}', ViewTransaction::class)->name('view_transactions');
+    Route::get('/assign_role', AccessControl::class)->name('assign_role');
+    Route::get('/view_access_log/{id}', ViewContrologs::class)->name('view_access_log');
 });

@@ -14,6 +14,8 @@ class AccessControl extends Component
 
         $this->rolesWithUserCount = Role::withCount('users')->get();
 
+        //dd($this->rolesWithUserCount);
+
     }
 
 

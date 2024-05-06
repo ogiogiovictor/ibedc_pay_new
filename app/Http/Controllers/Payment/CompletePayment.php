@@ -58,6 +58,19 @@ class CompletePayment extends BaseAPIController
 
        // return $payment->pay()['data']['status'];
       //return $request->provider;
+
+
+       $paymentResponse = $payment->pay();
+       $checkForErrors = $paymentResponse->getData(true)['message'];  //message - 
+
+       if($request->provider == 'Polaris' && $checkForErrors == "Error Verifying Payment" ){
+        return $this->sendError($paymentResponse->getData(true)['message'], "Error!", Response::HTTP_BAD_REQUEST);
+       }
+
+       if($request->provider == 'FCMB' && $checkForErrors == "404" ){
+        return $this->sendError($paymentResponse->getData(true)['payload'], "Error!", Response::HTTP_BAD_REQUEST);
+       }
+
     
       if($request->provider == 'Polaris' && $payment->pay() && $payment->pay()['data']['status'] == 'successful'){
 
