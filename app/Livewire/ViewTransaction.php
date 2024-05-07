@@ -16,7 +16,7 @@ class ViewTransaction extends Component
     }
 
     public function processTransaction($id){
-        dd($id);
+       // dd($id);
     }
 
 

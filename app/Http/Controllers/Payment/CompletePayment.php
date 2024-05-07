@@ -55,23 +55,50 @@ class CompletePayment extends BaseAPIController
         $paymentFactory = new PaymentFactory();
         $payment = $paymentFactory->initializePayment($request->provider, $checkTrans, $request);
         $payment->pay();
+       // $paymentResponse = $payment->pay();
 
-       // return $payment->pay()['data']['status'];
-      //return $request->provider;
+        ///////////////////////// CLOSING POLARIS COMPLETE TRANSACTION //////////////////////////////////////////////
+        if ($request->provider == 'Polaris') {
+             $paymentResponse = $payment->pay(); // Get the response object
+            //$content = $paymentResponse->getContent(); // Get the content of the response
+            //$paymentResponseArray = json_decode($content, true); // Decode the JSON content to an array
+            //isset($payment->pay()) && $payment->pay()['data']['status'] == 'successful'
+            
+            if (isset($paymentResponse['data']['status']) && $paymentResponse['data']['status'] == 'successful') {
+                return $this->checkSwitch($request->account_type, $request, $checkTrans, $payment->pay());
+            } else {
+                return $this->sendError('Error Verifying Payments', "Error!", Response::HTTP_BAD_REQUEST);
+            }
+        }
+       
 
 
-       $paymentResponse = $payment->pay();
-       $checkForErrors = $paymentResponse->getData(true)['message'];  //message - 
+        ///////////////////////// CLOSING FCMB COMPLETE TRANSACTION /////////////////////////////////////////////////
+        if($request->provider == 'FCMB' && $payment->pay()['data']['transactionStatus'] == "Success"){   //$fcmbResponse->data->transactionStatus != "Success"
+             return $this->checkSwitch($request->account_type, $request, $checkTrans, $payment->pay());
+        } else {
+            return $this->sendError('Error Verifying Payments', "Error!", Response::HTTP_BAD_REQUEST);
+        }
 
-       if($request->provider == 'Polaris' && $checkForErrors == "Error Verifying Payment" ){
-        return $this->sendError($paymentResponse->getData(true)['message'], "Error!", Response::HTTP_BAD_REQUEST);
-       }
 
-       if($request->provider == 'FCMB' && $checkForErrors == "404" ){
-        return $this->sendError($paymentResponse->getData(true)['payload'], "Error!", Response::HTTP_BAD_REQUEST);
-       }
+        ///////////////////////// CLOSING WALLET COMPLETE TRANSACTION ///////////////////////////////////////////
+        if($request->provider == 'Wallet') { 
+            $paymentResponse = $payment->pay();
+            $payload = $paymentResponse->getData(true)['message']; 
+               if($payload == 'Error'){
+                   return $paymentResponse->getData(true);
+               } else {
+                   $npayload =   $paymentResponse->getData(true)['payload'];
+                  // return $this->checkSwitch($request->account_type, $request, $checkTrans, $npayload);
+               }
+   
+         } else {
+            return $this->sendError('Error Verifying Payments', "Error!", Response::HTTP_BAD_REQUEST);
+         }
 
-    
+
+    /*
+     
       if($request->provider == 'Polaris' && $payment->pay() && $payment->pay()['data']['status'] == 'successful'){
 
         return $this->checkSwitch($request->account_type, $request, $checkTrans, $payment->pay());
@@ -105,6 +132,8 @@ class CompletePayment extends BaseAPIController
         //         return $this->sendError('Invalid Payment Type', "Error!", Response::HTTP_BAD_REQUEST);
         //     }
         // }
+
+        */
         
     }
 

@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Authenticate\RegisterController;
 use App\Http\Controllers\Agency\AgencyController;
 use App\Http\Controllers\Agency\AgencySearchController;
+use App\Http\Controllers\Agency\AgencyCollection;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,9 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_agency_sync', 'middleware' => 'myAuth'
     
         Route::resource('agency', AgencyController::class)->only(['index', 'store', 'show']); // only administrator
         Route::post('search', [AgencySearchController::class, 'searchCustomers']); // only administrator
+        
+        //Agency Collection | Target
+        Route::get('collection_target', [AgencyCollection::class, 'agentCollection']);
     
 
     });
