@@ -1,8 +1,40 @@
 <div>
-@php
+<?php
         $user = auth()->user();
+
+        $menus = [];
+        
         $main_menu = \App\Models\MainMenu::where("menu_side", "left")->get();
-    @endphp
+
+        foreach ($main_menu as $mainMenu) {
+
+     $menu = [
+         'id' => $mainMenu->id,
+         'name' => $mainMenu->menu_name,
+         'status' => $mainMenu->menu_status,
+         'menu_url' => $mainMenu->menu_url,
+         'icon' => $mainMenu->menu_icon,
+         'submenus' => []
+     ];
+
+     $submenus = \App\Models\SubMenu::where("menu_id", $mainMenu->id)->get();
+
+     foreach ($submenus as $submenu) {
+         $menu['submenus'][] = [
+             'id' => $submenu->id,
+             'name' => $submenu->sub_menu_name,
+             'url' => $submenu->sub_menu_url,
+             // Add other properties you need from the submenu model
+         ];
+
+     }
+
+     $menus[] = $menu;
+
+    
+    
+ }
+?>
 
 <nav class="sidebar sidebar-offcanvas" id="sidebar">
         <ul class="nav">
@@ -28,6 +60,48 @@
             <span class="menu-title">Dashboard</span>
             </a>
           </li>
+
+
+
+           <!-- Main Menu -->
+           @foreach($menus as $key => $menu)
+           <li class="nav-item">
+            <!-- <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic"> -->
+            <a class="nav-link" @if (!empty($menu['submenus'])) data-toggle="collapse" @endif 
+            @if (!empty($menu['submenus'])) href="#{{ $menu['submenus'][$key]['name'] }}" @else href="{{ $menu['menu_url'] }}" @endif 
+            aria-expanded="false" aria-controls="#{{ $menu['submenus'][$key]['name'] }}">
+            
+            <i class="mdi mdi-view-array menu-icon"></i>
+            <span class="menu-title">{{ $menu['name'] }}</span>
+            @if (!empty($menu['submenus']))<i class="menu-arrow"></i>@endif 
+            </a>
+            <div class="collapse" id="#{{ $menu['submenus'][$key]['name'] }}">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link"  href="/customers"  wire:navigate>All Customers</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/outstanding_balances">Oustanding Balances</a></li>
+              </ul>
+            </div>
+          </li>
+          @endforeach
+            <!-- End Main Menu -->
+
+            <li class="nav-item">
+            <a class="nav-link" data-toggle="collapse" href="#maps" aria-expanded="false" aria-controls="maps">
+            <i class="mdi mdi-map menu-icon"></i>
+            <span class="menu-title">Setting</span>
+            <i class="menu-arrow"></i>
+            </a>
+            <div class="collapse" id="maps">
+              <ul class="nav flex-column sub-menu">
+                <li class="nav-item"> <a class="nav-link" href="/roles">Create Role</a></li>
+                <li class="nav-item"> <a class="nav-link" href="/assign_role">Access Control List</a></li>
+                <li class="nav-item"> <a class="nav-link" href="pages/maps/vector-map.html">App Setting</a></li>
+                <li class="nav-item"> <a class="nav-link" href="pages/maps/vector-map.html">API Keys</a></li>
+              </ul>
+            </div>
+          </li>
+           
+
          
           <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">

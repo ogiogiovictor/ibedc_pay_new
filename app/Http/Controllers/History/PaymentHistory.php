@@ -29,7 +29,7 @@ class PaymentHistory extends BaseAPIController
      */
     public function getHistory()
     {
-        $queryHistory =  $this->transaction->mytransactions(Auth::user()->id);
+        $queryHistory =  $this->transaction->code(Auth::user()->id);
         return $this->sendSuccess($queryHistory, "History Successfully Loaded", Response::HTTP_OK);
     }
 

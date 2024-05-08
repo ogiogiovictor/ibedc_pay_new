@@ -123,7 +123,6 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
             Route::get('notification', 'GetNotification')->name('notification');
           });
 
-
     });
 
 

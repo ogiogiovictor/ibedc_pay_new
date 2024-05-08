@@ -6,6 +6,7 @@ use App\Http\Controllers\Authenticate\RegisterController;
 use App\Http\Controllers\Agency\AgencyController;
 use App\Http\Controllers\Agency\AgencySearchController;
 use App\Http\Controllers\Agency\AgencyCollection;
+use App\Http\Controllers\History\CustomerPaymentHistory;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,6 +31,11 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_agency_sync', 'middleware' => 'myAuth'
         
         //Agency Collection | Target
         Route::get('collection_target', [AgencyCollection::class, 'agentCollection']);
+
+        Route::prefix('customerhistory')->controller(CustomerPaymentHistory::class)->group(function () {
+            Route::post('customer-history', 'customerHistory')->name('customer-history');
+        });
+
     
 
     });

@@ -58,23 +58,30 @@ class FcmbPaymentRepository extends BaseApiController implements PayableInterfac
                 "Authorization" => $FCMB_AUTHORIZATION
             ])->get($FULL_LINK);
 
+            $fcmbResponse = $iresponse->json(); 
+
          if (!$iresponse->successful()) {
+            return $fcmbResponse;
+            //return $iresponse;
             // Handle unsuccessful response
-            return $this->sendError('Error Verifying Payment', $iresponse->status(), Response::HTTP_BAD_REQUEST);
+            //return $this->sendError('Error Verifying Payment', $iresponse->status(), Response::HTTP_BAD_REQUEST);
          }    
 
 
          
         if($iresponse['code'] == 57) {
-            return $this->sendError($iresponse['description'], "Error Verifying Payment", Response::HTTP_BAD_REQUEST);
+            return $fcmbResponse;
+            //return $iresponse;
+            //return $this->sendError($iresponse['description'], "Error Verifying Payment", Response::HTTP_BAD_REQUEST);
         };
 
-         $fcmbResponse = $iresponse->json(); 
+        
 
         \Log::info('FCMB Response: ' . json_encode($fcmbResponse));
 
          if (!isset($fcmbResponse['data']['transactionStatus']) && ($fcmbResponse['data']['transactionStatus'] != "Success")) {
-            return $this->sendError('Invalid Payment', "Error Verifying Payment", Response::HTTP_BAD_REQUEST);
+            return $fcmbResponse;
+           // return $this->sendError('Invalid Payment', "Error Verifying Payment", Response::HTTP_BAD_REQUEST);
         }
 
         if ($fcmbResponse['data']['transactionStatus'] == "Success") {
@@ -88,7 +95,8 @@ class FcmbPaymentRepository extends BaseApiController implements PayableInterfac
           return $fcmbResponse;
 
         } else {
-            return $this->sendError($fcmbResponse, "Error Verifying Payment", Response::HTTP_BAD_REQUEST);
+            return $fcmbResponse;
+            //return $this->sendError($fcmbResponse, "Error Verifying Payment", Response::HTTP_BAD_REQUEST);
         }
 
       //  \Log::info('FCMB Success Response: ' . $fcmbResponse->data->transactionStatus);
