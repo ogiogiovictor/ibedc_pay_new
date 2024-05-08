@@ -61,7 +61,9 @@ class FcmbPaymentRepository extends BaseApiController implements PayableInterfac
             $fcmbResponse = $iresponse->json(); 
 
          if (!$iresponse->successful()) {
+            \Log::info('FCMB Unsuccessful: ' . json_encode($fcmbResponse));
             return $fcmbResponse;
+           
             //return $iresponse;
             // Handle unsuccessful response
             //return $this->sendError('Error Verifying Payment', $iresponse->status(), Response::HTTP_BAD_REQUEST);
@@ -70,16 +72,19 @@ class FcmbPaymentRepository extends BaseApiController implements PayableInterfac
 
          
         if($iresponse['code'] == 57) {
+            \Log::info('FCMB Response Code 57: ' . json_encode($fcmbResponse));
             return $fcmbResponse;
+          
             //return $iresponse;
             //return $this->sendError($iresponse['description'], "Error Verifying Payment", Response::HTTP_BAD_REQUEST);
         };
 
         
 
-        \Log::info('FCMB Response: ' . json_encode($fcmbResponse));
+       
 
          if (!isset($fcmbResponse['data']['transactionStatus']) && ($fcmbResponse['data']['transactionStatus'] != "Success")) {
+            \Log::info('FCMB data Error TransactionStatus not sucessful: ' . json_encode($fcmbResponse));
             return $fcmbResponse;
            // return $this->sendError('Invalid Payment', "Error Verifying Payment", Response::HTTP_BAD_REQUEST);
         }
@@ -92,9 +97,11 @@ class FcmbPaymentRepository extends BaseApiController implements PayableInterfac
                 'provider' => $this->request->provider,
             ]);
 
+            \Log::info('Successful: ' . json_encode($fcmbResponse));
           return $fcmbResponse;
 
         } else {
+            \Log::info('FCMB Unkown Error: ' . json_encode($fcmbResponse));
             return $fcmbResponse;
             //return $this->sendError($fcmbResponse, "Error Verifying Payment", Response::HTTP_BAD_REQUEST);
         }
