@@ -60,6 +60,8 @@ class FcmbPaymentRepository extends BaseApiController implements PayableInterfac
 
             $fcmbResponse = $iresponse->json(); 
 
+            \Log::info('FCMB Response Again: ' . json_encode($fcmbResponse));
+
          if (!$iresponse->successful()) {
             \Log::info('FCMB Unsuccessful: ' . json_encode($fcmbResponse));
             return $fcmbResponse;

@@ -6,16 +6,21 @@ use Livewire\Component;
 use App\Models\MainMenu;
 use App\Models\SubMenu;
 use App\Models\MenuAccess;
+use Spatie\Permission\Models\Role;
 
 class ViewContrologs extends Component
 {
     public $id = [];
     public $submenu = [];
     public $menus = [];
+    public $roleName;
+    public $role_name;
+    public $menu_name = [];
 
 
     public function mount() {
 
+        $this->roleName = Role::where("id", $this->id)->first();
         $mainMenus = MainMenu::where("menu_side", "left")->get();
 
         foreach ($mainMenus as $mainMenu) {
@@ -64,13 +69,21 @@ class ViewContrologs extends Component
         //     $this->menus[] = $menu;
         // }
         }
-        dd($this->menus);
+        //dd($this->menus);
+    }
+
+    public function assignMenu() {
+
+        dd($this->menu_name);
+        //dd($this->role_name);
     }
 
     public function render()
     {
         return view('livewire.view-contrologs', [
             'menus' => $this->menus,
+            'role' => $this->roleName,
+            //'all_role' => Role::all()
         ]);
        // return view('livewire.view-contrologs');
     }

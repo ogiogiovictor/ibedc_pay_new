@@ -20,18 +20,20 @@
                 <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
                  
 
+                <form class="form-sample" wire:submit.prevent="assignMenu">
                   <div class="row">
+
                     <div class="col-6 grid-margin">
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Application Roles</h4>
+                            <h4 class="card-title">ACCESS CONTROL CONFIGURATION FOR {{ str_replace("_", " ", strtoupper($role->name)) }}</h4>
                             <div class="dropdown dropleft card-menu-dropdown">
                               <button class="btn p-0" type="button" id="dropdown12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-dots-vertical card-menu-btn"></i>
                               </button>
                               <div class="dropdown-menu" aria-labelledby="dropdown12" x-placement="left-start">
-                                <a class="dropdown-item" href="#">Add Role</a>
+                                <a class="dropdown-item" href="#">Menu & Sub Menu</a>
                               </div>
                             </div>
                           </div>
@@ -39,32 +41,35 @@
                             <table class="table center-aligned-table">
                               <thead>
                                 <tr>
-                                  <th>ID</th>
-                                  <th>Role Name</th>
-                                  <th>Guard</th>
-                                  <th>Date Created </th>
-                                  <th>Actions</th>
+                                  <th>Menu Name</th>
                                 </tr>
                               </thead>
                               <tbody>
 
-                              @if(count($roles) > 0)
+                              @if(count($menus) > 0)
 
-                              @foreach($roles as $role)
+                              @foreach($menus as $menu)
                                 <tr>
-                                  <td>{{ $role->id }} </td>
-                                  <td>{{ $role->name }} </td>
-                                  <td><div class="text-dark font-weight-medium badge badge-warning"> {{ $role->guard_name }} </div></td>
-                                  <td>{{ $role->created_at }} </td>
-                                  <td>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
-                                  </td>
+                                  <td><h3> <input type="checkbox" value="{{$menu['id'] }}"  wire:model="menu_name"/> &nbsp; {{ $menu['name'] }}  </h3>
+                                    <table>
+                                        <tr>
+                                        <td>
+                                        @if(!empty($menu['submenus']))
+                                            @foreach($menu['submenus'] as $sub)
+                                             {{ $sub['name'] }} &nbsp;&nbsp;
+                                                <!-- <input type="checkbox"  /> {{ $sub['name'] }} &nbsp;&nbsp; -->
+                                            @endforeach
+                                        @endif
+                                        </td>
+                                        </tr>
+                                    </table>
+                                </td>
                                 </tr>
 
                                 @endforeach
                                 @else
                                 <tr>
-                                  <td colspan="10" class="text-center">No Role Found </td>
+                                  <td colspan="10" class="text-center">No Menu Found </td>
                                 </tr>
                                 @endif
 
@@ -75,52 +80,60 @@
                       </div>
                     </div>
 
+
+
+
                     <div class="col-6 grid-margin">
-                      <div class="card">
-                        <div class="card-body">
-                          <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Add Roles</h4>
-                          </div>
-
-
-                          
-                    
-                    <div class="col-12 grid-margin">
+                        <div class="card">
+                            <div class="card-body">
+                            <div class="d-flex flex-wrap justify-content-between">
+                                <h4 class="card-title">Add Menu To Role</h4>
                             
-                          <form class="form-sample">
-                    <p class="card-description">
-                      <!-- Error Information is Displayed Here -->
-                    </p>
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group row">
-                          <label class="col-sm-3 col-form-label">Role Name</label>
-                          <div class="col-sm-9">
-                            <input type="text" class="form-control" />
-                          </div>
+                            </div>
+                            <div class="table">
+                            
+                        
+                        <p class="card-description">
+                        <!-- Error Information is Displayed Here -->
+                        </p>
+                        <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group row">
+                            <label class="col-sm-3 col-form-label">Role Name</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" wire:model="role_name">
+                                <option value="">Select</option>
+                                <option value="{{ $role->id }}">{{ str_replace("_", " ", $role->name) }}<option>
+                        
+                                </select>
+                            </div>
+                            </div>
                         </div>
-                      </div>
-                      
-                    </div>
-                    <div class="row">
-                      <div class="col-md-12">
-                        <div class="form-group row">
-                          <button class="btn btn-block btn-primary">Submit</button>
-                          
+                        
                         </div>
-                      </div>
-                     
-                    </div>
-                  </form>
+                        <div class="row">
+                        <div class="col-md-12">
+                            <div class="form-group row">
+                            <button class="btn btn-block btn-primary" type="submit">Submit</button>
+                            
+                            </div>
+                        </div>
+                        
+                        </div>
+                    
 
 
-                          </div>
+                    
+                            </div>
+                            </div>
                         </div>
-                      </div>
+                        </div>
+
+                    
                     </div>
-                  </div>
-                 
-                </div>
+                    
+                    </div>
+                </form>
               
               </div>
                     

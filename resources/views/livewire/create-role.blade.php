@@ -87,7 +87,7 @@
                     
                     <div class="col-12 grid-margin">
                             
-                          <form class="form-sample">
+                  <form class="form-sample">
                     <p class="card-description">
                       <!-- Error Information is Displayed Here -->
                     </p>

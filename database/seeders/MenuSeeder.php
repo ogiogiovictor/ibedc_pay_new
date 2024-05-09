@@ -64,7 +64,7 @@ class MenuSeeder extends Seeder
 
         [
             "menu_name" => "Agency",
-            "menu_url" => "agency",
+            "menu_url" => "agencies",
             "menu_status" =>  "on",
             "menu_icon" => "mdi mdi-file-document menu-icon",
             "menu_side" => "left"

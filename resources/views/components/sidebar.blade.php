@@ -64,28 +64,31 @@
 
 
            <!-- Main Menu -->
-           @foreach($menus as $key => $menu)
+           @foreach($menus as $menu)
            <li class="nav-item">
             <!-- <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic"> -->
             <a class="nav-link" @if (!empty($menu['submenus'])) data-toggle="collapse" @endif 
-            @if (!empty($menu['submenus'])) href="#{{ $menu['submenus'][$key]['name'] }}" @else href="{{ $menu['menu_url'] }}" @endif 
-            aria-expanded="false" aria-controls="#{{ $menu['submenus'][$key]['name'] }}">
+            @if (!empty($menu['submenus'])) href="#{{ $menu['name'] }}" @else href="{{ $menu['menu_url'] }}" @endif 
+            aria-expanded="false" aria-controls="{{ $menu['name'] }}">
             
             <i class="mdi mdi-view-array menu-icon"></i>
             <span class="menu-title">{{ $menu['name'] }}</span>
             @if (!empty($menu['submenus']))<i class="menu-arrow"></i>@endif 
             </a>
-            <div class="collapse" id="#{{ $menu['submenus'][$key]['name'] }}">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link"  href="/customers"  wire:navigate>All Customers</a></li>
-                <li class="nav-item"> <a class="nav-link" href="/outstanding_balances">Oustanding Balances</a></li>
-              </ul>
-            </div>
+            @if(!empty($menu['submenus']))
+              @foreach($menu['submenus'] as $sub)
+              <div class="collapse" id="{{ $menu['name'] }}">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"> <a class="nav-link"  href="/{{ $sub['url'] }}"  wire:navigate>{{ $sub['name'] }}</a></li>
+                </ul>
+              </div>
+              @endforeach
+            @endif
           </li>
           @endforeach
             <!-- End Main Menu -->
 
-            <li class="nav-item">
+            <!-- <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#maps" aria-expanded="false" aria-controls="maps">
             <i class="mdi mdi-map menu-icon"></i>
             <span class="menu-title">Setting</span>
@@ -99,11 +102,11 @@
                 <li class="nav-item"> <a class="nav-link" href="pages/maps/vector-map.html">API Keys</a></li>
               </ul>
             </div>
-          </li>
+          </li> -->
            
 
          
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic">
             <i class="mdi mdi-view-array menu-icon"></i>
             <span class="menu-title">Customers</span>
@@ -115,25 +118,25 @@
                 <li class="nav-item"> <a class="nav-link" href="/outstanding_balances">Oustanding Balances</a></li>
               </ul>
             </div>
-          </li>
+          </li> -->
          
 
 
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="/transactions" wire:navigate>
             <i class="mdi mdi-drawing-box menu-icon"></i>
             <span class="menu-title">All Transaction</span>
             </a>
-          </li>
+          </li> -->
 
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link"  href="/users"  wire:navigate>
             <i class="mdi mdi-bell menu-icon"></i>
             <span class="menu-title">Users</span>
             </a>
-          </li>
+          </li> -->
 
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="/wallet_users"  wire:navigate>
             <i class="mdi mdi-checkbox-marked-outline menu-icon"></i>
             <span class="menu-title">Wallets</span>
@@ -163,9 +166,9 @@
                 <li class="nav-item"> <a class="nav-link" href="pages/maps/vector-map.html">API Keys</a></li>
               </ul>
             </div>
-          </li>
+          </li> -->
           
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" data-toggle="collapse" href="/contact" aria-expanded="false" aria-controls="error">
             <i class="mdi mdi-alert-circle menu-icon"></i>
             <span class="menu-title">Contact Us</span>
@@ -198,7 +201,7 @@
             <i class="mdi mdi-calendar-blank menu-icon"></i>
             <span class="menu-title">Migrations</span>
             </a>
-          </li>
+          </li> -->
          
           <!-- <li class="nav-item">
             <a class="nav-link" href="pages/apps/gallery.html">
@@ -206,12 +209,12 @@
             <span class="menu-title">Gallery</span>
             </a>
           </li> -->
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="pages/documentation/documentation.html">
             <i class="mdi mdi-file-document menu-icon"></i>
             <span class="menu-title">Documentation</span>
             </a>
-          </li>
+          </li> -->
         </ul>
       </nav>
 </div>
