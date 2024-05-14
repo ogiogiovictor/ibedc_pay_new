@@ -39,7 +39,15 @@ class PaymentTransactions extends Model
         'units',
         'costOfUnits',
         'VAT',
-        'agency'
+        'agency',
+        'minimumPurchase',
+        'tariffcode',
+        'customerArrears',
+        'tariff',
+        'serviceBand',
+        'feederName',
+        'dssName',
+        'udertaking'
     ];
 
     

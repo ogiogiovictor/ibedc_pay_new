@@ -24,21 +24,23 @@ class FcmbPaymentRepository extends BaseApiController implements PayableInterfac
 
     public function pay()
     {
-        $FCMB_LINK = env("FCMB_TEST_URL");
-        $FCMB_MERCHANT_CODE = env("FCMB_TEST_MERCHANT_CODE");
-        $FCMB_AUTHORIZATION = env("FCMB_TEST_AUTHORIZATION");
+        // $FCMB_LINK = env("FCMB_TEST_URL");
+        // $FCMB_MERCHANT_CODE = env("FCMB_TEST_MERCHANT_CODE");
+        // $FCMB_AUTHORIZATION = env("FCMB_TEST_AUTHORIZATION");
+
+        //Test Key
+        // $FULL_LINK = $FCMB_LINK."".$this->request->payRef;
 
         // $FULL_LINK = $FCMB_LINK."".$this->request->payRef."?sof=true";
 
-        // $FCMB_LINK = env("FCMB_LIVE_URL");
-        // $FCMB_MERCHANT_CODE = env("FCMB_LIVE_MERCHANT_CODE");
-        // $FCMB_AUTHORIZATION = env("FCMB_LIVE_AUTHORIZATION");
+        $FCMB_LINK = env("FCMB_LIVE_URL");
+        $FCMB_MERCHANT_CODE = env("FCMB_LIVE_MERCHANT_CODE");
+        $FCMB_AUTHORIZATION = env("FCMB_LIVE_AUTHORIZATION");
 
         //Live Key
-        //$FULL_LINK = $FCMB_LINK."".$this->request->payRef."?subscription-key=1ac401806abe49efb0dd98f2489acca9";
+        $FULL_LINK = $FCMB_LINK."".$this->request->payRef."?subscription-key=1ac401806abe49efb0dd98f2489acca9";
 
-        //Test Key
-        $FULL_LINK = $FCMB_LINK."".$this->request->payRef;
+        
 
         //LIVE LINK
         //https://liveapi.fcmb.com/paymentgatewaymiddleware-callback-prod/api/transactions/verify/{transRef}?subscription-key=1ac401806abe49efb0dd98f2489acca9

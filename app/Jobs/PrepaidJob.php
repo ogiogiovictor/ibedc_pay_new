@@ -59,6 +59,7 @@ class PrepaidJob implements ShouldQueue
 
             $newResponse =  $response->json();
 
+           
                 //Post to Middleware and confirm succesful status
                 if (isset($newResponse['status']) && $newResponse['status'] == "true") 
                 {
@@ -68,6 +69,14 @@ class PrepaidJob implements ShouldQueue
                         'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] : $newResponse['data']['recieptNumber'],  //Carbon::now()->format('YmdHis').time()
                         'Descript' =>  isset($newResponse['message']) ? $newResponse['message'] : $newResponse['transactionStatus'],
                         'units' => isset($newResponse['Units']) ? $newResponse['Units'] : $newResponse['data']['Units'], 
+                        'minimumPurchase' => $newResponse['customer']['minimumPurchase'],
+                        'tariffcode'  => $newResponse['customer']['tariffcode'],
+                        'customerArrears' => $newResponse['customer']['customerArrears'],
+                        'tariff' => $newResponse['customer']['tariff'],
+                        'serviceBand' => $newResponse['customer']['serviceBand'],
+                        'feederName' => $newResponse['customer']['feederName'],
+                        'dssName' => $newResponse['customer']['dssName'],
+                        'udertaking' => $newResponse['customer']['undertaking'],
                     ]);
 
                      //Send SMS to User

@@ -82,9 +82,6 @@
                                   <th>Agency Name</th>
                                   <th>Email</th>
                                   <th>Number of Agents</th>
-                                  <th>Monthly Target</th>
-                                  <th>Monthly Collection</th>
-                                  <th>Daily Collection</th>
                                   <th>Status</th>
                                   <th>Actions</th>
                                 </tr>
@@ -102,9 +99,7 @@
                                   <td>{{ $agency->agent_name }}</td>
                                   <td>{{ $agency->agent_email }}</td>
                                   <td> <div class="text-dark font-weight-medium">{{ $agency->no_of_agents }}</div> </td>
-                                  <td>monthly collection</td>
-                                  <td>monthly timezone_transitions_get</td>
-                                  <td>daily collection</td>
+                                 
                                   <td>
                                     @if($agency->status == "1")
                                     <label class="badge badge-success">Active</label>
@@ -118,7 +113,6 @@
                                     &nbsp;
                                     @can('super_admin')
                                      <a href="/add_target/{{ $agency->id }}" wure:navigate class="mr-1 p-2 btn btn-xs btn-danger">Add Target</a>  &nbsp;
-                                    <a href="#" wire:navigate class="mr-1 p-2 btn btn-xs btn-primary">Edit Target</a>
                                     @endcan
                                   </td>
                                 </tr>

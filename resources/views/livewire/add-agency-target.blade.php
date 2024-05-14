@@ -81,8 +81,10 @@
                                   <th>Agency </th>
                                   <th>Year</th>
                                   <th>Month </th>
-                                  <th>Target (Amount)</th>
-                                  <th>Date Created</th>
+                                  <th>Monthly Target</th>
+                                  <th>Monthly Collection</th>
+                                  <!-- <th>Date</th> -->
+                                  <td>Action</th>
                                 </tr>
                               </thead>
                               <tbody>
@@ -95,7 +97,19 @@
                                   <td>{{ $tag->year }} </td>
                                   <td>{{ $tag->month }} </td>
                                   <td><div class="text-dark font-weight-medium badge badge-warning"> {{ $tag->target_amount }} </div></td>
-                                  <td>{{ $tag->created_at }} </td>
+                                  <td><div class="text-dark font-weight-medium badge badge-success"> 
+                                  {{
+                                        number_format(\App\Models\Transactions\PaymentTransactions::where("agency", $tag->agency_id)
+                                         ->whereIn("status", ['processing', 'success'])
+                                        ->whereRaw('YEAR(created_at) = ?', [$tag->year])
+                                        ->whereRaw('MONTH(created_at) = ?', [$tag->month])
+                                        ->sum(\DB::raw('CONVERT(decimal(18,2), amount)')), 2)
+                                    }} 
+                                     <!-- {{ \App\Models\Transactions\PaymentTransactions::where(["agency" => $tag->agency_id, "created_at" => 
+                                      $tag->created_at->format('Y')])->sum(\DB::raw('CONVERT(decimal(18,2), amount)')) }}  -->
+                                  </div></td>
+                                  <!-- <td>{{ $tag->created_at->format('Y-m-d') }} </td> -->
+                                  <td><a href="#" wire:navigate class="mr-1 p-2 btn btn-xs btn-primary">Edit Target</a> </td>
                                 </tr>
                                 @endforeach
                                 @else

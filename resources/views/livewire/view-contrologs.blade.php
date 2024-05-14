@@ -17,25 +17,31 @@
 
                  
             <div class="tab-content tab-transparent-content pb-0">
-                <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                <div class="tab-pane fade show active" id="overview" role="" aria-labelledby="overview-tab">
                  
 
                 <form class="form-sample" wire:submit.prevent="assignMenu">
+                @if (session()->has('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        @if (session()->has('success'))
+                            <div class="alert alert-success">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                        
                   <div class="row">
+                
 
                     <div class="col-6 grid-margin">
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
                             <h4 class="card-title">ACCESS CONTROL CONFIGURATION FOR {{ str_replace("_", " ", strtoupper($role->name)) }}</h4>
-                            <div class="dropdown dropleft card-menu-dropdown">
-                              <button class="btn p-0" type="button" id="dropdown12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical card-menu-btn"></i>
-                              </button>
-                              <div class="dropdown-menu" aria-labelledby="dropdown12" x-placement="left-start">
-                                <a class="dropdown-item" href="#">Menu & Sub Menu</a>
-                              </div>
-                            </div>
+                           
                           </div>
                           <div class="table-responsive">
                             <table class="table center-aligned-table">
@@ -50,7 +56,15 @@
 
                               @foreach($menus as $menu)
                                 <tr>
-                                  <td><h3> <input type="checkbox" value="{{$menu['id'] }}"  wire:model="menu_name"/> &nbsp; {{ $menu['name'] }}  </h3>
+                                  <td>
+                                    <h3> 
+                                        <!-- {{ $user_menu_access }} -->
+                                        <input type="checkbox"  value="{{$menu['id'] }}" @if(in_array($menu['id'], explode("," , $user_menu_access))) checked @endif  wire:model="menu_name"/> &nbsp; {{ $menu['name'] }}  {{ $menu['id'] }} 
+                                        @if(in_array($menu['id'], explode("," , $user_menu_access))) 
+                                        <input type="text" value="Available" /> 
+                                        
+                                        @endif
+                                    </h3>
                                     <table>
                                         <tr>
                                         <td>

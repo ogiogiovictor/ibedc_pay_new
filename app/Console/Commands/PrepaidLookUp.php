@@ -80,6 +80,15 @@ class PrepaidLookUp extends Command
                                  'status' => $newResponse['status'] == "true" ?  'success' : 'failed', //"resp": "00",
                                  'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] : $newResponse['data']['recieptNumber'],
                                  'Descript' =>  isset($newResponse['message']) ? $newResponse['message']."-".$newResponse['transactionReference'] : $newResponse['transaction_status']."-".$newResponse['transactionReference'],
+                                'units' => isset($newResponse['Units']) ? $newResponse['Units'] : $newResponse['data']['Units'], 
+                                'minimumPurchase' => $newResponse['customer']['minimumPurchase'],
+                                'tariffcode'  => $newResponse['customer']['tariffcode'],
+                                'customerArrears' => $newResponse['customer']['customerArrears'],
+                                'tariff' => $newResponse['customer']['tariff'],
+                                'serviceBand' => $newResponse['customer']['serviceBand'],
+                                'feederName' => $newResponse['customer']['feederName'],
+                                'dssName' => $newResponse['customer']['dssName'],
+                                'udertaking' => $newResponse['customer']['undertaking'],
                              ]);
     
                            

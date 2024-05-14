@@ -16,6 +16,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:prepaid-look-up')->everyMinute();
         $schedule->command('app:postpaid-look-up')->everyTwoMinutes();
         $schedule->command('app:payment-look-up')->everyTwoMinutes();
+        $schedule->command('app:verifyfcmb-transaction')->everyTwoMinutes();
         
 
        //Enable task scheduler logging
