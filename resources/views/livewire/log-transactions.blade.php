@@ -214,7 +214,7 @@
                                   <td>{{ $transaction->meter_no }}</td>
                                   <td> <div class="text-dark font-weight-medium">{{ $transaction->customer_name }}</div> </td>
                                   <td>{{ $transaction->email }}</td>
-                                  <td>{{ number_format($transaction->amount, 2) }}</td>
+                                  <td>₦{{ number_format($transaction->amount, 2) }}</td>
                                   <td>{{ $transaction->account_type }}</td>
                                   <!-- <td>{{ $transaction->BUID }}</td> -->
                                   <td>

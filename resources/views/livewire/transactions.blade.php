@@ -47,7 +47,7 @@
                                   <th>Meter No</th>
                                   <th>Customer Name</th>
                                   <th>Email</th>
-                                  <th>Phone</th>
+                                  <th>Amount</th>
                                   <th>Acount Type</th>
                                   <th>Business Hub</th>
                                   <th>Status</th>
@@ -66,7 +66,7 @@
                                   <td>{{ $transaction->meter_no }}</td>
                                   <td> <div class="text-dark font-weight-medium">{{ $transaction->customer_name }}</div> </td>
                                   <td>{{ $transaction->email }}</td>
-                                  <td>{{ $transaction->phone }}</td>
+                                  <td>₦{{ $transaction->amount }}</td>
                                   <td>{{ $transaction->account_type }}</td>
                                   <td>{{ $transaction->BUID }}</td>
                                   <td>

@@ -96,7 +96,7 @@
                                   <td>{{ \App\Models\Agency\Agents::where("id", $tag->agency_id)->value("agent_name") }} </td>
                                   <td>{{ $tag->year }} </td>
                                   <td>{{ $tag->month }} </td>
-                                  <td><div class="text-dark font-weight-medium badge badge-warning"> {{ $tag->target_amount }} </div></td>
+                                  <td><div class="text-dark font-weight-medium badge badge-warning"> {{ number_format($tag->target_amount, 2) }} </div></td>
                                   <td><div class="text-dark font-weight-medium badge badge-success"> 
                                   {{
                                         number_format(\App\Models\Transactions\PaymentTransactions::where("agency", $tag->agency_id)

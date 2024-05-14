@@ -15,6 +15,7 @@ use App\Livewire\AccessControl;
 use App\Livewire\ViewContrologs;
 use App\Livewire\AllAgencies;
 use App\Livewire\AddAgencyTarget;
+use App\Livewire\AgenctTransactions;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,4 +46,5 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/view_access_log/{id}', ViewContrologs::class)->name('view_access_log');
     Route::get('/agencies', AllAgencies::class)->name('agencies');
     Route::get('/add_target/{id}', AddAgencyTarget::class)->name('add_target');
+    Route::get('/agency_transaction/{id}', AgenctTransactions::class)->name('agency_transaction');
 });

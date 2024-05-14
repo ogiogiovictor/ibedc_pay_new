@@ -31,7 +31,7 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3" wire:poll> {{ $agencyCount }}</h2>
+                                  <h2 class="mr-3" wire:poll> 8909</h2>
                                 </div>
                                 <div class="mb-3">
                                   <p class="text-muted font-weight-bold text-small">All agencies<span class=" font-weight-normal">&nbsp;</span></p>
@@ -78,10 +78,13 @@
                               <thead>
                                 <tr>
                                   <th>Date</th>
-                                  <th>Agency Code</th>
-                                  <th>Agency Name</th>
-                                  <th>Email</th>
-                                  <th>Number of Agents</th>
+                                  <th>Transaction ID</th>
+                                  <th>Account No</th>
+                                  <th>Meter No</th>
+                                  <th>Customer Name</th>
+                                  <th>Amount</th>
+                                  <th>Agency</th>
+                                  <th>User</th>
                                   <th>Status</th>
                                   <th>Actions</th>
                                 </tr>
@@ -89,38 +92,52 @@
                               <tbody>
 
 
-                              
-                              @if(collect($agencies)->isNotEmpty())
+                             
+                              @if(collect($transactions)->isNotEmpty())
 
-                              @foreach($agencies as $agency)
+                              @foreach($transactions['data'] as $tx)
                                 <tr>
-                                  <td>{{ $agency->created_at->format('Y-m-d') }} </td>
-                                  <td>{{ $agency->agent_code }} </td>
-                                  <td>{{ $agency->agent_name }}</td>
-                                  <td>{{ $agency->agent_email }}</td>
-                                  <td> <div class="text-dark font-weight-medium">{{ $agency->no_of_agents }}</div> </td>
-                                 
+                                  <td>{{ \Carbon\Carbon::parse($tx['created_at'])->format('Y-m-d')}} </td>
+                                  <td>{{ $tx['transaction_id'] }} </td>
+                                  <td>{{ $tx['account_number'] }}</td>
+                                  <td>{{ $tx['meter_no'] }}</td>
+                                  <td>{{ $tx['customer_name'] }}</td>
+                                  <td>₦{{ $tx['amount'] }}</td>
+                                  <td>{{ $tx['agency'] }}</td>
+                                  <td>{{ \App\Models\User::where("id", $tx['user_id'])->value("name") }}</td>
                                   <td>
-                                    @if($agency->status == "1")
-                                    <label class="badge badge-success">Active</label>
+                                    @if($tx['status'] == "success")
+                                    <label class="badge badge-success">{{ $tx['status'] }}</label>
+                                    @elseif($tx['status'] == "started")
+                                    <label class="badge badge-secondary">{{ $tx['status'] }}</label>
                                     @else
-                                    <label class="badge badge-danger">Inactive</label>
+                                    <label class="badge badge-warning">{{ $tx['status'] }}</label>
                                     @endif
                                   
                                   </td>
                                   <td>
-                                    <a href="/agency_transaction/{{ $agency->id }}" wire:navigate class="mr-1 p-2 btn btn-xs btn-secondary">View</a>
-                                    &nbsp;
-                                    @can('super_admin')
-                                     <a href="/add_target/{{ $agency->id }}" wure:navigate class="mr-1 p-2 btn btn-xs btn-danger">Add Target</a>  &nbsp;
-                                    @endcan
+                                    <a href="" wire:navigate class="mr-1 p-2 btn btn-xs btn-secondary">View</a>
+                                   
                                   </td>
                                 </tr>
 
                                 @endforeach
+
+                                <nav>
+                                    <ul class="pagination">
+                                        @foreach($transactions['links'] as $link)
+                                            <li class="page-item {{ $link['active'] ? 'active' : '' }}">
+                                                <!-- <a class="page-link" href="{{ $link['url'] }}">{{ $link['label'] }}</a> -->
+                                                <a href="{{ $link['url'] }}" class="page-link">{!! $link['label'] !!}</a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </nav>
+                               
+
                                 @else
                                 <tr>
-                                  <td colspan="10" class="text-center">No Agency Found</td>
+                                  <td colspan="10" class="text-center">No Transaction Found</td>
                                 </tr>
                                 @endif
 
