@@ -1,23 +1,30 @@
 <div>
 <?php
         $user = auth()->user();
-
+        $role_id = $user->roles->first()->id;
         $menus = [];
         
-        $main_menu = \App\Models\MainMenu::where("menu_side", "left")->get();
+        //$main_menu = \App\Models\MainMenu::where("menu_side", "left")->get();
 
-        foreach ($main_menu as $mainMenu) {
+    $main_menu2 = \App\Models\MenuAccess::where("user_role", $role_id)->first();
+
+    $main_menu = explode(",",  $main_menu2->menu_id);
+
+    //foreach ($main_menu as $mainMenu) {
+    foreach ($main_menu as $menuID) {
+     $imenu = \App\Models\MainMenu::where(["menu_side" => "left", "id" => $menuID])->first();
 
      $menu = [
-         'id' => $mainMenu->id,
-         'name' => $mainMenu->menu_name,
-         'status' => $mainMenu->menu_status,
-         'menu_url' => $mainMenu->menu_url,
-         'icon' => $mainMenu->menu_icon,
+         'id' => $imenu->id,
+         'name' => $imenu->menu_name,
+         'status' => $imenu->menu_status,
+         'menu_url' => $imenu->menu_url,
+         'icon' => $imenu->menu_icon,
          'submenus' => []
      ];
 
-     $submenus = \App\Models\SubMenu::where("menu_id", $mainMenu->id)->get();
+     //$submenus = \App\Models\SubMenu::where("menu_id", $mainMenu->id)->get();
+     $submenus = \App\Models\SubMenu::where("menu_id", $menuID)->get();
 
      foreach ($submenus as $submenu) {
          $menu['submenus'][] = [
@@ -68,10 +75,10 @@
            <li class="nav-item">
             <!-- <a class="nav-link" data-toggle="collapse" href="#ui-basic" aria-expanded="false" aria-controls="ui-basic"> -->
             <a class="nav-link" @if (!empty($menu['submenus'])) data-toggle="collapse" @endif 
-            @if (!empty($menu['submenus'])) href="#{{ $menu['name'] }}" @else href="{{ $menu['menu_url'] }}" @endif 
+            @if (!empty($menu['submenus'])) href="#{{ $menu['name'] }}" @else href="/{{ $menu['menu_url'] }}" @endif 
             aria-expanded="false" aria-controls="{{ $menu['name'] }}">
             
-            <i class="mdi mdi-view-array menu-icon"></i>
+            <i class="{{ $menu['icon'] }}"></i>
             <span class="menu-title">{{ $menu['name'] }}</span>
             @if (!empty($menu['submenus']))<i class="menu-arrow"></i>@endif 
             </a>

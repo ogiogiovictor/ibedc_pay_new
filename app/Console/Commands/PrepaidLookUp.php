@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use Mail;
 use App\Mail\PrePaidPaymentMail;
+use App\Models\ECMI\EcmiPayments;
+
 
 class PrepaidLookUp extends Command
 {
@@ -89,6 +91,8 @@ class PrepaidLookUp extends Command
                                 'feederName' => $newResponse['customer']['feederName'],
                                 'dssName' => $newResponse['customer']['dssName'],
                                 'udertaking' => $newResponse['customer']['undertaking'],
+                                'VAT' =>  EcmiPayments::where("transref", $newResponse['transactionReference'])->value('VAT'),
+                                'costOfUnits' => EcmiPayments::where("transref", $newResponse['transactionReference'])->value('CostOfUnits'),
                              ]);
     
                            

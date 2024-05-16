@@ -31,7 +31,7 @@ Route::get('/', Login::class);
 Route::get('/login', Login::class)->name('login');
 
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['auth', 'check_access'])->group(function () {
 
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/transactions', Transactions::class)->name('transactions');

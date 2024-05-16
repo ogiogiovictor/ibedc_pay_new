@@ -24,14 +24,13 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Total Agencies</h4>
-                            
+                            <h4 class="card-title">Total Agency Collection</h4>
                           </div>
                           <div id="sales" class="carousel slide dashboard-widget-carousel position-static pt-2" data-ride="carousel">
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3" wire:poll> 8909</h2>
+                                  <h2 class="mr-3" wire:poll>₦ {{  $this->totalCollection}}</h2>
                                 </div>
                                 <div class="mb-3">
                                   <p class="text-muted font-weight-bold text-small">All agencies<span class=" font-weight-normal">&nbsp;</span></p>
@@ -45,14 +44,100 @@
                               </div>
                               
                             </div>
-                            <a class="carousel-control-prev" href="#sales" role="button" data-slide="prev">
-                            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Previous</span>
-                            </a>
-                            <a class="carousel-control-next" href="#sales" role="button" data-slide="next">
-                            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-                            <span class="sr-only">Next</span>
-                            </a>
+                           
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <div class="col-12 col-sm-6 col-md-6 col-xl-3 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="d-flex flex-wrap justify-content-between">
+                            <h4 class="card-title">Monthly Collection</h4>
+                          </div>
+                          <div id="sales" class="carousel slide dashboard-widget-carousel position-static pt-2" data-ride="carousel">
+                            <div class="carousel-inner">
+                              <div class="carousel-item active">
+                                <div class="d-flex flex-wrap align-items-baseline">
+                                  <h2 class="mr-3" wire:poll>₦ {{ $monthlyCollection }}</h2>
+                                </div>
+                                <div class="mb-3">
+                                  <p class="text-muted font-weight-bold text-small"><?php echo date('M'); ?><span class=" font-weight-normal">&nbsp;</span></p>
+                                </div>
+                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
+                                <i class="mdi mdi-calendar mr-1"></i>
+                                <span class="text-left">
+                                <!-- Oct -->
+                                </span>
+                                </button>
+                              </div>
+                              
+                            </div>
+                           
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <div class="col-12 col-sm-6 col-md-6 col-xl-3 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="d-flex flex-wrap justify-content-between">
+                            <h4 class="card-title">Daily Collection</h4>
+                          </div>
+                          <div id="sales" class="carousel slide dashboard-widget-carousel position-static pt-2" data-ride="carousel">
+                            <div class="carousel-inner">
+                              <div class="carousel-item active">
+                                <div class="d-flex flex-wrap align-items-baseline">
+                                  <h2 class="mr-3" wire:poll>₦{{ $todaysCollection ?: 0 }}</h2>
+                                </div>
+                                <div class="mb-3">
+                                  <p class="text-muted font-weight-bold text-small"><?php echo date('Y-m-d'); ?><span class=" font-weight-normal">&nbsp;</span></p>
+                                </div>
+                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
+                                <i class="mdi mdi-calendar mr-1"></i>
+                                <span class="text-left">
+                                <!-- Oct -->
+                                </span>
+                                </button>
+                              </div>
+                              
+                            </div>
+                           
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+
+                    <div class="col-12 col-sm-6 col-md-6 col-xl-3 grid-margin stretch-card">
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="d-flex flex-wrap justify-content-between">
+                            <h4 class="card-title">Pending Collections</h4>
+                          </div>
+                          <div id="sales" class="carousel slide dashboard-widget-carousel position-static pt-2" data-ride="carousel">
+                            <div class="carousel-inner">
+                              <div class="carousel-item active">
+                                <div class="d-flex flex-wrap align-items-baseline">
+                                  <h2 class="mr-3" wire:poll>₦ {{ $pendingCollection ?: 0}}</h2>
+                                </div>
+                                <div class="mb-3">
+                                  <p class="text-muted font-weight-bold text-small">All agencies<span class=" font-weight-normal">&nbsp;</span></p>
+                                </div>
+                                <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
+                                <i class="mdi mdi-calendar mr-1"></i>
+                                <span class="text-left">
+                                <!-- Oct -->
+                                </span>
+                                </button>
+                              </div>
+                              
+                            </div>
+                           
                           </div>
                         </div>
                       </div>
@@ -71,7 +156,7 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Agencies</h4>
+                            <h4 class="card-title">Transactions for {{ \App\Models\Agency\Agents::where("id", $id)->value("agent_name") }}</h4>
                           </div>
                           <div class="table-responsive"  wire:poll>
                             <table class="table center-aligned-table">

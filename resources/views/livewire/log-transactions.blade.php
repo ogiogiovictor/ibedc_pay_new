@@ -236,7 +236,7 @@
                                     &nbsp;
                                     @can('super_admin')
                                     <!-- <a href="#" class="mr-1 p-2 btn btn-xs btn-danger">Retry</a> &nbsp;&nbsp; -->
-                                    <a href="#" wire:navigate class="mr-1 p-2 btn btn-xs btn-danger">Edit</a>
+                                    <!-- <a href="#" wire:navigate class="mr-1 p-2 btn btn-xs btn-danger">Edit</a> -->
                                     @endcan
                                   </td>
                                 </tr>

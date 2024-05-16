@@ -28,6 +28,7 @@
                           <div class="d-flex flex-wrap justify-content-between">
                             <h6 class="card-title">Transaction Details</h6><hr/>
                           
+
                           </div>
                           <div class="table-responsive">
                             
@@ -54,7 +55,7 @@
 
                                         <li>
 											<h6>Amount </h6>
-											<p>{{ $transactions->amount }} </p>
+											<p>{{ number_format($transactions->amount, 2) }} </p>
                                             <p class="text-muted mb-4"></p>
 										</li>
 
@@ -67,6 +68,12 @@
                                         <li>
 											<h6>Account Number </h6>
 											<p>{{ $transactions->account_numer }} </p>
+                                            <p class="text-muted mb-4"></p>
+										</li>
+
+                                        <li>
+											<h6>Meter Number </h6>
+											<p>{{ $transactions->meter_no }} </p>
                                             <p class="text-muted mb-4"></p>
 										</li>
 
@@ -128,8 +135,26 @@
 										
 									</ul>
 
+                                    @if(isset($errorMessage))
+                                        <div class="alert alert-danger">
+                                            {{ $errorMessage }}
+                                        </div>
+                                    @endif
+
+                                    @if(session()->has('error'))
+                                    <div class="alert alert-danger">
+                                        {{ session('error') }}
+                                    </div>
+                                @endif
+
+                                @if (session()->has('success'))
+                                    <div class="alert alert-danger">
+                                        {{ session('success') }}
+                                    </div>
+                                @endif
+
                                     @can('super_admin')
-                                        @if (!$transactions->receiptno)
+                                        @if (!$transactions->receiptno && $transactions->account_type == 'Prepaid')
                                             <button wire:click="processTransaction({{ $transactions->id }})" class="btn btn-xs btn-danger">Resync</button>
                                         @endif
                                     @endcan

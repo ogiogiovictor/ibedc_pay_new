@@ -97,7 +97,7 @@ class LoginController extends BaseAPIController
 
 
         if(!$checkifExist){
-            return $this->sendError('This meter no is not mapped to your profile. Please enter your meter number', 'ERROR', Response::HTTP_UNAUTHORIZED);
+            return $this->sendError('This meter no is not mapped to your profile. Please register your account', "FALSE", Response::HTTP_UNAUTHORIZED);
         }
 
         if($checkifExist->status != 1){

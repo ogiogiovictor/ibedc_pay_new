@@ -12,6 +12,7 @@ use App\Mail\PrePaidPaymentMail;
 use Illuminate\Support\Facades\Http;
 use App\Models\Transactions\PaymentTransactions;
 use Illuminate\Support\Facades\Log;
+use App\Models\ECMI\EcmiPayments;
 
 class PrepaidJob implements ShouldQueue
 {
@@ -64,6 +65,7 @@ class PrepaidJob implements ShouldQueue
                 if (isset($newResponse['status']) && $newResponse['status'] == "true") 
                 {
 
+                    //$newResponse['transactionReference']
                     $update = PaymentTransactions::where("transaction_id", $this->payment['transaction_id'])->update([
                         'status' => $newResponse['status'] == "true" ?  'success' : 'failed', //"resp": "00",
                         'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] : $newResponse['data']['recieptNumber'],  //Carbon::now()->format('YmdHis').time()
@@ -77,6 +79,8 @@ class PrepaidJob implements ShouldQueue
                         'feederName' => $newResponse['customer']['feederName'],
                         'dssName' => $newResponse['customer']['dssName'],
                         'udertaking' => $newResponse['customer']['undertaking'],
+                        'VAT' =>  EcmiPayments::where("transref", $newResponse['transactionReference'])->value('VAT'),
+                        'costOfUnits' => EcmiPayments::where("transref", $newResponse['transactionReference'])->value('CostOfUnits'),
                     ]);
 
                      //Send SMS to User

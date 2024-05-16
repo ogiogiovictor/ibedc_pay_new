@@ -25,7 +25,7 @@ class ViewContrologs extends Component
     public $user;
     public $user_role;
     public $roleIds;
-    public $acesss;
+    public $access;
 
 
 
