@@ -57,6 +57,12 @@ class CheckMenuAccess
             return $next($request);
         }
 
+        $subMenu = SubMenu::where("sub_menu_url", $routeName)->first();
+
+       // dd($routeName);
+       // dd($subMenu);
+
+        
         if(!$menuID && $parameters){ // i will need to add the url with id in the database and call it inner
           //  dd($routeName);
 
@@ -86,6 +92,22 @@ class CheckMenuAccess
                 abort(403, 'Unathorized action. No Access Resource'); 
             }
 
+        } 
+
+
+        //Checking for the Submenu
+        if($subMenu){
+            if(in_array($subMenu->menu_id, explode(",", $usermenuID->menu_id))){
+                return $next($request);
+            } else {
+                abort(403, 'Unathorized action. Resource Not Available'); 
+            }
+        }
+
+        //Checking for the buttons in the menu like view/transactionid = /view_acess_log/1
+
+        if(!$subMenu){
+            return $next($request);
         }
 
        // you need to also check if $usermenuID is not a main menu and find another login 

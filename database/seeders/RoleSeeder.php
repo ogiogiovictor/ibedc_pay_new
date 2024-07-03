@@ -45,6 +45,13 @@ class RoleSeeder extends Seeder
             "guard_name" => "web"
         ],
 
+        [
+            "name" => "payment_channel",  
+            "guard_name" => "web"
+        ],
+
+        //payment_channel
+
     ];
 
     public function run(): void

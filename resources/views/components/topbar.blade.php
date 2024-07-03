@@ -1,8 +1,12 @@
 <div>
 
+<?php 
+
+$user = auth()->user();
+?>
 <div class="row">
                         <div class="col-sm-6 mb-4 mb-xl-0">
-                        <h3>Congrats Administrator!</h3>
+                        <h3>Hello {{ strtoupper($user->name) }}!</h3>
                         <h6 class="font-weight-normal mb-0 text-muted">Welcome Back!.</h6>
                         </div>
                         <div class="col-sm-6">
@@ -33,21 +37,30 @@
                                 <li class="nav-item">
                                 <a  href="/dashboard"  wire:navigate class="nav-link active" id="overview-tab" data-toggle="tab" href="#" role="tab" aria-controls="overview" aria-selected="true">Overview</a>
                                 </li>
+                                @can('super_admin')
                                 <li class="nav-item">
                                 <a  href="/transactions"  wire:navigate class="nav-link" id="users-tab" data-toggle="tab" href="#" role="tab" aria-controls="users" aria-selected="false">Transactions</a>
                                 </li>
+                                @endcan
+                                
                                 <li class="nav-item">
                                 <a  href="/log_transactions"  wire:navigate class="nav-link" id="users-tab" data-toggle="tab" href="#" role="tab" aria-controls="users" aria-selected="false">Transactions - (v1)</a>
                                 </li>
+
+                                @can('super_admin')
                                 <li class="nav-item">
                                 <a  href="/users"  wire:navigate class="nav-link" id="returns-tab" data-toggle="tab" href="#" role="tab" aria-controls="returns" aria-selected="false">Users</a>
                                 </li>
+                                @endcan
+                                @can('super_admin')
                                 <li class="nav-item">
                                 <a  href="/syslog"  wire:navigate class="nav-link" id="more-tab" data-toggle="tab" href="#" role="tab" aria-controls="more" aria-selected="false">System Logs</a>
                                 </li>
+                                @endcan
                             </ul>
                             </div>
                             <div class="col-12 col-sm-6 mb-xs-4 mb-xl-0 pt-2 pb-2 text-md-right d-none d-md-block">
+                            @can('super_admin')
                             <div class="d-inline-flex">
                                 <button class="btn d-flex align-items-center">
                                 <i class="mdi mdi-download mr-1"></i>
@@ -63,6 +76,7 @@
                                 </span>
                                 </button>
                             </div>
+                            @endcan
                             </div>
                         </div>
                         </div>

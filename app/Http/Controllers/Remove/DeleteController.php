@@ -8,6 +8,7 @@ use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\BaseAPIController;
 use Illuminate\Support\Facades\Auth;
 
+
 class DeleteController extends BaseAPIController
 {
     /**
@@ -37,6 +38,10 @@ class DeleteController extends BaseAPIController
 
             return $this->sendError('User mixmatch', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
+
+        // Update the status of the authenticated user to 1
+        $authenticate_user->status = '0';
+        $authenticate_user->save();
 
         $removeUser = $authenticate_user->delete();
 

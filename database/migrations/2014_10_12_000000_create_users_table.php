@@ -22,7 +22,7 @@ return new class extends Migration
             $table->string('password');
             $table->string('user_code')->nullable();
             $table->string('meter_no_primary')->nullable();
-            $table->enum('authority', ['user', 'admin', 'supervisor', 'manager', 'customer', 'agent', 'super_admin'])->default('customer');
+            $table->enum('authority', ['user', 'admin', 'supervisor', 'manager', 'customer', 'agent', 'super_admin', 'payment_channel', 'agency_admin'])->default('customer');
             $table->rememberToken();
             $table->timestamps();
             $table->softDeletes();

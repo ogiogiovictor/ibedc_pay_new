@@ -3,7 +3,7 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>WELCOME TO IBEDC PAY</title>
+    <title>IBEDC PAY</title>
     <style media="all" type="text/css">
     /* -------------------------------------
     GLOBAL RESETS
@@ -315,26 +315,14 @@
             </table>
 
             <!-- START CENTERED WHITE CONTAINER -->
-            <span class="preheader">WELCOME TO IBEDCPAY</span>
+            <span class="preheader">IBECPay</span><br/>
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
 
               <!-- START MAIN CONTENT AREA -->
               <tr>
                 <td class="wrapper">
-                  <p>Hi {{ $name }}</p>
-                  <div style="text-align:justify">
-                 <p>Warm greetings from Ibadan Electricity Distribution Company (IBEDC)!</p>
-
-                    <p>Thank you for choosing to register with IBECPay, your one-stop solution for effortless bill payments and seamless energy management. 
-                      We are delighted to welcome you aboard!<br/>
-
-                    <br/>With IBECPay, you now have the power to manage your energy needs conveniently, right at your fingertips. 
-                    Whether it's paying bills or purchasing energy, we've got you covered every step of the way.<br/></p>
-
-                    <p>As a valued customer, your satisfaction is our top priority. 
-                      Should you have any questions or require assistance, our dedicated support team is here to help.</p>
-                  </div>
-
+                  <p><b>Hi {{ $name }}, </b></p>
+                  <p> {{ $new_message }}<br/></p>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tbody>
                       <tr>
@@ -342,19 +330,22 @@
                           <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                             <tbody>
                               <tr>
-                                <td> 
-                              
-                          <p>Your PIN for accessing our platform is: <b>{{ $pin }}</b></p>
+                                <td>
 
-<p>Once again, thank you for entrusting IBECPay with your energy management needs. We look forward to serving you and ensuring a smooth, hassle-free experience.</p>
+                                <p>
+
+             
+                    Thank you for trusting IBECPay for your energy management needs. We're committed to providing you with a seamless and secure experience every time. <br/>
+                        </p>
+
+                        <p><b>You can vend or pay bills using https://pay.ibedc.com</b></p>
+
+                        <p>Best regards,</p>
+                        Ibadan Electricity Distribution Company (IBEDC)
 
 
-<p><b>You can vend or pay bills using https://pay.ibedc.com</b></p>
-
-
-<p>Best regards</p>   
-<div> Ibadan Electricity Distribution Company (IBEDC)</div>
-                              </td>
+                                </td>
+                                
                               </tr>
                             </tbody>
                           </table>
@@ -368,8 +359,9 @@
 
               <!-- END MAIN CONTENT AREA -->
               </table>
+              
 
-              <br/>
+    <br/>
             <!-- START FOOTER -->
             <div class="footer">
               <table role="presentation" border="0" cellpadding="0" cellspacing="0">

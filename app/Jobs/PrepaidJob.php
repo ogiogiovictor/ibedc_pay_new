@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Http;
 use App\Models\Transactions\PaymentTransactions;
 use Illuminate\Support\Facades\Log;
 use App\Models\ECMI\EcmiPayments;
+use Illuminate\Support\Facades\Auth;
 
 class PrepaidJob implements ShouldQueue
 {
@@ -113,9 +114,12 @@ class PrepaidJob implements ShouldQueue
 
                     Log::info('TOKEN SENT: : - ', ['Generated Successfully' =>     $smsdata ]);
 
+                    $user = Auth::user();
+                    Mail::to($user->email)->send(new PrePaidPaymentMail($emailData));
+
                     $iresponse = Http::asForm()->post($baseUrl, $smsdata);
                     //Send a Successfully Mail to user
-                    Mail::to($this->payment['email'])->send(new PrePaidPaymentMail($emailData));
+                   // Mail::to($this->payment['email'])->send(new PrePaidPaymentMail($emailData);
 
 
                 } else {

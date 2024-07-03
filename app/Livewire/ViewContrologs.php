@@ -46,7 +46,7 @@ class ViewContrologs extends Component
 
         $this->access = MenuAccess::where("user_role", $this->id)->first();
 
-        //dd($this->access->menu_id);
+       // dd($this->access->menu_id);
 
         foreach ($mainMenus as $mainMenu) {
             $menu = [
@@ -127,11 +127,11 @@ class ViewContrologs extends Component
         return view('livewire.view-contrologs', [
             'menus' => $this->menus,
             'role' => $this->roleName,
-            'user_menu_access' => $this->access->menu_id,
+            'user_menu_access' => $this->access ? $this->access->menu_id : null,
             //'all_role' => Role::all()
         ]);
-
-
        // return view('livewire.view-contrologs');
     }
+
+
 }

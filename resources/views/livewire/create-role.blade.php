@@ -87,7 +87,18 @@
                     
                     <div class="col-12 grid-margin">
                             
-                  <form class="form-sample">
+                  <form class="form-sample" wire:submit.prevent="addRole">
+                  @if (session()->has('error'))
+                            <div class="alert alert-danger">
+                                {{ session('error') }}
+                            </div>
+                        @endif
+
+                        @if (session()->has('success'))
+                            <div class="alert alert-danger">
+                                {{ session('success') }}
+                            </div>
+                        @endif
                     <p class="card-description">
                       <!-- Error Information is Displayed Here -->
                     </p>
@@ -96,7 +107,7 @@
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">Role Name</label>
                           <div class="col-sm-9">
-                            <input type="text" class="form-control" />
+                            <input type="text" class="form-control" wire:model="role_name"  />
                           </div>
                         </div>
                       </div>

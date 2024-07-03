@@ -47,7 +47,8 @@ class PaymentTransactions extends Model
         'serviceBand',
         'feederName',
         'dssName',
-        'udertaking'
+        'udertaking',
+        'Address'
     ];
 
     

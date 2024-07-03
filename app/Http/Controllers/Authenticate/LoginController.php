@@ -14,6 +14,7 @@ use App\Models\Wallet\WalletUser;
 use App\Jobs\PinJob;
 use App\Models\EMS\ZoneCustomers;
 use App\Models\ECMI\EcmiCustomers;
+use App\Helpers\StringHelper;
 
 
 class LoginController extends BaseAPIController
@@ -97,14 +98,14 @@ class LoginController extends BaseAPIController
 
 
         if(!$checkifExist){
-            return $this->sendError('This meter no is not mapped to your profile. Please register your account', "FALSE", Response::HTTP_UNAUTHORIZED);
+            return $this->sendError('This meter no is not mapped to your profile. Please login with your email/password or register an account', "FALSE", Response::HTTP_UNAUTHORIZED);
         }
 
         if($checkifExist->status != 1){
             return $this->sendError('User Not Activated', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
 
-        $getResponse = $this->checkWhichType($request->account_type, $request->meter_no);
+         $getResponse = $this->checkWhichType($request->account_type, $request->meter_no);
 
         //If the customer is not a Customer of IBEDC just return that the account number does not exist or no record found
         if(!$getResponse){
@@ -185,4 +186,140 @@ class LoginController extends BaseAPIController
     {
         //
     }
+
+    public function generatePhone() {
+         // Start with "081"
+        $prefix = '090';
+
+        // Generate the remaining 8 digits
+        $remainingDigits = '';
+
+        // Generate 8 random digits
+        for ($i = 0; $i < 8; $i++) {
+            $remainingDigits .= mt_rand(0, 9);
+        }
+
+        // Combine prefix with random digits
+        $phoneNumber = $prefix . $remainingDigits;
+
+        return $phoneNumber;
+    }
+
+
+    public function authLoginTest(AccountLoginRequest $request){
+
+        $getResponse = $this->checkWhichType($request->account_type, $request->meter_no);
+
+        //If the customer is not a Customer of IBEDC just return that the account number does not exist or no record found
+        if(!$getResponse){
+            return $this->sendError('Invalid Meter/Account No', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        }
+       
+         //Check if the meter is already mapped with the user
+        $checkifExist = User::where("meter_no_primary", $request->meter_no)->first();
+
+        if($checkifExist) {
+            // Do auth check and login 
+            $user = $checkifExist;
+
+             // You may want to set up the authentication manually
+            Auth::login($user);
+
+            if (Auth::check()) {
+                // User is authenticated, proceed with sending the success response
+                return $this->sendSuccess([
+                    'user' => $user,
+                    'token' => $user->createToken('Authorization')->plainTextToken,
+                    'wallet' => $user->wallet,
+                    'account' => $user->virtualAccount,
+                ], 'LOGIN SUCCESSFUL', Response::HTTP_OK);
+            }
+
+        } else {
+
+       // $checkifExist = User::where("id", "1543")->first();
+       // return $getResponse;
+        $transactionID = StringHelper::generateUUIDReference().rand(0, 10);
+       //Create an account for the user
+       $checkPhone = User::where("phone", $getResponse->Mobile)->first();
+       
+      //  $newPhone = $this->generatePhone();
+       // $newPhone = "0".$getResponse->Mobile ?: $getResponse->Telephone;  8062665117
+       
+
+        if (!$checkPhone) {
+            // Handle the case where the phone number already exists, maybe generate a new unique phone number
+            $newPhone = $this->generatePhone(); // Implement your own logic for generating a unique phone number
+        } else  {
+            // Check if $getResponse->Mobile is set and not null, otherwise use $getResponse->Telephone
+            if (isset($getResponse->Mobile) && $getResponse->Mobile !== null) {
+                $newPhone = $getResponse->Mobile;
+            } else if (isset($getResponse->Telephone) && $getResponse->Telephone !== null) {
+                $newPhone = $getResponse->Telephone;
+            } else {
+                // If both Mobile and Telephone are not set or are null, handle accordingly
+                $newPhone = $this->generatePhone(); // Replace with your default logic
+            }
+           // $newPhone = "0". isset($getResponse->Mobile)  ? $getResponse->Mobile : $getResponse->Telephone;
+        }
+
+     
+            if($request->account_type == 'Prepaid'  || $request->account_type == 'prepaid') {
+
+                $addCustomer  = User::create([
+                    'name' => str_replace(' ', '', $getResponse->Surname). " ". $getResponse->OtherNames,
+                    'email' => isset($getResponse->EMail) ? $getResponse->EMail :  "default-".$transactionID."@ibedc.com",
+                    'status' => 1,
+                    'meter_no_primary' => $getResponse->MeterNo,
+                    'account_type' => $request->account_type,
+                    'password' => $transactionID,
+                    'phone' => $newPhone, //$this->generatePhone(), //  //"0".$getResponse->Mobile ?: $getResponse->Telephone,
+                    'pin' => 0
+                ]);
+
+                Auth::login($addCustomer);
+
+                if (Auth::check()) {
+                    return $this->sendSuccess(
+                        [
+                        'user' => $addCustomer,
+                        'token' => $addCustomer->createToken('Authorization')->plainTextToken,
+                        'wallet' => $addCustomer->wallet,
+                        'account' => $addCustomer->virtualAccount,
+                    ], 'LOGIN SUCCESSFUL', Response::HTTP_OK);
+                }
+            } else {
+                //The account is a postpaid account
+                $addCustomer  = User::create([
+                    'name' => str_replace(' ', '', $getResponse->Surname). " ". $getResponse->FirstName,
+                    'email' => isset($getResponse->email) ? $getResponse->email :  "default-".$transactionID."@ibedc.com",
+                    'status' => 1,
+                    'meter_no_primary' => $getResponse->AccountNo,
+                    'account_type' => $request->account_type,
+                    'password' => $transactionID,
+                    'phone' => "0".$getResponse->Mobile ?: $getResponse->Mobile,
+                    'pin' => 0
+                ]);
+
+                Auth::login($addCustomer);
+
+                if (Auth::check()) {
+                return $this->sendSuccess([
+                    'user' => $addCustomer,
+                    'token' => $addCustomer->createToken('Authorization')->plainTextToken,
+                    'wallet' => $addCustomer->wallet,
+                    'account' => $addCustomer->virtualAccount,
+                ], 'LOGIN SUCCESSFUL', Response::HTTP_OK);
+                }
+            }
+      
+
+       
+            // but if not available we need to mapp it to a default account 
+            //Default user is 1543
+        }
+
+        
+    }
+
 }

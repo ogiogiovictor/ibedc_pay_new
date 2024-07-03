@@ -14,7 +14,7 @@ class Transactions extends Component
     {
         $transaction = new PaymentTransactions();
         //All Transactions
-        $this->all_transactions = $transaction->orderby("id", "desc")->get();
+        $this->all_transactions = $transaction->orderby("id", "desc")->paginate(50)->toArray();
 
 
     }

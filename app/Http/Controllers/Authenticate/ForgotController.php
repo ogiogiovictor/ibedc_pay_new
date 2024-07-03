@@ -56,8 +56,8 @@ class ForgotController extends BaseAPIController
             return $this->sendError('Invalid Option Sent', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
 
-        $transactionID = StringHelper::generateUUIDReference();
-        $user->update(['pin' => $transactionID]);
+        //$transactionID = StringHelper::generateUUIDReference();
+        //$user->update(['pin' => $transactionID]);
 
         return $this->sendSuccess( [
             'payload' => $user,
@@ -87,6 +87,9 @@ class ForgotController extends BaseAPIController
             $user->password = Hash::make($validatedData['password']); // Hash the new password
             $user->save();
 
+            $transactionID = StringHelper::generateUUIDReference();
+            $user->update(['pin' => '']);
+
             return $this->sendSuccess( [
                 'payload' => $user,
                 'message' => 'Password changed successfully',
@@ -94,7 +97,7 @@ class ForgotController extends BaseAPIController
             // Password changed successfully
         } else {
             // User not found
-            return $this->sendError('User not found', 'ERROR', Response::HTTP_UNAUTHORIZED);
+            return $this->sendError('ERROR',  "Something wenth wrong, please make sure you are sending the correct parameters", Response::HTTP_UNAUTHORIZED);
         }
     }
 }

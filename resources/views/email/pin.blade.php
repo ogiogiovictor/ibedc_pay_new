@@ -315,13 +315,13 @@
             </table>
 
             <!-- START CENTERED WHITE CONTAINER -->
-            <span class="preheader">Welcome to IBECPay - Your Virtual Account is Ready!</span>
+            <span class="preheader">Welcome to IBECPay</span><br/>
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
 
               <!-- START MAIN CONTENT AREA -->
               <tr>
                 <td class="wrapper">
-                  <p>Hi {{ $name }}</p>
+                  <p><b>Hi {{ strtoupper($name) }},</b></p>
                   <p>we're pleased to inform you that an OTP (One-Time Password) has been sent to your registered email address to ensure secure access to your IBECPay account.<br/></p>
                   <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                     <tbody>
@@ -331,6 +331,31 @@
                             <tbody>
                               <tr>
                                 <td> <h3>Pin:  {{ $pin }}</h3> </td>
+                                
+                              </tr>
+
+                              <tr>
+                                <td>   With this unique code, you can securely log in to your account and enjoy uninterrupted access to our range of energy management services, including bill payments and energy purchases. </td>
+                                
+                              </tr>
+
+                              <tr>
+                                <td>   Please ensure to keep this OTP confidential and do not share it with anyone for your account's security.<br/> </td>
+                                
+                              </tr>
+
+                              <tr>
+                                <td>   Should you encounter any issues or need further assistance, our support team is here to help.<br/>
+
+Thank you for trusting IBECPay for your energy management needs. We're committed to providing you with a seamless and secure experience every time. <br/> </td>
+                                
+                              </tr>
+
+                              <tr>
+                                <td>   <p><b>You can vend or pay bills using https://pay.ibedc.com</b></p>
+
+<p>Best regards,</p>
+Ibadan Electricity Distribution Company (IBEDC)</td>
                                 
                               </tr>
                             </tbody>
@@ -345,21 +370,8 @@
 
               <!-- END MAIN CONTENT AREA -->
               </table>
-              <p>
-
-              With this unique code, you can securely log in to your account and enjoy uninterrupted access to our range of energy management services, including bill payments and energy purchases.<br/>
-
-              Please ensure to keep this OTP confidential and do not share it with anyone for your account's security.<br/>
-
-Should you encounter any issues or need further assistance, our support team is here to help.<br/>
-
-Thank you for trusting IBECPay for your energy management needs. We're committed to providing you with a seamless and secure experience every time. <br/>
-              </p>
-
-              <p><b>You can vend or pay bills using https://pay.ibedc.com</b></p>
-
-              <p>Best regards,</p>
-              Ibadan Electricity Distribution Company (IBEDC)
+             
+             
 
 
     <br/>

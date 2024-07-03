@@ -23,8 +23,54 @@ class ViewTransaction extends Component
 
     }
 
-    public function processTransaction($id){
+    public function checkPaymentStatus($id) {
+
+        //dd($this->transactions->transaction_id);
+
         $this->transactions = PayTransactions::where("id", $id)->first();
+
+        if(!$this->transactions->transaction_id) { 
+            Session::flash('error', 'Please provide a valid provider Reference');
+            return redirect()->route('log_transactions');
+        }
+
+        $flutterData = [
+            'SECKEY' =>  env("FLUTTER_POLARIS_KEY"), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
+            "txref" => $this->transactions->transaction_id
+        ];
+
+       
+
+        $flutterUrl = env("FLUTTER_WAVE_URL");
+
+        $iresponse = Http::post($flutterUrl, $flutterData);
+        $flutterResponse = $iresponse->json(); 
+
+      //  dd($flutterResponse);
+
+        if ($flutterResponse['status'] == "success" ) {
+
+            Session::put('success', $flutterResponse['data']['status']);
+        } else {
+            Session::put('error', $flutterResponse['data']['message']);
+        }  
+    }
+
+    public function processTransaction($id){
+        
+        $this->transactions = PayTransactions::where("id", $id)->first();
+
+        if(!$this->transactions->providerRef) { 
+            Session::flash('error', 'Please provide a valid provider Reference');
+            return redirect()->route('log_transactions');
+        }
+
+        if(!$this->transactions->status == 'pending') { 
+            Session::flash('error', 'Transaction status cannot be verified, please check payment status');
+            return;
+            //return redirect()->route('log_transactions');
+        }
+
 
         $baseUrl = env('MIDDLEWARE_URL');
         $addCustomerUrl = $baseUrl. 'vendelect';
@@ -70,7 +116,7 @@ class ViewTransaction extends Component
                 'sender' => "IBEDC",
                 'to' => $this->transactions->phone,
                 "message" => "Meter Token: $token  Your IBEDC Prepaid payment of $amount for Meter No 
-                 $meter_no was successful. REF: $transactionID. For Support: 07001239999",
+                 $meterno was successful. REF: $transactionID. For Support: 07001239999",
                 "type" => 0,
                 "routing" => 3,
             ];
@@ -84,6 +130,7 @@ class ViewTransaction extends Component
                 "custname" => $this->transactions->customer_name,
                 "custphoneno" => $this->transactions->phone,
                 "payreference" => $this->transactions->transaction_id,
+                "transaction_id" => $this->transactions->transaction_id,
             ];
 
              Mail::to($this->transactions->email)->send(new PrepaidPaymentMail($emailData));

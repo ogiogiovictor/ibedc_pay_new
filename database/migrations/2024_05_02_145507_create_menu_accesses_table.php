@@ -13,8 +13,10 @@ return new class extends Migration
     {
         Schema::create('menu_access', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id'); // Use unsignedBigInteger for foreign keys
-            $table->unsignedBigInteger('menu_id'); // Use unsignedBigInteger for foreign keys
+           // $table->unsignedBigInteger('user_id'); // Use unsignedBigInteger for foreign keys
+            //$table->unsignedBigInteger('menu_id'); // Use unsignedBigInteger for foreign keys
+            $table->string('user_id'); // Use unsignedBigInteger for foreign keys
+            $table->string('menu_id'); // Use unsignedBigInteger for foreign keys
             $table->timestamps();
         });
     }

@@ -28,22 +28,16 @@
                               <button class="btn p-0" type="button" id="dropdown1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-dots-vertical card-menu-btn"></i>
                               </button>
-                              <div class="dropdown-menu" aria-labelledby="dropdown1" x-placement="left-start">
-                                <a class="dropdown-item" href="#">Started</a>
-                                <a class="dropdown-item" href="#">Pending</a>
-                                <a class="dropdown-item" href="#">Processing</a>
-                                <a class="dropdown-item" href="#">Successful</a>
-                              </div>
                             </div>
                           </div>
                           <div id="sales" class="carousel slide dashboard-widget-carousel position-static pt-2" data-ride="carousel">
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3"> {{ $count_transactions }}</h2>
+                                  <h2 class="mr-3">  {{ number_format($today_transactions, 2) }}</h2>
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small"><?= date('Y-m-d')?> <span class=" font-weight-normal">&nbsp;</span></p>
+                                  <p class="text-muted font-weight-bold text-small">Total Collections: <span class=" font-weight-bold"> {{  number_format($totalCollection, 2) }}</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -71,7 +65,7 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Sales</h4>
+                            <h4 class="card-title"><?php echo date('F') ?> Collection</h4>
                             <div class="dropdown dropleft card-menu-dropdown">
                               <button class="btn p-0" type="button" id="dropdown2" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-dots-vertical card-menu-btn"></i>
@@ -86,11 +80,11 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3 text-success">₦ {{ number_format($transactions, 2) }}</h2>
+                                  <h2 class="mr-3 text-success">₦ {{ number_format($monthlyCollection, 2) }}</h2>
                                   <!-- <h3 class="text-success">+2.3%</h3> -->
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold  text-small">Today's <span class=" font-weight-normal">(Sales)</span></p>
+                                  <p class="text-muted font-weight-bold  text-small">Monthly <span class=" font-weight-normal">(Sales)</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -181,7 +175,10 @@
                                   <!-- <h3 class="text-success">+2.3%</h3> -->
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">&nbsp;<span class=" font-weight-normal">(complain)</span></p>
+                                  <p class="text-muted font-weight-bold text-small">&nbsp;<span class=" font-weight-normal">
+                                    <a href="complaints"> (view complaints) </a>
+                                  </span>
+                                  </p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -218,16 +215,33 @@
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
                             <h4 class="card-title">Latest Transactions</h4>
-                            <div class="dropdown dropleft card-menu-dropdown">
-                              <button class="btn p-0" type="button" id="dropdown12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical card-menu-btn"></i>
-                              </button>
-                              <div class="dropdown-menu" aria-labelledby="dropdown12" x-placement="left-start">
-                                <a class="dropdown-item" href="#">Pending</a>
-                                <a class="dropdown-item" href="#">Processing</a>
-                                <a class="dropdown-item" href="#">Successful</a>
+                            <form class="form-inline justify-content-end" wire:submit.prevent="searchTransactions">
+                             
+                              <div class="form-group mr-2">
+                                <label for="selectOption" class="mr-2">Select:</label>
+                                <select class="form-control" id="selectOption" wire:model="clearOption">
+                                  <option value="">Select</option>
+                                  <option value="meter_no">Meter No</option>
+                                  <option value="account_number">Account Number</option>
+                                  <option value="customer_name">Customer Name</option>
+                                  <option value="transaction_id">Transaction ID</option>
+                                  <option value="email">Email</option>
+                                  <option value="amount">Amount</option>
+                                  <option value="BUID">Business Hub</option>
+                                  <option value="providerRef">Provider Reference</option>
+                                </select>
+                              </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              <div class="form-group mr-2">
+                                <label for="inputField" class="mr-2">Enter Value:</label>
+                                <input type="text" class="form-control" wire:model="clearValue" id="inputField" placeholder="Enter value">
                               </div>
-                            </div>
+                              <button type="submit" class="btn btn-md btn-primary">Search</button>&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+                              <!-- <button type="submit" class="btn btn-md btn-secondary" wire:click="exportTransactions">Export</button>&nbsp; &nbsp;&nbsp;&nbsp;&nbsp; -->
+                              @if (session()->has('error'))
+                                <div class="alert alert-danger">{{ session('error') }}</div>
+                              @endif
+                            </form>
+                            
                           </div>
                           <div class="table-responsive">
                             <table class="table center-aligned-table">
@@ -239,7 +253,7 @@
                                   <th>Meter No</th>
                                   <th>Customer Name</th>
                                   <th>Email</th>
-                                  <th>Phone</th>
+                                  <th>Amount</th>
                                   <th>Acount Type</th>
                                   <th>Business Hub</th>
                                   <th>Status</th>
@@ -258,7 +272,7 @@
                                   <td>{{ $transaction->meter_no }}</td>
                                   <td> <div class="text-dark font-weight-medium">{{ $transaction->customer_name }}</div> </td>
                                   <td>{{ $transaction->email }}</td>
-                                  <td>{{ $transaction->phone }}</td>
+                                  <td>₦{{ number_format($transaction->amount, 2) }}</td>
                                   <td>{{ $transaction->account_type }}</td>
                                   <td>{{ $transaction->BUID }}</td>
                                   <td>
@@ -274,7 +288,8 @@
                                   
                                   </td>
                                   <td>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
+                                    <!-- <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a> -->
+                                    <a href="transaction_details/{{ $transaction->transaction_id }}" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
                                   </td>
                                 </tr>
 

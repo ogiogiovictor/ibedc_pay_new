@@ -5,12 +5,14 @@ namespace App\Http\Controllers\Agency;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Agency\Agents;
+use App\Models\Agency\Targets;
 use Symfony\Component\HttpFoundation\Response;
 use App\Http\Controllers\BaseAPIController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Transactions\PaymentTransactions;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class AgencyCollection extends BaseAPIController
 {
@@ -42,12 +44,17 @@ class AgencyCollection extends BaseAPIController
                     ->sum_amount;
     
             $today_transactions = (float)$today_transactions;
+
+            $currentYear = Carbon::now()->year;
+            $currentMonth = Carbon::now()->month;
+
+            $agencyMonthlyTarget = Targets::where(["agency_id" => $auth->agency, "year" => $currentYear,  "month" => $currentMonth ])->first();
     
             $agencyAggreation = [
                 'collection_for_the_month' => $monthly,
                 'collection_for_today' => $today_transactions,
                 'monthly_target' => '',
-                'agency_monthly_target' => '',
+                'agency_monthly_target' =>  number_format($agencyMonthlyTarget->target_amount, 2),
             ];
 
 

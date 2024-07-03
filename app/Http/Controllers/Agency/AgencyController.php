@@ -13,7 +13,7 @@ use App\Http\Requests\LoginRequest;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Wallet\WalletUser;
-
+use App\Enums\RoleEnum;
 
 
 class AgencyController extends BaseAPIController
@@ -23,6 +23,9 @@ class AgencyController extends BaseAPIController
      */
     public function index()
     {
+      //  $user = auth()->user();
+
+       
         $getAgency = Agents::all();
 
         return $this->sendSuccess([
@@ -44,7 +47,7 @@ class AgencyController extends BaseAPIController
      */
     public function store(AgencyRequest $request)
     {
-       
+       $this->middleware('can:'.RoleEnum::super_admin()->value);
         $newRequest = $request->merge(['agent_code' => StringHelper::generateUUIDReference()]);
         $createAgency = Agents::create($newRequest->all());
 
@@ -100,7 +103,11 @@ class AgencyController extends BaseAPIController
         }
     
 
-        $user_status = User::where(["email" => $request->email, "authority" => "agent"])->first();
+        //$user_status = User::where(["email" => $request->email, "authority" => "agent"])->first();
+
+        $user_status = User::where('email', $request->email)->where(function($query) {
+            $query->where('authority', 'agent')->orWhere('authority', 'agency_admin');
+        })->first();
 
         if(!$user_status || $user_status->status != 1){
             return $this->sendError('User Not Activated Or User Does Not Exists' , 'ERROR', Response::HTTP_UNAUTHORIZED);

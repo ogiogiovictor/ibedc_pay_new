@@ -32,7 +32,8 @@ class User extends Authenticatable
         'phone',
         'authority',
         'meter_no_primary',
-        'agency'
+        'agency',
+        'account_type'
     ];
 
     /**
@@ -101,6 +102,18 @@ class User extends Authenticatable
     {
         return $this->authority === RoleEnum::agent()->value;
     }
+
+    public function isPaymentChannel()
+    {
+        return $this->authority === RoleEnum::payment_channel()->value;
+    }
+
+    public function isAgencyAdmin()
+    {
+        return $this->authority === RoleEnum::agency_admin()->value;
+    }
+
+    
 
     
 

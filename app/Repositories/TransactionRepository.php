@@ -23,6 +23,7 @@ class TransactionRepository implements TransactionRepositoryInterface
     }
 
     public function mytransactions($user_id){
+       // return $user_id;
         return PaymentTransactions::where('user_id', $user_id)->whereIn('status', ['processing', 'success', 'failed'])->orderby('created_at', 'desc')->paginate(10);
     }
 

@@ -52,11 +52,35 @@ class PaymentLookUp extends Command
                     $flutterResponse = $iresponse->json(); 
 
                     if ($flutterResponse['status'] == "success" && $flutterResponse['data']['status'] == 'successful') {
+
+                        if($paymentLog->status == "processing") {
+                            $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                                'providerRef' => $flutterResponse['data']['flwref'],
+                                //'status' => 'processing'
+                            ]);
+                        }else if($paymentLog->status == "started") {
+                            $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                                'providerRef' => $flutterResponse['data']['flwref'],
+                                'status' => 'processing'
+                            ]);
+                        }else {
+
+                            \Log::info("We don't know the status ". json_encode($flutterResponse));
+                        }
+                        
+                        $this->info('***** FLUTTERWAVE Verification Was Successful *************');
+                        \Log::info("payment Reference Updated Successfully ". json_encode($flutterResponse));
+
+                    } else if($flutterResponse['status'] == "success" && $flutterResponse['data']['status'] == 'failed') { 
                         $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                             'providerRef' => $flutterResponse['data']['flwref'],
+                            'status' => 'failed'
                         ]);
-    
-                        \Log::info("payment Reference Updated Successfully ". json_encode($flutterResponse));
+
+                        // Send Failed Response to Customer
+                    }else {
+                        $this->info('***** FLUTTERWAVE Verification Was Failed *************');
+                        \Log::error("Payment Error : No LookUp ". json_encode($flutterResponse));
                     }
                 }
 

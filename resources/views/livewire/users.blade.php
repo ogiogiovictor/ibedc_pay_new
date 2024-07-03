@@ -46,7 +46,7 @@
                                   <th>User Name</th>
                                   <th>Email </th>
                                   <th>Phone</th>
-                                  <th>Pin</th>
+                                  <th>Account Type</th>
                                   <th>User Code</th>
                                   <th>Primary Meters</th>
                                   <th>Authority</th>
@@ -56,23 +56,23 @@
                               </thead>
                               <tbody>
 
-                              @if($users->count() > 0)
+                              @if(count($users['links']) > 0)
 
-                              @foreach($users as $user)
+                              @foreach($users['data'] as $user)
                                 <tr>
-                                  <td>{{ $user->created_at }} </td>
-                                  <td>{{ $user->id }} </td>
-                                  <td><div class="text-dark font-weight-medium"> {{ $user->name }} </div></td>
-                                  <td>{{ $user->email }}</td>
-                                  <td> {{ $user->phone }} </td>
-                                  <td>{{ $user->phon }}</td>
-                                  <td>{{ $user->user_code }}</td>
-                                  <td>{{ $user->meter_no_primary }}</td>
-                                  <td>{{ $user->authority }}</td>
+                                  <td>{{ \Carbon\Carbon::parse($user['created_at'])->format('Y-m-d H:i:s')}} </td>
+                                  <td>{{ $user['id'] }} </td>
+                                  <td><div class="text-dark font-weight-medium"> {{ $user['name'] }} </div></td>
+                                  <td>{{ $user['email'] }}</td>
+                                  <td> {{ $user['phone'] }} </td>
+                                  <td>{{ $user['account_type'] }}</td>
+                                  <td>{{ $user['user_code'] }}</td>
+                                  <td>{{ $user['meter_no_primary'] }}</td>
+                                  <td>{{ $user['authority'] }}</td>
                                   <td>
-                                    @if($user->status == 0)
+                                    @if($user['status'] == 0)
                                     <label class="badge badge-warning">Inactive</label>
-                                    @elseif($user->status == 1)
+                                    @elseif($user['status'] == 1)
                                     <label class="badge badge-success">Active</label>
                                     @else
                                     <label class="badge badge-danger">Failed</label>
@@ -87,6 +87,18 @@
                                 </tr>
 
                                 @endforeach
+
+                                <nav>
+                                    <ul class="pagination">
+                                        @foreach($users['links'] as $link)
+                                            <li class="page-item {{ $link['active'] ? 'active' : '' }}">
+                                                <!-- <a class="page-link" href="{{ $link['url'] }}">{{ $link['label'] }}</a> -->
+                                                <a href="{{ $link['url'] }}" class="page-link">{!! $link['label'] !!}</a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </nav>
+
                                 @else
                                 <tr>
                                   <td colspan="10" class="text-center">No User Found</td>

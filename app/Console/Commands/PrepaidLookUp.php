@@ -45,7 +45,7 @@ class PrepaidLookUp extends Command
                 ->where('account_type', 'Prepaid')
                 ->where('status', 'processing')
                 ->whereNotNull('providerRef')
-                ->chunk(30, function($prepaidpayments) use (&$paymentData) {
+                ->chunk(20, function($prepaidpayments) use (&$paymentData) {
 
                     foreach($prepaidpayments as $paymentLog){
 
@@ -71,7 +71,7 @@ class PrepaidLookUp extends Command
                 
                         $newResponse =  $response->json();
     
-                        \Log::info('RESPONSE FROM MOMAS API: ' . json_encode($newResponse));
+                        \Log::info('RESPONSE FROM MOMAS API - PREPAID LOG: ' . json_encode($newResponse));
                         $totalRecords = count($prepaidpayments);
 
                         if($newResponse['status'] == "true"){      
@@ -142,7 +142,7 @@ class PrepaidLookUp extends Command
                 
 
         }catch(\Exception $e){
-
+            \Log::info('ERROR MESSAGE - PREPAID LOG: ' . json_encode($e));
             \Log::info(DB::getQueryLog());
             $this->info('***** TOKENLOOKUP API PAYMENT COMPLETED:: All payments processed successfully *************');
         }

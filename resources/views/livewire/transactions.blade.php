@@ -56,25 +56,27 @@
                               </thead>
                               <tbody>
 
-                              @if($all_transactions->count() > 0)
+                              
 
-                              @foreach($all_transactions as $transaction)
+                              @if(count($all_transactions['links']) > 0)
+
+                              @foreach($all_transactions['data'] as $transaction)
                                 <tr>
-                                  <td>{{ $transaction->created_at }} </td>
-                                  <td>{{ $transaction->transaction_id }} </td>
-                                  <td>{{ $transaction->account_number }}</td>
-                                  <td>{{ $transaction->meter_no }}</td>
-                                  <td> <div class="text-dark font-weight-medium">{{ $transaction->customer_name }}</div> </td>
-                                  <td>{{ $transaction->email }}</td>
-                                  <td>₦{{ $transaction->amount }}</td>
-                                  <td>{{ $transaction->account_type }}</td>
-                                  <td>{{ $transaction->BUID }}</td>
+                                  <td> {{ \Carbon\Carbon::parse($transaction['created_at'])->format('Y-m-d H:i:s')}} </td>
+                                  <td>{{ $transaction['transaction_id'] }} </td>
+                                  <td>{{ $transaction['account_number'] }}</td>
+                                  <td>{{ $transaction['meter_no'] }}</td>
+                                  <td> <div class="text-dark font-weight-medium">{{ $transaction['customer_name'] }}</div> </td>
+                                  <td>{{ $transaction['email'] }}</td>
+                                  <td>₦{{ number_format($transaction['amount'], 2) }}</td>
+                                  <td>{{ $transaction['account_type'] }}</td>
+                                  <td>{{ $transaction['BUID'] }}</td>
                                   <td>
-                                    @if($transaction->status == "started")
-                                    <label class="badge badge-default">Started</label>
-                                    @elseif($transaction->status == "processing")
+                                    @if($transaction['status'] == "started")
+                                    <label class="badge badge-info">Started</label>
+                                    @elseif($transaction['status'] == "processing")
                                     <label class="badge badge-warning">Processing</label>
-                                    @elseif($transaction->status == "success")
+                                    @elseif($transaction['status'] == "success")
                                     <label class="badge badge-success">Successful</label>
                                     @else
                                     <label class="badge badge-danger">Failed</label>
@@ -82,11 +84,23 @@
                                   
                                   </td>
                                   <td>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
+                                    <a href="transaction_details/{{ $transaction['transaction_id'] }}" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
                                   </td>
                                 </tr>
 
                                 @endforeach
+
+                                <nav>
+                                    <ul class="pagination">
+                                        @foreach($all_transactions['links'] as $link)
+                                            <li class="page-item {{ $link['active'] ? 'active' : '' }}">
+                                                <!-- <a class="page-link" href="{{ $link['url'] }}">{{ $link['label'] }}</a> -->
+                                                <a href="{{ $link['url'] }}" class="page-link">{!! $link['label'] !!}</a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </nav>
+
                                 @else
                                 <tr>
                                   <td colspan="10" class="text-center">No Transaction Found</td>

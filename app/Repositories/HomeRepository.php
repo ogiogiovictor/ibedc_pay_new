@@ -41,9 +41,26 @@ class HomeRepository implements HomeRepositoryInterface
             return null; // Or handle this case as appropriate
         }
 
+        $checkPhone = User::where('phone', $userRequest->phone)->first();
+
+        if($checkPhone) {
+            return "Error! Phone Number Exists";
+        }
+
+        if (str_starts_with($userRequest->email, 'noemail')) {
+             //we need to check if the email you want to update already exist before even updating..
+            $user->email = isset($userRequest->email) ? $userRequest->email : $user->email;
+            $user->phone = isset($userRequest->phone) ? $userRequest->phone : $user->phone;
+        }
+
         // Update user attributes based on the request
         $user->meter_no_primary = isset($userRequest->meter_no_primary) ? $userRequest->meter_no_primary : $user->meter_no_primary;
         $user->password = isset($userRequest->password) ? bcrypt($userRequest->password) : $user->password;
+        $user->phone = isset($userRequest->phone) ? $userRequest->phone : $user->phone;
+
+        //we need to check if the email you want to update already exist before even updating..
+        //$user->email = isset($userRequest->email) ? $userRequest->email : $user->email;
+        //$user->phone = isset($userRequest->phone) ? $userRequest->phone : $user->phone;
 
         // Save the changes
         $user->save();

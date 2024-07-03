@@ -11,7 +11,7 @@ class Users extends Component
 
     public function mount()
     {
-        $this->users = User::all();
+        $this->users = User::orderby("id", "desc")->paginate(15)->toArray();
     }
 
     

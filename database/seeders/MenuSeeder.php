@@ -72,7 +72,7 @@ class MenuSeeder extends Seeder
 
         [
             "menu_name" => "Contact Us",
-            "menu_url" => "contact_us",
+            "menu_url" => "complaints",
             "menu_status" =>  "on",
             "menu_icon" => "mdi mdi-alert-circle menu-icon",
             "menu_side" => "left"

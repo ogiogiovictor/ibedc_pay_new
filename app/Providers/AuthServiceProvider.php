@@ -48,6 +48,11 @@ class AuthServiceProvider extends ServiceProvider
             return  $user->authority === RoleEnum::user()->value;
         });
 
+
+        Gate::define(RoleEnum::payment_channel()->value, function(User $user) : bool{
+            return  $user->authority === RoleEnum::payment_channel()->value;
+        });
+
         
 
         

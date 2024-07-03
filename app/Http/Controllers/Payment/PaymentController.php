@@ -100,9 +100,9 @@ class PaymentController extends BaseAPIController
         try{
           
             $payment = $this->transaction->store([
-                'email' => $this->user->index($auth->id)[0]->email,
+                'email' => isset($request->email) ? $request->email : $this->user->index($auth->id)[0]->email,
                 'transaction_id' => $transactionID,
-                'phone' =>  $this->user->index($auth->id)[0]->phone,
+                'phone' => isset($request->phone) ? $request->phone :  $this->user->index($auth->id)[0]->phone,
                 'amount' => (float)$request->amount,
                 'account_type' => $request->account_type,
                 'account_number' => trim($request->account_number),
@@ -116,7 +116,8 @@ class PaymentController extends BaseAPIController
                 'longitude' => isset($request->longitude) ? $request->longitude : 'null',
                 'source_type' => isset($request->source_type) ? $request->source_type : 'null',
                 "user_id" => $auth->id,
-                'agency' => $auth->agency
+                'agency' => $auth->agency,
+                'Address' => $custInfo->Address1. ' '. $custInfo->Address2
             ]);
 
             if($payment){
@@ -218,9 +219,9 @@ class PaymentController extends BaseAPIController
         try{
 
             $payment = $this->transaction->store([
-                'email' => $this->user->index($auth->id)[0]->email,
+                'email' => isset($request->email) ? $request->email : $this->user->index($auth->id)[0]->email,
                 'transaction_id' => $transactionID,
-                'phone' =>  $this->user->index($auth->id)[0]->phone,
+                'phone' => isset($request->phone) ? $request->phone : $this->user->index($auth->id)[0]->phone,
                 'amount' => (float)$request->amount,
                 'account_type' => $request->account_type,
                 'account_number' => trim($zoneECMI->AccountNo),
@@ -235,7 +236,8 @@ class PaymentController extends BaseAPIController
                 'longitude' => isset($request->longitude) ? $request->longitude : 'null',
                 'source_type' => isset($request->source_type) ? $request->source_type : 'null',
                 "user_id" => $auth->id,
-                'agency' => $auth->agency
+                'agency' => $auth->agency,
+                'Address' => $zoneECMI->Address
             ]);
 
             if($payment){

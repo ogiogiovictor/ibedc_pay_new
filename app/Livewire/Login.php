@@ -29,9 +29,14 @@ class Login extends Component
                 return redirect()->back();
             }
 
-            if ($user->isSuperAdmin() || $user->isAdmin() || $user->isManager() || $user->isSupervisor() || $user->isAgent()) {
+            if ($user->isSuperAdmin() || $user->isAdmin() || $user->isManager() || $user->isSupervisor() 
+            || $user->isAgent() || $user->isPaymentChannel() || $user->isManager()  || $user->isSupervisor() ) {
                 // Redirect admin user to the dashboard
                 return redirect()->route('dashboard');
+            } else if($user->isAgencyAdmin()) {
+
+                return redirect()->route('agency_dashboard');
+                
             } else {
                 // Logout non-admin users
                 Auth::logout();

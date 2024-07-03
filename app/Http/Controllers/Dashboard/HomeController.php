@@ -11,6 +11,7 @@ use App\Http\Controllers\BaseAPIController;
 use Illuminate\Support\Facades\Auth;
 use App\Services\PinService;
 use App\Models\VirtualAccount;
+use App\Models\EMS\ZoneCustomers;
 
 class HomeController extends BaseAPIController
 {
@@ -125,9 +126,9 @@ class HomeController extends BaseAPIController
 
         $checkAccountNo = Auth::user()->meter_no_primary;
 
-        if($request->account_no !=  $checkAccountNo){
-            return $this->sendError('You are not authorize to check outstanding balance of another customer', 'ERROR', Response::HTTP_UNAUTHORIZED);
-        }
+        // if($request->account_no !=  $checkAccountNo){
+        //     return $this->sendError('You are not authorize to check outstanding balance of another customer', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        // }
 
         $validatedData = $request->validate([
             'email' => 'required',
@@ -163,7 +164,12 @@ class HomeController extends BaseAPIController
 
                 
             } else {
-                return $this->sendError('ERROR', 'Please visit any of our office for your Postpaid Outstanding Balance', Response::HTTP_UNAUTHORIZED);
+                //ZoneCustomers
+                return $this->sendSuccess([
+                    'balance' => ZoneCustomers::where("AccountNo", $request->account_no)->value('ArrearsBalance'),
+                 ], 'BALANCE LOADED', Response::HTTP_OK);
+
+               // return $this->sendError('ERROR', 'Please visit any of our office for your Postpaid Outstanding Balance', Response::HTTP_UNAUTHORIZED);
             }
 
         } else {
@@ -181,7 +187,7 @@ class HomeController extends BaseAPIController
 
         $user = Auth::user();
 
-       $profileUpdate =  $this->profile-> updateProfile($request, $user->id);
+       $profileUpdate =  $this->profile->updateProfile($request, $user->id);
 
        if($profileUpdate) {
         return $this->sendSuccess([
