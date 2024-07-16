@@ -14,6 +14,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Wallet\WalletUser;
 use App\Enums\RoleEnum;
+use App\Models\Transactions\PaymentTransactions;
 
 
 class AgencyController extends BaseAPIController
@@ -25,11 +26,25 @@ class AgencyController extends BaseAPIController
     {
       //  $user = auth()->user();
 
-       
-        $getAgency = Agents::all();
+        $user = Auth::user();
+
+        if ($user->authority == RoleEnum::super_admin()->value || $user->authority == RoleEnum::admin()->value) {
+            $getAgency = Agents::with('users')->get();
+            //$agencyPayments = User::with('paymentTransactions')->get();
+            $agencyPayments = PaymentTransactions::paginate(20);
+
+        } elseif ($user->authority == RoleEnum::agency_admin()->value) {
+            
+            $getAgency = Agents::where('id', $user->agency)->with('users')->get();
+           // $agencyPayments = User::where('agency', $user->agency_id)->with('paymentTransactions')->get();
+           $agencyPayments = PaymentTransactions::where('agency', $user->agency)->paginate(20);
+        } 
 
         return $this->sendSuccess([
-            'payload' => $getAgency,
+            'payload' => [
+                'agency' => $getAgency,
+                'payments' => $agencyPayments
+            ],
             'message' => 'Agency Successfully Loaded',
         ], Response::HTTP_OK);
     }

@@ -42,6 +42,7 @@ class PolarisPaymentRepository extends BaseApiController implements PayableInter
                 'Descript' => $flutterResponse['data']['status'],
                 'response_status' => 1,
                 'provider' => $this->request->provider,
+                'status' => 'processing'
             ]);
             
         }

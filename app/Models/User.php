@@ -13,6 +13,8 @@ use App\Models\Wallet\WalletUser;
 use App\Models\VirtualAccount;
 use App\Enums\RoleEnum;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\Agency\Agents;
+use App\Models\Transactions\PaymentTransactions;
 
 class User extends Authenticatable
 {
@@ -113,7 +115,14 @@ class User extends Authenticatable
         return $this->authority === RoleEnum::agency_admin()->value;
     }
 
-    
+    public function agency()
+    {
+        return $this->belongsTo(Agents::class);  // This is the Agency not Agents
+    }
+
+    public function PaymentTransactions() {
+        return $this->hasMany(PaymentTransactions::class, "user_id");
+    }
 
     
 

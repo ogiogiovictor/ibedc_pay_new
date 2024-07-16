@@ -229,6 +229,7 @@
                                   <option value="amount">Amount</option>
                                   <option value="BUID">Business Hub</option>
                                   <option value="providerRef">Provider Reference</option>
+                                  <option value="status">Status</option>
                                 </select>
                               </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                               <div class="form-group mr-2">

@@ -24,7 +24,12 @@ class LogTransactions extends Component
 
     public function mount()
     {
+        $user = Auth::user();
 
+        if($user->authority == (RoleEnum::agency_admin()->value )) {
+          //redirect to agency dashboard
+          return redirect()->route('agency_dashboard');
+        } 
        
         $this->loadData();
 

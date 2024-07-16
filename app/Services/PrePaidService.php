@@ -20,7 +20,8 @@ class PrePaidService extends BaseAPIController
 
         $checkExist = PaymentTransactions::where("transaction_id", $checkRef->transaction_id)->value("receiptno");
 
-        if($checkExist && $checkExist != "NULL"){
+        //if($checkExist && $checkExist != "NULL"){
+        if($checkExist){
 
             return $this->sendSuccess($checkExist, "PaymentSource Successfully Loaded", Response::HTTP_OK);
 
@@ -39,12 +40,13 @@ class PrePaidService extends BaseAPIController
                 'id' => $checkRef->id
             ];
 
-            $update = PaymentTransactions::where("transaction_id", $checkRef->transaction_id)->update([
-                'response_status' => 1,
-                'status' => "processing",
-            ]);
+            // $update = PaymentTransactions::where("transaction_id", $checkRef->transaction_id)->update([
+            //     'response_status' => 1,
+            //     'status' => "processing",
+            //     'Descript' => 'Processing, Your token is underway'
+            // ]);
 
-            dispatch(new PrepaidJob($payment))->delay(2);
+            dispatch(new PrepaidJob($payment));
 
             return $this->sendSuccess($payment, "Payment Successfully Token will be sent to your email", Response::HTTP_OK);
 

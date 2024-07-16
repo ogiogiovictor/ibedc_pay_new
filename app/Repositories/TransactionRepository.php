@@ -4,7 +4,9 @@ namespace App\Repositories;
 
 use App\Interfaces\TransactionRepositoryInterface;
 use App\Models\Transactions\PaymentTransactions;
-
+use App\Models\User;
+use App\Models\ECMI\EcmiPayments;
+use App\Http\Resources\ECMIPaymentResource;
 
 class TransactionRepository implements TransactionRepositoryInterface
 {
@@ -22,9 +24,20 @@ class TransactionRepository implements TransactionRepositoryInterface
         return PaymentTransactions::where('transaction_id', $tid)->first();
     }
 
-    public function mytransactions($user_id){
+    public function mytransactions($user_id) {
        // return $user_id;
-        return PaymentTransactions::where('user_id', $user_id)->whereIn('status', ['processing', 'success', 'failed'])->orderby('created_at', 'desc')->paginate(10);
+
+       $checkStatus = PaymentTransactions::where('user_id', $user_id->id)->whereIn('status', ['processing', 'success', 'failed'])->orderby('created_at', 'desc')->paginate(10);
+
+       return $checkStatus;
+
+    //    if($user_id->account_type == 'Prepaid'){
+
+    //         $ecmi_transaction = ECMIPaymentResource::collection(EcmiPayments::where("MeterNo", $user_id->meter_no_primary)->get());
+    //    }
+       
+       
+        
     }
 
     public function checkifexist($user_id, $account_no){

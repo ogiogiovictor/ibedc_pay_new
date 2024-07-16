@@ -11,14 +11,15 @@
         <ul class="navbar-nav">
           <li class="nav-item  dropdown d-none align-items-center d-lg-flex d-none">
             <a class="dropdown-toggle btn btn-outline-secondary btn-fw"  href="#" data-toggle="dropdown" id="pagesDropdown">
-            <span class="nav-profile-name">Pages</span>
+            <span class="nav-profile-name">Settings</span>
             </a>
             <div class="dropdown-menu dropdown-menu-right navbar-dropdown" aria-labelledby="pagesDropdown">
               <a class="dropdown-item">
               <i class="mdi mdi-settings text-primary"></i>
-              Settings
+              Profile
               </a>
-              <a class="dropdown-item">
+              
+              <a class="dropdown-item" wire:click.prevent="logout">
               <i class="mdi mdi-logout text-primary"></i>
               Logout
               </a>
@@ -27,7 +28,7 @@
          
         </ul>
         <ul class="navbar-nav navbar-nav-right">
-            <li class="nav-item nav-search d-none d-lg-flex">
+            <!-- <li class="nav-item nav-search d-none d-lg-flex">
               <div class="input-group">
                 <div class="input-group-prepend">
                   <span class="input-group-text" id="search">
@@ -36,100 +37,18 @@
                 </div>
                 <input type="text" class="form-control" placeholder="Type to search..." aria-label="search" aria-describedby="search">
               </div>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link count-indicator dropdown-toggle d-flex align-items-center justify-content-center" id="notificationDropdown" href="#" data-toggle="dropdown">
-              <i class="mdi mdi-bell-outline mx-0"></i>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="notificationDropdown">
-                <p class="mb-0 font-weight-normal float-left dropdown-header">Notifications</p>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-success">
-                      <i class="mdi mdi-information mx-0"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <h6 class="preview-subject font-weight-normal">Tosin Abayomi</h6>
-                    <p class="font-weight-light small-text mb-0 text-muted">
-                      Just bought 2,000
-                    </p>
-                  </div>
-                </a>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-warning">
-                      <i class="mdi mdi-settings mx-0"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <h6 class="preview-subject font-weight-normal">Abigail</h6>
-                    <p class="font-weight-light small-text mb-0 text-muted">
-                      just bought 3400
-                    </p>
-                  </div>
-                </a>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <div class="preview-icon bg-info">
-                      <i class="mdi mdi-account-box mx-0"></i>
-                    </div>
-                  </div>
-                  <div class="preview-item-content">
-                    <h6 class="preview-subject font-weight-normal">Sandra Agudosi</h6>
-                    <p class="font-weight-light small-text mb-0 text-muted">
-                      bought 500 naira
-                    </p>
-                  </div>
-                </a>
-              </div>
-            </li>
-            <li class="nav-item dropdown">
-              <a class="nav-link count-indicator dropdown-toggle d-flex justify-content-center align-items-center" id="messageDropdown" href="#" data-toggle="dropdown">
-                <i class="mdi mdi-email-outline mx-0"></i>
-                <p class="notification-ripple notification-ripple-bg">
-                  <span class="ripple notification-ripple-bg"></span>
-                  <span class="ripple notification-ripple-bg"></span>
-                  <span class="ripple notification-ripple-bg"></span>
-                </p>
-              </a>
-              <div class="dropdown-menu dropdown-menu-right navbar-dropdown preview-list" aria-labelledby="messageDropdown">
-                <p class="mb-0 font-weight-normal float-left dropdown-header">Messages</p>
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <img src="https://via.placeholder.com/36x36" alt="image" class="profile-pic">
-                  </div>
-                  <div class="preview-item-content flex-grow">
-                    <h6 class="preview-subject ellipsis font-weight-normal">From Fortune
-                    </h6>
-                    <p class="font-weight-light small-text text-muted mb-0">
-                      please help put forward
-                    </p>
-                  </div>
-                </a>
-                
-                <a class="dropdown-item preview-item">
-                  <div class="preview-thumbnail">
-                    <img src="https://via.placeholder.com/36x36" alt="image" class="profile-pic">
-                  </div>
-                  <div class="preview-item-content flex-grow">
-                    <h6 class="preview-subject ellipsis font-weight-normal"> Johnson
-                    </h6>
-                    <p class="font-weight-light small-text text-muted mb-0">
-                     Frank is coming to the office
-                    </p>
-                  </div>
-                </a>
-              </div>
-            </li>
+            </li> -->
+           
+          
             <li class="nav-item nav-user-icon">
               <a class="nav-link" href="#">
               <img src="https://via.placeholder.com/37x37" alt="profile"/>
               </a>
             </li>
+
             <li class="nav-item nav-settings d-none d-lg-flex">
-              <a class="nav-link" href="#">
-              <i class="mdi mdi-dots-horizontal"></i>
+              <a class="nav-link" href="#" wire:click.prevent="logout" placeholder="Logout">
+              <i class="mdi mdi-power"></i>
               </a>
             </li>
         </ul>

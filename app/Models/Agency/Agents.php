@@ -4,6 +4,7 @@ namespace App\Models\Agency;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class Agents extends Model
 {
@@ -17,5 +18,13 @@ class Agents extends Model
 
     public function hasAgents() : hasMany {
         
+    }
+
+    /**
+     * Get the users for the agency.
+     */
+    public function users()
+    {
+        return $this->hasMany(User::class, 'agency');
     }
 }

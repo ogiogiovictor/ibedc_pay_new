@@ -16,7 +16,7 @@ class WalletUser extends Model
     protected $table = "wallet_users";
 
     protected $fillable = [
-        'user_id', 'wallet_amount' 
+        'user_id', 'wallet_amount' , 'commission_amount'
     ];
 
 

@@ -53,8 +53,8 @@ class AgencyCollection extends BaseAPIController
             $agencyAggreation = [
                 'collection_for_the_month' => $monthly,
                 'collection_for_today' => $today_transactions,
-                'monthly_target' => '',
-                'agency_monthly_target' =>  number_format($agencyMonthlyTarget->target_amount, 2),
+               // 'monthly_target' => 0,
+                'agency_monthly_target' =>  isset($agencyMonthlyTarget->target_amount) ? number_format($agencyMonthlyTarget->target_amount, 2) : 0,
             ];
 
 

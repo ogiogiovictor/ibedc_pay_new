@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use Mail;
 use App\Mail\PrePaidPaymentMail;
 use App\Models\ECMI\EcmiPayments;
+use Illuminate\Support\Facades\Auth;
 
 
 class PrepaidLookUp extends Command
@@ -79,18 +80,19 @@ class PrepaidLookUp extends Command
                             $paymentData[] = $data;
                           
                              $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
-                                 'status' => $newResponse['status'] == "true" ?  'success' : 'failed', //"resp": "00",
+                                // 'status' => $newResponse['status'] == "true" ?  'success' : 'failed', //"resp": "00",
+                                 'status' => 'success',
                                  'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] : $newResponse['data']['recieptNumber'],
                                  'Descript' =>  isset($newResponse['message']) ? $newResponse['message']."-".$newResponse['transactionReference'] : $newResponse['transaction_status']."-".$newResponse['transactionReference'],
                                 'units' => isset($newResponse['Units']) ? $newResponse['Units'] : $newResponse['data']['Units'], 
-                                'minimumPurchase' => $newResponse['customer']['minimumPurchase'],
-                                'tariffcode'  => $newResponse['customer']['tariffcode'],
-                                'customerArrears' => $newResponse['customer']['customerArrears'],
-                                'tariff' => $newResponse['customer']['tariff'],
-                                'serviceBand' => $newResponse['customer']['serviceBand'],
-                                'feederName' => $newResponse['customer']['feederName'],
-                                'dssName' => $newResponse['customer']['dssName'],
-                                'udertaking' => $newResponse['customer']['undertaking'],
+                                'minimumPurchase' => isset($newResponse['customer']['minimumPurchase']) ? $newResponse['customer']['minimumPurchase'] : '',
+                                'tariffcode'  => isset($newResponse['customer']['tariffcode']) ? $newResponse['customer']['tariffcode'] : '',
+                                'customerArrears' => isset($newResponse['customer']['customerArrears']) ? $newResponse['customer']['customerArrears'] : '',
+                                'tariff' => isset($newResponse['customer']['tariff']) ? $newResponse['customer']['tariff'] : '',
+                                'serviceBand' => isset($newResponse['customer']['serviceBand']) ? $newResponse['customer']['serviceBand'] : '',
+                                'feederName' => isset($newResponse['customer']['feederName']) ? $newResponse['customer']['feederName'] : '',
+                                'dssName' => isset($newResponse['customer']['dssName']) ? $newResponse['customer']['dssName'] : '',
+                                'udertaking' => isset($newResponse['customer']['undertaking']) ? $newResponse['customer']['undertaking'] : '',
                                 'VAT' =>  EcmiPayments::where("transref", $newResponse['transactionReference'])->value('VAT'),
                                 'costOfUnits' => EcmiPayments::where("transref", $newResponse['transactionReference'])->value('CostOfUnits'),
                              ]);
@@ -129,7 +131,8 @@ class PrepaidLookUp extends Command
                                 "payreference" => $paymentLog->transaction_id,
                             ];
     
-                             Mail::to($paymentLog->email)->send(new PrePaidPaymentMail($emailData));
+                            $user = Auth::user();
+                            Mail::to($user->email)->cc($paymentLog->email)->send(new PrePaidPaymentMail($emailData));
      
                             return $newResponse;
                           }

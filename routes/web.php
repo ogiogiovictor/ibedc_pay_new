@@ -37,6 +37,8 @@ Route::get('/login', Login::class)->name('login');
 
 Route::middleware(['auth', 'check_access'])->group(function () {
 
+    Route::middleware('auth:sanctum')->group(function() {
+
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/transactions', Transactions::class)->name('transactions');
     Route::get('/transaction_details/{transaction_id}', TransactionDetails::class)->name('transaction_details');
@@ -53,6 +55,15 @@ Route::middleware(['auth', 'check_access'])->group(function () {
     Route::get('/add_target/{id}', AddAgencyTarget::class)->name('add_target');
     Route::get('/agency_transaction/{id}', AgenctTransactions::class)->name('agency_transaction');
     Route::get('/complaints', Complaints::class)->name('complaints');
-    Route::get('/agency_dashboard', AgencyDashboard::class)->name('agency_dashboard');
     Route::get('/view_complaints/{id}', ViewComplains::class)->name('view_complaints');
+
+    Route::middleware(['auth', 'agency_access'])->group(function () { 
+        Route::get('/agency_dashboard', AgencyDashboard::class)->name('agency_dashboard');
+    });
+   
+
+  });
+
 });
+
+

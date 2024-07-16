@@ -65,12 +65,12 @@ class VerifyFCMBTransaction extends Command
                     }
 
                     if ($fcmbResponse['data']['transactionStatus'] == "Success") {
-                        $update = PaymentTransactions::where("transaction_id", $this->checkTrans->transaction_id)->update([
-                            'providerRef' => $fcmbResponse['data']['transactionRef'],
-                            'Descript' => $fcmbResponse['data']['transactionStatus'],
-                            'response_status' => 1,
-                            'provider' => $this->request->provider,
-                        ]);
+                        // $update = PaymentTransactions::where("transaction_id", $this->checkTrans->transaction_id)->update([
+                        //     'providerRef' => $fcmbResponse['data']['transactionRef'],
+                        //     'Descript' => $fcmbResponse['data']['transactionStatus'],
+                        //     'response_status' => 1,
+                        //     'provider' => $this->request->provider,
+                        // ]);
             
                         \Log::info('Successful: ' . json_encode($fcmbResponse));
                       return $fcmbResponse;

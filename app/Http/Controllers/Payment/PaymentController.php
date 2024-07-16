@@ -39,7 +39,7 @@ class PaymentController extends BaseAPIController
     }
 
     public function store(PaymentRequest $request){
-
+       // return $this->sendError("System Maintenance", ' We are Updating our system , please try again later', Response::HTTP_BAD_REQUEST); 
     
         try{
 
@@ -147,6 +147,7 @@ class PaymentController extends BaseAPIController
     ///////////////////////////////// CREATE PREPAID PAYMENT ////////////////////////////////
     public function createPrePaidPayment($request){
 
+
         $checkRequest = $request->MeterNo;
 
         if(!$checkRequest){
@@ -219,7 +220,7 @@ class PaymentController extends BaseAPIController
         try{
 
             $payment = $this->transaction->store([
-                'email' => isset($request->email) ? $request->email : $this->user->index($auth->id)[0]->email,
+                'email' => isset($request->email) ? str_replace(' ', '', $request->email) : $this->user->index($auth->id)[0]->email,
                 'transaction_id' => $transactionID,
                 'phone' => isset($request->phone) ? $request->phone : $this->user->index($auth->id)[0]->phone,
                 'amount' => (float)$request->amount,

@@ -44,7 +44,7 @@ class RegisterController extends BaseAPIController
         $pin = strval(rand(100000, 999999));
         $user->update(['pin' => $pin]);
 
-        isset($request->authority) ? $user->assignRole($request->authority) : '';
+        isset($request->authority) ? $user->assignRole(strtolower($request->authority)) : '';
 
         //dispatch a welcome email to the user
         dispatch(new RegistrationJob($user));

@@ -266,9 +266,26 @@ class LoginController extends BaseAPIController
      
             if($request->account_type == 'Prepaid'  || $request->account_type == 'prepaid') {
 
+                 // Extract the provided email or use a default email if not available
+             $email = isset($getResponse->EMail) ? $getResponse->EMail : "default-".$transactionID."@ibedc.com";
+
+             // Check if the email already exists in the users table
+            if (User::where('email', $email)->exists()) {
+                // If the email exists, generate a unique default email
+                $email = "default-".$transactionID."@ibedc.com";
+                
+                // Add a counter to ensure the generated email is unique
+                // $counter = 1;
+                // while (User::where('email', $email)->exists()) {
+                //     $email = "default-".$transactionID."-".$counter."@ibedc.com";
+                //     $counter++;
+                // }
+            }
+            
+
                 $addCustomer  = User::create([
-                    'name' => str_replace(' ', '', $getResponse->Surname). " ". $getResponse->OtherNames,
-                    'email' => isset($getResponse->EMail) ? $getResponse->EMail :  "default-".$transactionID."@ibedc.com",
+                    'name' => $getResponse->Surname. " ". $getResponse->OtherNames,
+                    'email' => $email, // isset($getResponse->EMail) ? $getResponse->EMail :  "default-".$transactionID."@ibedc.com",
                     'status' => 1,
                     'meter_no_primary' => $getResponse->MeterNo,
                     'account_type' => $request->account_type,
@@ -289,6 +306,19 @@ class LoginController extends BaseAPIController
                     ], 'LOGIN SUCCESSFUL', Response::HTTP_OK);
                 }
             } else {
+
+
+                  // Check if the phone number exists and handle it accordingly
+                $checkPhone = User::where("phone", $getResponse->Mobile)->first();
+
+                if ($checkPhone) {
+                    // If phone already exists, generate a new unique phone number
+                    $newPhone = $this->generateUniquePhone($getResponse->Mobile);
+                } else {
+                    // Use the provided phone number or generate if not available
+                    $newPhone = $getResponse->Mobile ?? $this->generatePhone();
+                }
+
                 //The account is a postpaid account
                 $addCustomer  = User::create([
                     'name' => str_replace(' ', '', $getResponse->Surname). " ". $getResponse->FirstName,
@@ -297,7 +327,7 @@ class LoginController extends BaseAPIController
                     'meter_no_primary' => $getResponse->AccountNo,
                     'account_type' => $request->account_type,
                     'password' => $transactionID,
-                    'phone' => "0".$getResponse->Mobile ?: $getResponse->Mobile,
+                    'phone' => $newPhone, // "0".$getResponse->Mobile ?: $getResponse->Mobile,
                     'pin' => 0
                 ]);
 
@@ -321,5 +351,24 @@ class LoginController extends BaseAPIController
 
         
     }
+
+
+
+    private function generateUniquePhone($basePhone)
+    {
+        $counter = 1;
+        $newPhone = $basePhone;
+
+        // Loop to generate a unique phone number
+        while (User::where('phone', $newPhone)->exists()) {
+            $newPhone = $basePhone .  $counter;
+
+            $counter++;
+        }
+
+        return $newPhone;
+    }
+
+
 
 }

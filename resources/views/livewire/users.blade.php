@@ -26,16 +26,30 @@
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
                             <h4 class="card-title">All Users</h4>
-                            <div class="dropdown dropleft card-menu-dropdown">
-                              <button class="btn p-0" type="button" id="dropdown12" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <i class="mdi mdi-dots-vertical card-menu-btn"></i>
-                              </button>
-                              <div class="dropdown-menu" aria-labelledby="dropdown12" x-placement="left-start">
-                                <a class="dropdown-item" href="#">Pending</a>
-                                <a class="dropdown-item" href="#">Processing</a>
-                                <a class="dropdown-item" href="#">Successful</a>
+
+                            <form class="form-inline justify-content-end" wire:submit.prevent="searchUser">
+                             
+                              <div class="form-group mr-2">
+                                <label for="selectOption" class="mr-2">Select:</label>
+                                <select class="form-control" id="selectOption" wire:model="clearOption">
+                                  <option value="">Select</option>
+                                  <option value="email">Email</option>
+                                  <option value="name">Customer Name</option>
+                                  <option value="phone">Customer Phone</option>
+                                  <option value="meter_no_primary">Meter/Account No</option>
+                                </select>
+                              </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                              <div class="form-group mr-2">
+                                <label for="inputField" class="mr-2">Enter Value:</label>
+                                <input type="text" class="form-control" wire:model="clearValue" id="inputField" placeholder="Enter value">
                               </div>
-                            </div>
+                              <button type="submit" class="btn btn-md btn-primary">Search</button>&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
+                              @if (session()->has('error'))
+                                <div class="alert alert-danger">{{ session('error') }}</div>
+                              @endif
+                            </form>
+
+                            
                           </div>
                           <div class="table-responsive">
                             <table class="table center-aligned-table">
@@ -80,9 +94,7 @@
                                   
                                   </td>
                                   <td>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-grease-pencil"></i></a>
-                                    <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-delete"></i></a>
+                                    <a href="/view_user/{{ $user['id'] }}" class="mr-1 p-2 btn btn-xs btn-primary">View</a>
                                   </td>
                                 </tr>
 

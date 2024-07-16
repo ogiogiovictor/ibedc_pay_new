@@ -23,17 +23,24 @@ class Login extends Component
             // Authentication successful
             $user = Auth::user();
 
+           
+
             if($user->status != 1) {
                 Auth::logout();
                 session()->flash('error', 'Your account is not active. Please contact the administrator.');
                 return redirect()->back();
             }
 
+          
+
             if ($user->isSuperAdmin() || $user->isAdmin() || $user->isManager() || $user->isSupervisor() 
-            || $user->isAgent() || $user->isPaymentChannel() || $user->isManager()  || $user->isSupervisor() ) {
+            || $user->isPaymentChannel() || $user->isManager() ) {
                 // Redirect admin user to the dashboard
                 return redirect()->route('dashboard');
+
             } else if($user->isAgencyAdmin()) {
+
+                session()->flash('success', 'You are successfully loggedIn');
 
                 return redirect()->route('agency_dashboard');
                 

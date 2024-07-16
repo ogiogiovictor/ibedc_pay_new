@@ -84,6 +84,8 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
          ///////////////////////// PAYMENT INITIATION FOR POSTPAID | PREPAID //////////////////
          Route::group(['prefix' => 'history'], function () {  
             Route::get('get-history', [PaymentHistory::class, 'getHistory']);
+            Route::get('other-history', [PaymentHistory::class, 'getOtherHistory']);
+            Route::get('get-bill-history', [PaymentHistory::class, 'getBillHistory']);
         });
 
          ///////////////////////// OUTSTANDING BALANCE | PREPAID //////////////////

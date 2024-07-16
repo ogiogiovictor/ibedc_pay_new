@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:payment-look-up')->everyTwoMinutes();
         $schedule->command('app:verifyfcmb-transaction')->everyTwoMinutes();
         $schedule->command('app:clean-log')->dailyAt('02:00');
+        $schedule->command('app:failed-transactions')->everyFiveMinutes();
       //  $schedule->command('telescope:prune')->daily();
         
        //Enable task scheduler logging

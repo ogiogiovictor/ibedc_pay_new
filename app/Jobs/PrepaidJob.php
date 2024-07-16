@@ -53,7 +53,8 @@ class PrepaidJob implements ShouldQueue
         $checkifTokenExist = PaymentTransactions::where("transaction_id", $this->payment['transaction_id'])->first();
 
 
-        if($checkifTokenExist->status == 'processing' && $checkifTokenExist->providerRef != "" && $checkifTokenExist->receiptno == 'NULL' ){
+        //if($checkifTokenExist->status == 'processing' && $checkifTokenExist->providerRef != "" && $checkifTokenExist->receiptno == 'NULL' ){
+        if($checkifTokenExist->status == 'processing' && $checkifTokenExist->providerRef != ""){
 
             $response = Http::withoutVerifying()->withHeaders([
                 'Authorization' => env('MIDDLEWARE_TOKEN'),
@@ -61,6 +62,7 @@ class PrepaidJob implements ShouldQueue
 
             $newResponse =  $response->json();
 
+            Log::info('INITIAL RESPONSE: - ', ['Response from ecmi' =>    $newResponse ]);
            
                 //Post to Middleware and confirm succesful status
                 if (isset($newResponse['status']) && $newResponse['status'] == "true") 
@@ -68,18 +70,19 @@ class PrepaidJob implements ShouldQueue
 
                     //$newResponse['transactionReference']
                     $update = PaymentTransactions::where("transaction_id", $this->payment['transaction_id'])->update([
-                        'status' => $newResponse['status'] == "true" ?  'success' : 'failed', //"resp": "00",
+                        //'status' => $newResponse['status'] == "true" ?  'success' : 'failed', //"resp": "00",
+                        'status' => 'success',
                         'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] : $newResponse['data']['recieptNumber'],  //Carbon::now()->format('YmdHis').time()
-                        'Descript' =>  isset($newResponse['message']) ? $newResponse['message'] : $newResponse['transactionStatus'],
+                        'Descript' =>  isset($newResponse['message']) ? $newResponse['message'] :  '', //$newResponse['transactionStatus'],
                         'units' => isset($newResponse['Units']) ? $newResponse['Units'] : $newResponse['data']['Units'], 
-                        'minimumPurchase' => $newResponse['customer']['minimumPurchase'],
-                        'tariffcode'  => $newResponse['customer']['tariffcode'],
-                        'customerArrears' => $newResponse['customer']['customerArrears'],
-                        'tariff' => $newResponse['customer']['tariff'],
-                        'serviceBand' => $newResponse['customer']['serviceBand'],
-                        'feederName' => $newResponse['customer']['feederName'],
-                        'dssName' => $newResponse['customer']['dssName'],
-                        'udertaking' => $newResponse['customer']['undertaking'],
+                        'minimumPurchase' => isset($newResponse['customer']['minimumPurchase']) ? $newResponse['customer']['minimumPurchase'] : '',
+                        'tariffcode'  => isset($newResponse['customer']['tariffcode']) ? $newResponse['customer']['tariffcode'] : '',
+                        'customerArrears' => isset($newResponse['customer']['customerArrears']) ? $newResponse['customer']['customerArrears'] : '',
+                        'tariff' => isset($newResponse['customer']['tariff']) ? $newResponse['customer']['tariff'] :  '',
+                        'serviceBand' => isset($newResponse['customer']['serviceBand']) ? $newResponse['customer']['serviceBand'] : '',
+                        'feederName' => isset($newResponse['customer']['feederName']) ? $newResponse['customer']['feederName'] : '',
+                        'dssName' => isset($newResponse['customer']['dssName']) ? $newResponse['customer']['dssName'] : '',
+                        'udertaking' => isset($newResponse['customer']['undertaking']) ? $newResponse['customer']['undertaking'] : '',
                         'VAT' =>  EcmiPayments::where("transref", $newResponse['transactionReference'])->value('VAT'),
                         'costOfUnits' => EcmiPayments::where("transref", $newResponse['transactionReference'])->value('CostOfUnits'),
                     ]);
@@ -100,7 +103,8 @@ class PrepaidJob implements ShouldQueue
                          "type" => 0,
                          "routing" => 3,
                      ];
- 
+                     
+                     // $iresponse = Http::asForm()->post($baseUrl, $smsdata);
                      Log::info('NULL RESPONSE: - ', ['SMS Response' =>    $smsdata ]);
 
                      $emailData = [
@@ -115,11 +119,26 @@ class PrepaidJob implements ShouldQueue
                     Log::info('TOKEN SENT: : - ', ['Generated Successfully' =>     $smsdata ]);
 
                     $user = Auth::user();
-                    Mail::to($user->email)->send(new PrePaidPaymentMail($emailData));
+                   // Mail::to($this->payment['email'])->send(new PrePaidPaymentMail($emailData));
+                    
+                   $iresponse = Http::asForm()->post($baseUrl, $smsdata);
 
-                    $iresponse = Http::asForm()->post($baseUrl, $smsdata);
+                    $email_other = $this->payment['email'];
+                    
+                    if(isset($user->email) && $user->email != "" &&  $user->email != "null"){
+                        Mail::to($user->email)->send(new PrePaidPaymentMail($emailData));
+                    }
+                   
+                    if(isset($email_other) && $email_other != "" ) {
+                        Mail::to($email_other)->send(new PrePaidPaymentMail($emailData));
+                    }
+                   
+
+                    Log::info('EMAIL SENT TO USER: - ', ['EMAIL SENT TO USER WITH COPY' =>  $data, 'USER eMAIL ' =>  $user->email ]);
+
+                   
                     //Send a Successfully Mail to user
-                   // Mail::to($this->payment['email'])->send(new PrePaidPaymentMail($emailData);
+                  //  Mail::to($this->payment['email'])->send(new PrePaidPaymentMail($emailData));
 
 
                 } else {

@@ -42,10 +42,20 @@ $user = auth()->user();
                                 <a  href="/transactions"  wire:navigate class="nav-link" id="users-tab" data-toggle="tab" href="#" role="tab" aria-controls="users" aria-selected="false">Transactions</a>
                                 </li>
                                 @endcan
+
+                            
                                 
+                                @can('super_admin') 
                                 <li class="nav-item">
                                 <a  href="/log_transactions"  wire:navigate class="nav-link" id="users-tab" data-toggle="tab" href="#" role="tab" aria-controls="users" aria-selected="false">Transactions - (v1)</a>
                                 </li>
+                                @endcan
+
+                                @can('payment_channel') 
+                                <li class="nav-item">
+                                <a  href="/log_transactions"  wire:navigate class="nav-link" id="users-tab" data-toggle="tab" href="#" role="tab" aria-controls="users" aria-selected="false">IBEDC Transactions - (v1)</a>
+                                </li>
+                                @endcan
 
                                 @can('super_admin')
                                 <li class="nav-item">

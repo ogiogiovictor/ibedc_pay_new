@@ -31,13 +31,14 @@ class PaymentLookUp extends Command
     {
         try {
 
-            $this->info('***** FLUTTERWAVE VERIFY DAILY PAYMENT API :: Lookup Started *************');
+            $this->info('***** FLUTTERWAVE VERIFY DAILY PAYMENT API :: Lookup Initiated --- *************');
 
             $today = now()->toDateString();
 
+            //$checkTransaction = PaymentTransactions::whereIn('status', ['started', 'processing'])
             $checkTransaction = PaymentTransactions::whereDate('created_at', $today)
-            ->whereIn('status', ['started', 'processing'])
-            ->chunk(10, function ($paymentLogs) use (&$paymentData) {
+             ->whereIn('status', ['started', 'processing'])
+            ->chunk(5, function ($paymentLogs) use (&$paymentData) {
 
                 foreach ($paymentLogs as $paymentLog) {
         
@@ -51,37 +52,45 @@ class PaymentLookUp extends Command
                     $iresponse = Http::post($flutterUrl, $flutterData);
                     $flutterResponse = $iresponse->json(); 
 
-                    if ($flutterResponse['status'] == "success" && $flutterResponse['data']['status'] == 'successful') {
+                    $this->info('***** FLUTTERWAVE Processing Payments *************');
 
-                        if($paymentLog->status == "processing") {
+                    \Log::info("BEFORE PAYMENT LOOKUP ". json_encode($flutterResponse));
+
+                    if (isset($flutterResponse['status']) && $flutterResponse['status'] == "success" && isset($flutterResponse['data']['status']) && $flutterResponse['data']['status'] == 'successful') {
+
+                        if ($paymentLog->status == "processing") {
                             $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                                 'providerRef' => $flutterResponse['data']['flwref'],
-                                //'status' => 'processing'
                             ]);
-                        }else if($paymentLog->status == "started") {
+                            $this->info('***** FLUTTERWAVE Verification Was Successful *************');
+
+                        } else if ($paymentLog->status == "started") {
                             $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                                 'providerRef' => $flutterResponse['data']['flwref'],
                                 'status' => 'processing'
                             ]);
-                        }else {
-
-                            \Log::info("We don't know the status ". json_encode($flutterResponse));
+                            $this->info('***** FLUTTERWAVE Transaction is set to processing *************');
+                        } else {
+                            $this->info('***** FLUTTERWAVE Verification failed or unknown *************');
+                            \Log::info("We don't know the status " . json_encode($flutterResponse));
                         }
-                        
-                        $this->info('***** FLUTTERWAVE Verification Was Successful *************');
-                        \Log::info("payment Reference Updated Successfully ". json_encode($flutterResponse));
-
-                    } else if($flutterResponse['status'] == "success" && $flutterResponse['data']['status'] == 'failed') { 
+    
+                       
+                       // \Log::info("payment Reference Payload " . json_encode($flutterResponse));
+    
+                    } elseif (isset($flutterResponse['status']) && isset($flutterResponse['data']['status']) && $flutterResponse['data']['status'] == 'failed') {
+    
                         $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                             'providerRef' => $flutterResponse['data']['flwref'],
                             'status' => 'failed'
                         ]);
-
                         // Send Failed Response to Customer
-                    }else {
-                        $this->info('***** FLUTTERWAVE Verification Was Failed *************');
-                        \Log::error("Payment Error : No LookUp ". json_encode($flutterResponse));
                     }
+    
+                    \Log::error("Payment Response" . json_encode($flutterResponse));
+
+
+                   
                 }
 
             });
@@ -92,6 +101,7 @@ class PaymentLookUp extends Command
         }catch(\Exception $e){
             $this->info('***** ERROR PROCESSING PAYMENT :: Error Processing and updating payments *************');
             Log::error('Error in Payment LookUp: ' . $e->getMessage());
+            //Log::error('Error Response: ' . json_encode($flutterResponse));
         }
     }
 }

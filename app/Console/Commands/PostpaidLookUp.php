@@ -76,7 +76,7 @@ class PostpaidLookUp extends Command
                         $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                             'response_status' => 1,
                             'status' =>  'success',
-                            'receiptno' =>  Carbon::now()->format('YmdHis'),
+                            'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] :  '', //Carbon::now()->format('YmdHis'),
                         ]);
                         dispatch(new PostPaidJob($paymentLog));
                         \Log::info('Postpaid Payment Successfuly: ' . json_encode($newResponse));

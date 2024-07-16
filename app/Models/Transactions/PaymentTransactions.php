@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\User;
 
 class PaymentTransactions extends Model
 {
@@ -84,6 +85,11 @@ class PaymentTransactions extends Model
         return $this->whereDate('created_at', $today)
                 ->whereIn('status', ['success', 'processing'])
                 ->count();
+    }
+
+    public function userTransactions() {
+
+        return $this->belongsTo(User::class, "id");
     }
 }
 

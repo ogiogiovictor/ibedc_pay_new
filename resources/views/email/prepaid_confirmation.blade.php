@@ -320,13 +320,13 @@
                           <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                             <tbody>
                               <tr>
-                                <td> <h3>Transaction Reference  {{ $transaction_id }}</h3> </td>
+                                <td> <h3>Transaction Reference  {{ $payreference }}</h3> </td>
                               </tr>
                               <tr>
                                 <td> <h3>Token Number  {{ $token }}</h3> </td>
                               </tr>
                               <tr>
-                                <td> <h3>Amount  {{ $amount }}</h3> </td>
+                                <td> <h3>Amount ₦{{ number_format($amount, 2) }}</h3> </td>
                               </tr>
                               <tr>
                                 <td> <p>With this token, you now have the power to efficiently manage your energy consumption. Simply input the token into your meter to top up your prepaid balance and enjoy uninterrupted access to electricity.<br/></p> </td>

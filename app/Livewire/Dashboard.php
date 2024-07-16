@@ -8,6 +8,8 @@ use App\Models\User;
 use App\Models\ContactUs;
 use App\Models\Transactions\PayTransactions;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
+use App\Enums\RoleEnum;
 
 class Dashboard extends Component
 {
@@ -25,6 +27,18 @@ class Dashboard extends Component
 
     public function mount()
     {
+
+        $user = Auth::user();
+
+        if($user->authority == (RoleEnum::agency_admin()->value )) {
+          //redirect to agency dashboard
+          return redirect()->route('agency_dashboard');
+        } 
+
+        if($user->authority == (RoleEnum::user()->value)  || $user->authority == (RoleEnum::supervisor()->value) ) {
+           abort(403, 'Unathorized action.');
+        } 
+
         $today = now()->toDateString();
         $startDate = now()->startOfMonth()->toDateString();
         $endDate = now()->endOfMonth()->toDateString();
