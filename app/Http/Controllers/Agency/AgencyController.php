@@ -22,23 +22,43 @@ class AgencyController extends BaseAPIController
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-      //  $user = auth()->user();
+      
+       $account_number = $request->query('account_number');
+       $MeterNo = $request->query('MeterNo');
+       $agency = $request->query('agency');
 
         $user = Auth::user();
 
+      
+        $query = PaymentTransactions::query();
+
+        // Add filters based on query parameters
+        if ($account_number) {
+            $query->where('account_number', $account_number);
+        }
+        if ($MeterNo) {
+            $query->where('MeterNo', $MeterNo);
+        }
+        if ($agency) {
+            $query->where('agency', $agency);
+        }
+
+        // if ($agency !== null) {
+        //     $query->where('agency', $agency);
+        // }
+    
+        // Additional filtering based on user role
         if ($user->authority == RoleEnum::super_admin()->value || $user->authority == RoleEnum::admin()->value) {
             $getAgency = Agents::with('users')->get();
-            //$agencyPayments = User::with('paymentTransactions')->get();
-            $agencyPayments = PaymentTransactions::paginate(20);
-
+            // Order by creation date and paginate results
+            $agencyPayments = $query->orderby("created_at", "desc")->paginate(30);
         } elseif ($user->authority == RoleEnum::agency_admin()->value) {
-            
             $getAgency = Agents::where('id', $user->agency)->with('users')->get();
-           // $agencyPayments = User::where('agency', $user->agency_id)->with('paymentTransactions')->get();
-           $agencyPayments = PaymentTransactions::where('agency', $user->agency)->paginate(20);
-        } 
+            // Filter transactions by the user's agency and paginate results
+            $agencyPayments = $query->where('agency', $user->agency)->orderby("created_at", "desc")->paginate(30);
+        }
 
         return $this->sendSuccess([
             'payload' => [
@@ -113,7 +133,7 @@ class AgencyController extends BaseAPIController
 
     public function authenticate(LoginRequest $request){
 
-        if (!isset($request->authority) || $request->authority != "agent") {
+        if (!isset($request->authority) &&  $request->authority != "agent") {
             return $this->sendError('User do not have access to this app', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
     
@@ -137,12 +157,14 @@ class AgencyController extends BaseAPIController
         if (Auth::attempt($validatedData)) {
             // Authentication passed...
             $user = Auth::user();
+
            
             // You can customize the response based on your needs
             return $this->sendSuccess([
                 'user' => $user,
                 'token' => $user->createToken('Authorization')->plainTextToken,
-               // 'wallet' => $user->wallet,
+                'agency' => $user->agency ? Agents::where('id', $user->agency)->first() : 0, // Include the agency agent_name
+                'wallet' => $user->wallet,
               //  'account' => $user->virtualAccount,
             ], 'LOGIN SUCCESSFUL', Response::HTTP_OK);
         }

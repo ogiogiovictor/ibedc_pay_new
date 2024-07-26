@@ -77,6 +77,18 @@ class PostpaidLookUp extends Command
                             'response_status' => 1,
                             'status' =>  'success',
                             'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] :  '', //Carbon::now()->format('YmdHis'),
+
+                            'Descript' =>  isset($newResponse['message']) ? $newResponse['message'] :  '',
+                            'units' => isset($newResponse['Units']) ? $newResponse['Units'] : '0', 
+
+                            'minimumPurchase' => isset($newResponse['customer']['minimumPurchase']) ? $newResponse['customer']['minimumPurchase'] : '',
+                            'tariffcode'  => isset($newResponse['customer']['tariffcode']) ? $newResponse['customer']['tariffcode'] : '',
+                            'customerArrears' => isset($newResponse['customer']['customerArrears']) ? $newResponse['customer']['customerArrears'] : '',
+                        
+                            'udertaking' => isset($newResponse['customer']['businessUnitId']) ? $newResponse['customer']['businessUnitId'] : '',
+
+                            
+
                         ]);
                         dispatch(new PostPaidJob($paymentLog));
                         \Log::info('Postpaid Payment Successfuly: ' . json_encode($newResponse));

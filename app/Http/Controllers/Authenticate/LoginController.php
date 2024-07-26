@@ -15,10 +15,13 @@ use App\Jobs\PinJob;
 use App\Models\EMS\ZoneCustomers;
 use App\Models\ECMI\EcmiCustomers;
 use App\Helpers\StringHelper;
+use App\Services\AppService;
 
 
 class LoginController extends BaseAPIController
 {
+
+   
     /**
      * Display a listing of the resource.
      */
@@ -41,11 +44,18 @@ class LoginController extends BaseAPIController
     public function store(LoginRequest $request)
     {
 
+
+        $checkService = (new AppService)->processApp("System");
+
+        if ($checkService instanceof \Illuminate\Http\JsonResponse) {
+            return $checkService; // Return the downtime error response
+        }
+
         $user_status = User::where("email", $request->email)->first();
 
         if(!$user_status) {
             // User not found with the provided email
-            return $this->sendError('User not found', 'ERROR', Response::HTTP_NOT_FOUND);
+            return $this->sendError('User not found', 'ERROR!!!', Response::HTTP_NOT_FOUND);
         }
         
 
@@ -92,6 +102,12 @@ class LoginController extends BaseAPIController
     }
 
     public function authLogin(AccountLoginRequest $request){
+
+        $checkService = (new AppService)->processApp("System");
+
+        if ($checkService instanceof \Illuminate\Http\JsonResponse) {
+            return $checkService; // Return the downtime error response
+        }
 
         //Check if the meter is already mapped with the user
         $checkifExist = User::where("meter_no_primary", $request->meter_no)->first();
@@ -207,6 +223,12 @@ class LoginController extends BaseAPIController
 
 
     public function authLoginTest(AccountLoginRequest $request){
+
+        $checkService = (new AppService)->processApp("System");
+
+        if ($checkService instanceof \Illuminate\Http\JsonResponse) {
+            return $checkService; // Return the downtime error response
+        }
 
         $getResponse = $this->checkWhichType($request->account_type, $request->meter_no);
 

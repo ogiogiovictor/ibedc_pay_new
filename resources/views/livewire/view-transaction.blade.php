@@ -162,7 +162,7 @@
 
                                     @can('super_admin')
                                         @if (!$transactions->receiptno && $transactions->account_type == 'Prepaid' && $transactions->status != 'failed')
-                                            <button wire:click="processTransaction({{ $transactions->id }})" class="btn btn-xs btn-danger">Resync</button>
+                                            <!-- <button wire:click="processTransaction({{ $transactions->id }})" class="btn btn-xs btn-danger">Resync</button> -->
                                         @endif
 
                                     @endcan

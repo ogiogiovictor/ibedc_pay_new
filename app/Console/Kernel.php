@@ -16,10 +16,12 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:prepaid-look-up')->everyMinute();
         $schedule->command('app:postpaid-look-up')->everyTwoMinutes();
         $schedule->command('app:payment-look-up')->everyTwoMinutes();
-        $schedule->command('app:verifyfcmb-transaction')->everyTwoMinutes();
+       // $schedule->command('app:verifyfcmb-transaction')->everyTwoMinutes();
         $schedule->command('app:clean-log')->dailyAt('02:00');
         $schedule->command('app:failed-transactions')->everyFiveMinutes();
-      //  $schedule->command('telescope:prune')->daily();
+        $schedule->command('app:postpaid-error-fix')->everyFiveMinutes();
+        $schedule->command('app:prepaid-error-fix')->everyFiveMinutes();
+      //  $schedule->command('telescope:prune')->daily();  app:prepaid-error-fix
         
        //Enable task scheduler logging
        $schedule->exec('echo "Task Scheduler Ran: $(data)" >> /var/www/html/IBEDCPAY/storage/logs/scheduler.log')->everyMinute();

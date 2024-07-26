@@ -59,7 +59,7 @@ class PaymentHistory extends BaseAPIController
 
         $user = Auth::user();
 
-        $ZoneBills = ZoneBills::where('AccountNo', $user->meter_no_primary)->paginate(10);
+        $ZoneBills = ZoneBills::where('AccountNo', $user->meter_no_primary)->orderby("Billdate", "desc")->paginate(10);
 
         if(empty($ZoneBills)) {
             return "Please update your profile and map the correct Account No ". $user->meter_no_primary;

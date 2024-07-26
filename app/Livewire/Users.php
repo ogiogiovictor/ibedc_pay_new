@@ -21,8 +21,8 @@ class Users extends Component
 
             $this->users = User::where("agency", $user->agency)->orderby("id", "desc")->paginate(15)->toArray();
 
-        }else if($user->authority != (RoleEnum::super_admin()->value || RoleEnum::admin()->value)) {
-            $this->users = User::orderby("id", "desc")->paginate(15)->toArray();
+        }else if($user->authority == (RoleEnum::super_admin()->value || RoleEnum::admin()->value)) {
+            $this->users = User::orderby("id", "desc")->paginate(30)->toArray();
         } else {
             abort('403', "You do not have access to this resource");
         }

@@ -53,8 +53,8 @@ class TransactionDetails extends Component
 
         //dd($iresponse);
 
-        //if ($flutterResponse['status'] == "success" && $flutterResponse['data']['status'] == 'successful' ) {
-        if (isset($flutterResponse['status']) && $flutterResponse['status'] == "success" && isset($flutterResponse['data']['status']) && $flutterResponse['data']['status'] == 'successful') {
+        if (isset($flutterResponse['status']) && $flutterResponse['status'] == "success" && $flutterResponse['data']['status'] == 'successful' ) {
+       // if (isset($flutterResponse['status']) && $flutterResponse['status'] == "success" && isset($flutterResponse['data']['status']) && $flutterResponse['data']['status'] == 'successful') {
 
 
             $update = PaymentTransactions::where("transaction_id", $this->transactions->transaction_id)->update([
@@ -68,7 +68,7 @@ class TransactionDetails extends Component
             if(isset($flutterResponse['data']['message'])) {
                 Session::flash('error', $flutterResponse['data']['message']);
             } else {
-                Session::flash('error', isset($flutterResponse['data']['status']) ? $flutterResponse['data']['status'] : $flutterResponse);
+                Session::flash('error', isset($flutterResponse['data']['status']) ? $flutterResponse['data']['status'] : $iresponse);
             }
            
             
@@ -78,6 +78,7 @@ class TransactionDetails extends Component
 
 
     public function processTransaction($id){
+        
         
         $this->transactions = PaymentTransactions::where("id", $id)->first();
 

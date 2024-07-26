@@ -58,6 +58,7 @@ class ViewTransaction extends Component
 
     public function processTransaction($id){
         
+        return;
         $this->transactions = PayTransactions::where("id", $id)->first();
 
         if(!$this->transactions->providerRef) { 
@@ -100,7 +101,8 @@ class ViewTransaction extends Component
             $update = PayTransactions::where("transaction_id", $this->transactions->transaction_id)->update([
                 'status' => $newResponse['status'] == "true" ?  'success' : 'failed', //"resp": "00",
                 'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] : $newResponse['data']['recieptNumber'],
-                'Descript' =>  isset($newResponse['message']) ? $newResponse['message']."-".$newResponse['transactionReference'] : $newResponse['transaction_status']."-".$newResponse['transactionReference'],
+                'Descript' =>  isset($newResponse['message']) ? $newResponse['message'] : 'Successful',
+               // 'Descript' =>  isset($newResponse['message']) ? $newResponse['message']."-".$newResponse['transactionReference'] : $newResponse['transaction_status']."-".$newResponse['transactionReference'],
             ]);
 
              //Send SMS to User

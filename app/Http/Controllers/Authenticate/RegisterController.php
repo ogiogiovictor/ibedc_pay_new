@@ -173,7 +173,7 @@ class RegisterController extends BaseAPIController
 
             return $this->sendSuccess([
                 'user' => "Continue",
-            ], 'User Meter Already Exist', Response::HTTP_OK);
+            ], 'User Meter Already Exist. Use your meter/account number to login if you have not created a profile', Response::HTTP_OK);
         }
 
 

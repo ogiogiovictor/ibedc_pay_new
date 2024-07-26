@@ -117,7 +117,7 @@ class User extends Authenticatable
 
     public function agency()
     {
-        return $this->belongsTo(Agents::class);  // This is the Agency not Agents
+        return $this->belongsTo(Agents::class, 'id');  // This is the Agency not Agents
     }
 
     public function PaymentTransactions() {

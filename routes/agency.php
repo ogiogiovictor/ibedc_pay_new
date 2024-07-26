@@ -9,6 +9,7 @@ use App\Http\Controllers\Agency\AgencyCollection;
 use App\Http\Controllers\History\CustomerPaymentHistory;
 use App\Http\Controllers\Billing\ArcGISValidation;
 use App\Livewire\AgencyDashboard;
+use App\Http\Controllers\History\CustomerBillHistory;
 
 /*
 |--------------------------------------------------------------------------

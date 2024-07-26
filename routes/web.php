@@ -20,7 +20,8 @@ use App\Livewire\TransactionDetails;
 use App\Livewire\Complaints;
 use App\Livewire\AgencyDashboard;
 use App\Livewire\ViewComplains;
-
+use App\Livewire\ApplicationSettings;
+use App\Livewire\CommissionSettings;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -37,14 +38,14 @@ Route::get('/login', Login::class)->name('login');
 
 Route::middleware(['auth', 'check_access'])->group(function () {
 
-    Route::middleware('auth:sanctum')->group(function() {
+  //  Route::middleware('auth:sanctum')->group(function() {
 
     Route::get('/dashboard', Dashboard::class)->name('dashboard');
     Route::get('/transactions', Transactions::class)->name('transactions');
     Route::get('/transaction_details/{transaction_id}', TransactionDetails::class)->name('transaction_details');
     Route::get('/users', Users::class)->name('users');
     Route::get('/wallet_users', Wallets::class)->name('wallet_users');
-    Route::get('/syslog', AppLog::class)->name('syslog');
+  
     Route::get('/details/{id}', LogDetails::class)->name('details.show');  //Application logs
     Route::get('/log_transactions', LogTransactions::class)->name('log_transactions');
     Route::get('/roles', CreateRole::class)->name('roles');
@@ -60,9 +61,18 @@ Route::middleware(['auth', 'check_access'])->group(function () {
     Route::middleware(['auth', 'agency_access'])->group(function () { 
         Route::get('/agency_dashboard', AgencyDashboard::class)->name('agency_dashboard');
     });
+
+
+    //// super_admin_access
+    Route::middleware(['auth', 'super_admin_access'])->group(function () { 
+      Route::get('/application_settings', ApplicationSettings::class)->name('application_settings');
+      Route::get('/syslog', AppLog::class)->name('syslog');
+      Route::get('/commission_settings', CommissionSettings::class)->name('commission_settings');
+    });
+
    
 
-  });
+ // });
 
 });
 

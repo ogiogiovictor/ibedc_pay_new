@@ -80,6 +80,8 @@ class PaymentLookUp extends Command
     
                     } elseif (isset($flutterResponse['status']) && isset($flutterResponse['data']['status']) && $flutterResponse['data']['status'] == 'failed') {
     
+                        $this->info('***** FLUTTERWAVE TRANSACTION FAILED :- FAILED STATUS *************');
+
                         $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                             'providerRef' => $flutterResponse['data']['flwref'],
                             'status' => 'failed'

@@ -21,6 +21,7 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
+use App\Services\AppService;
 
 class PaymentController extends BaseAPIController
 {
@@ -39,7 +40,7 @@ class PaymentController extends BaseAPIController
     }
 
     public function store(PaymentRequest $request){
-       // return $this->sendError("System Maintenance", ' We are Updating our system , please try again later', Response::HTTP_BAD_REQUEST); 
+       // return $this->sendError("System Downtime", 'System Unavailable, please try again later', Response::HTTP_BAD_REQUEST); 
     
         try{
 
@@ -67,6 +68,13 @@ class PaymentController extends BaseAPIController
 
 
     private function createPostPaidPayment($request){
+
+        $checkService = (new AppService)->processApp("Postpaid");
+
+        if ($checkService instanceof \Illuminate\Http\JsonResponse) {
+            return $checkService; // Return the downtime error response
+        }
+
         $checkRequest = $request->account_number;
 
         if(!$checkRequest){
@@ -147,7 +155,12 @@ class PaymentController extends BaseAPIController
     ///////////////////////////////// CREATE PREPAID PAYMENT ////////////////////////////////
     public function createPrePaidPayment($request){
 
+        $checkService = (new AppService)->processApp("Prepaid");
 
+        if ($checkService instanceof \Illuminate\Http\JsonResponse) {
+            return $checkService; // Return the downtime error response
+        }
+    
         $checkRequest = $request->MeterNo;
 
         if(!$checkRequest){

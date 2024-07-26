@@ -43,17 +43,17 @@ class HomeRepository implements HomeRepositoryInterface
 
         $checkPhone = User::where('phone', $userRequest->phone)->first();
 
-        if($checkPhone) {
-            return "Error! Phone Number Exists";
-        }
+        // if($checkPhone) {
+        //     return "Error! Phone Number Exists";
+        // }
 
-        if (str_starts_with($userRequest->email, 'noemail')) {
+        if (str_starts_with($user->email, 'noemail')) {
              //we need to check if the email you want to update already exist before even updating..
             $user->email = isset($userRequest->email) ? $userRequest->email : $user->email;
-            $user->phone = isset($userRequest->phone) ? $userRequest->phone : $user->phone;
+           // $user->phone = isset($userRequest->phone) ? $userRequest->phone : $user->phone;
         }
 
-        if (str_starts_with($userRequest->email, 'default')) {
+        if (str_starts_with($user->email, 'default') ) {
             //we need to check if the email you want to update already exist before even updating..
            $user->email = isset($userRequest->email) ? $userRequest->email : $user->email;
            $user->phone = isset($userRequest->phone) ? $userRequest->phone : $user->phone;
