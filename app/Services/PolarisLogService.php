@@ -13,17 +13,26 @@ class PolarisLogService extends BaseAPIController
     
     public function processLogs($transactionid, $meterno = null, $accountno = null, $payload)
     {
-        try {
-            $createAccount = PolarisPaymentPayload::create([
-                'transaction_id' => $transactionid,
-                'meter_no' => $meterno,
-                'account_no' => $accountno,
-                'payload' => $payload
-            ]);
 
-            return response()->json(['message' => 'Log created successfully'], Response::HTTP_CREATED);
-        } catch (\Exception $e) {
-            return response()->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
+        $createAccount = PolarisPaymentPayload::create([
+            'transaction_id' => $transactionid,
+            'meter_no' => $meterno,
+            'account_no' => $accountno,
+            'payload' => $payload
+        ]);
+
+
+        // try {
+        //     $createAccount = PolarisPaymentPayload::create([
+        //         'transaction_id' => $transactionid,
+        //         'meter_no' => $meterno,
+        //         'account_no' => $accountno,
+        //         'payload' => $payload
+        //     ]);
+
+        //     return response()->json(['message' => 'Log created successfully'], Response::HTTP_CREATED);
+        // } catch (\Exception $e) {
+        //     return response()->json(['error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
+        // }
     }
 }

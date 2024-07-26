@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\DB;
 use App\Jobs\PostPaidJob;
 use Carbon\Carbon;
+//use App\Services\PolarisLogService;
 
 class PostpaidLookUp extends Command
 {

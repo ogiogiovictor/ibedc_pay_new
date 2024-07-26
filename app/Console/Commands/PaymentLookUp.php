@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\Transactions\PaymentTransactions;
 use Symfony\Component\HttpFoundation\Response;
+use App\Services\PolarisLogService;
 
 class PaymentLookUp extends Command
 {
@@ -76,7 +77,7 @@ class PaymentLookUp extends Command
                         }
     
                        
-                       // \Log::info("payment Reference Payload " . json_encode($flutterResponse));
+                    (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
     
                     } elseif (isset($flutterResponse['status']) && isset($flutterResponse['data']['status']) && $flutterResponse['data']['status'] == 'failed') {
     
@@ -87,8 +88,14 @@ class PaymentLookUp extends Command
                             'status' => 'failed'
                         ]);
                         // Send Failed Response to Customer
+                        (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
+                        
+                    } else {
+
+                        (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
                     }
     
+                   
                     \Log::error("Payment Response" . json_encode($flutterResponse));
 
 

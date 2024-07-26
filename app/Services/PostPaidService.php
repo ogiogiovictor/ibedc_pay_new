@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\EMS\ZoneBills;
 use App\Models\CommissionSettings;
 use App\Services\CommissionService;
+use App\Services\PolarisLogService;
 
 
 
@@ -25,6 +26,9 @@ class PostPaidService extends BaseAPIController
      $baseUrl = env('MIDDLEWARE_URL');
      $custInfo = ZoneCustomers::where("AccountNo", $request->account_id)->first();
      $buCode = BusinessUnit::where("BUID", $custInfo->BUID)->value("Name");
+
+     //The log the payment response first
+     (new PolarisLogService)->processLogs($checkRef->transaction_id, $request->account_id,  $custInfo->AccountNo, $payment);
      
      $addCustomerUrl = $baseUrl . 'vendelect';
 
