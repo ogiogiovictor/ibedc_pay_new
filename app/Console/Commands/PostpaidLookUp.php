@@ -88,8 +88,6 @@ class PostpaidLookUp extends Command
                         
                             'udertaking' => isset($newResponse['customer']['businessUnitId']) ? $newResponse['customer']['businessUnitId'] : '',
 
-                            
-
                         ]);
                         dispatch(new PostPaidJob($paymentLog));
                         \Log::info('Postpaid Payment Successfuly: ' . json_encode($newResponse));

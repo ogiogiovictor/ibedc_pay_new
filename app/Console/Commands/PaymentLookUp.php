@@ -89,7 +89,7 @@ class PaymentLookUp extends Command
                         ]);
                         // Send Failed Response to Customer
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
-                        
+
                     } else {
 
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
