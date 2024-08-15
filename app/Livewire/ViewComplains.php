@@ -62,6 +62,7 @@ class ViewComplains extends Component
        $this->contact->save(); // Save the updated contact record
 
        Session::flash('success', 'Message successfully sent and contact status updated.');
+       return redirect()->route('complaints');
 
      // Session::flash('success', 'Message successfully sent.');
     }

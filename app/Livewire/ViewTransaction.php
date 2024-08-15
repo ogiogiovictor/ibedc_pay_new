@@ -58,7 +58,8 @@ class ViewTransaction extends Component
 
     public function processTransaction($id){
         
-        return;
+       // Session::flash('error', 'Access Blocked');
+        //return;
         $this->transactions = PayTransactions::where("id", $id)->first();
 
         if(!$this->transactions->providerRef) { 

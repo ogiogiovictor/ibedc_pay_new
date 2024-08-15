@@ -35,7 +35,8 @@
     },
     "autoload-dev": {
         "psr-4": {
-            "Tests\\": "tests/"
+            "Tests\\": "tests/",
+            "Ibelemo\\Contact\\": "package/contact/src/"  
         }
     },
     "scripts": {

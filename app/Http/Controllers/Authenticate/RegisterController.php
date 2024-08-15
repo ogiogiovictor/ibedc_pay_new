@@ -38,6 +38,7 @@ class RegisterController extends BaseAPIController
     public function store(RegisterRequest $request)
     {
         
+        
         //create the user
         $user = User::create($request->all());
 

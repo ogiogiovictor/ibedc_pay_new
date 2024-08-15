@@ -12,6 +12,7 @@ use Mail;
 use Illuminate\Support\Facades\Session;
 use App\Mail\PrePaidPaymentMail;
 use App\Models\ECMI\EcmiPayments;
+use App\Services\PolarisLogService;
 
 class TransactionDetails extends Component
 {
@@ -139,7 +140,7 @@ class TransactionDetails extends Component
                 $update = PaymentTransactions::where("transaction_id", $this->transactions->transaction_id)->update([
                     'status' => $newResponse['status'] == "true" ?  'success' : 'failed', //"resp": "00",
                     'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] : $newResponse['data']['recieptNumber'],
-                    'Descript' =>  isset($newResponse['message']) ? $newResponse['message']."-".$newResponse['transactionReference'] : $newResponse['transaction_status']."-".$newResponse['transactionReference'],
+                    'Descript' =>  isset($newResponse['message']) ? $newResponse['message'] : $newResponse['transaction_status'],
                 ]);
     
                  //Send SMS to User
@@ -160,21 +161,42 @@ class TransactionDetails extends Component
                     "routing" => 3,
                 ];
     
-                $iresponse = Http::asForm()->post($baseUrl, $idata);
+             
     
-                $emailData = [
-                    'token' => $token,
-                    'meterno' => $this->transactions->meter_no,
-                    'amount' => $this->transactions->amount,
-                    "custname" => $this->transactions->customer_name,
-                    "custphoneno" => $this->transactions->phone,
-                    "payreference" => $this->transactions->transaction_id,
-                    "transaction_id" => $this->transactions->transaction_id,
-                ];
-    
-                 Mail::to($this->transactions->email)->send(new PrepaidPaymentMail($emailData));
+               $emailData = [
+                   'token' => $token,
+                   'meterno' => $this->transactions->meter_no,
+                   'amount' => $this->transactions->amount,
+                   "custname" => $this->transactions->customer_name,
+                   "custphoneno" => $this->transactions->phone,
+                   "payreference" => $this->transactions->transaction_id,
+                   "transaction_id" => $this->transactions->transaction_id,
+               ];
+
+               Mail::to($this->transactions->email)->send(new PrepaidPaymentMail($emailData));
+
+               //$iresponse = Http::asForm()->post($baseUrl, $idata);
+
+               //The log the payment response first
+               (new PolarisLogService)->processLogs($this->transactions->transaction_id, 
+               $this->transactions->meter_no,  $this->transactions->account_no, $flutterResponse);
+
+
+                try {
+                    // HTTP request with increased timeout and retry mechanism
+                    $iresponse = Http::asForm()
+                        ->timeout(30)  // timeout set to 30 seconds
+                        ->retry(3, 100)  // retries 3 times with a 100ms delay
+                        ->post($baseUrl, $idata);
+                } catch (RequestException $e) {
+                    // Log the error or handle the timeout exception
+                    \Log::error('HTTP Request failed: ' . $e->getMessage());
+                }
+
+
+               
                  Session::flash('success', 'Token Sccessfully Sent');
-                 return redirect()->route('log_transactions');
+                 return redirect()->route('dashboard');
                  
             } else {
                

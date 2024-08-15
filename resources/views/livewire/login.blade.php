@@ -52,6 +52,7 @@
                 </div>
                 <div class="my-3">
                   <button class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn">LOGIN</button>
+                  <span wire:loading>Saving post... </span>
                   <!-- <a class="btn btn-block btn-primary btn-lg font-weight-medium auth-form-btn" href="../../index.html">LOGIN</a> -->
                 </div>
                 

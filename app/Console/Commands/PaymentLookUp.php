@@ -37,7 +37,7 @@ class PaymentLookUp extends Command
             $today = now()->toDateString();
 
             //$checkTransaction = PaymentTransactions::whereIn('status', ['started', 'processing'])
-            $checkTransaction = PaymentTransactions::whereDate('created_at', $today)
+            $checkTransaction = PaymentTransactions::whereDate('created_at',  $today)
              ->whereIn('status', ['started', 'processing'])
             ->chunk(5, function ($paymentLogs) use (&$paymentData) {
 

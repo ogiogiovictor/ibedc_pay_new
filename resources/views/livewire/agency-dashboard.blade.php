@@ -34,10 +34,10 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3">  1</h2>
+                                  <h2 class="mr-3">  {{  $total_users }}</h2>
                                 </div>
                                 <div class="mb-3">
-                                  <p class="text-muted font-weight-bold text-small">Registered Today: <span class=" font-weight-bold"> 2</span></p>
+                                  <p class="text-muted font-weight-bold text-small">Registered Today: <span class=" font-weight-bold"> {{ $users_registered_today ?: 0 }}</span></p>
                                 </div>
                                 <button class="btn btn-outline-secondary btn-sm btn-icon-text d-flex align-items-center">
                                 <i class="mdi mdi-calendar mr-1"></i>
@@ -80,7 +80,7 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3 text-success">₦ 2000</h2>
+                                  <h2 class="mr-3 text-success">₦ {{ number_format($transaction_sum, 2) }}</h2>
                                   <!-- <h3 class="text-success">+2.3%</h3> -->
                                 </div>
                                 <div class="mb-3">
@@ -125,7 +125,7 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3 text-danger">450</h2>
+                                  <h2 class="mr-3 text-danger">{{ number_format($target, 2) ?: 0 }}</h2>
                                   <!-- <h3 class="text-danger">+2.3%</h3> -->
                                 </div>
                                 <div class="mb-3">
@@ -174,7 +174,7 @@
                             <div class="carousel-inner">
                               <div class="carousel-item active">
                                 <div class="d-flex flex-wrap align-items-baseline">
-                                  <h2 class="mr-3 text-primary">3</h2>
+                                  <h2 class="mr-3 text-primary">{{ $transaction_count }}</h2>
                                   <!-- <h3 class="text-success">+2.3%</h3> -->
                                 </div>
                                 <div class="mb-3">
@@ -256,7 +256,7 @@
                                   <th>Account No</th>
                                   <th>Meter No</th>
                                   <th>Customer Name</th>
-                                  <th>Agent</th>
+                                  <th>Agency</th>
                                   <th>Amount</th>
                                   <th>Acount Type</th>
                                   <th>Business Hub</th>
@@ -266,9 +266,59 @@
                               </thead>
                               <tbody>
 
-                              Table goes here
+                               @if(count($transactions['links']) > 0)
+                                 @foreach($transactions['data'] as $tf)
+                                <tr>
+                                 <td>{{ \Carbon\Carbon::parse($tf['created_at'])->format('Y-m-d H:i:s') }}</td>
+                                 <td>{{ $tf['transaction_id'] }}</td>
+                                 <td>{{ $tf['account_number'] }}</td>
+                                 <td>{{ $tf['meter_no'] }}</td>
+                                 <td>{{ $tf['customer_name'] }}</td>
+                                 <td>{{ \App\Models\Agency\Agents::where("id", $tf['agency'])->value("agent_name") }}</td>
+                                 <td>{{ number_format($tf['amount'], 2) }}</td>
+                                 <td>{{ $tf['account_type'] }}</td>
+                                 <td>{{ $tf['BUID'] }}</td>
+                                 <td>
+                                    @if($tf['status'] == "started")
+                                    <label class="badge badge-info">Started</label>
+                                    @elseif($tf['status'] == "processing")
+                                    <label class="badge badge-warning">Processing</label>
+                                    @elseif($tf['status'] == "success")
+                                    <label class="badge badge-success">Successful</label>
+                                    @else
+                                    <label class="badge badge-danger">Failed</label>
+                                    @endif
+                                  
+                                  </td>
+                                 <td>
+                                 <a href="transaction_details/{{ $tf['transaction_id'] }}" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
+                                 </td>
+                              </tr>
+
+                                 @endforeach
+
+                                 <nav>
+                                    <ul class="pagination">
+                                        @foreach($transactions['links'] as $link)
+                                            <li class="page-item {{ $link['active'] ? 'active' : '' }}">
+                                                <a href="{{ $link['url'] }}" class="page-link">{!! $link['label'] !!}</a>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                </nav>
+
+
+                                @else
+                                <tr>
+                                  <td colspan="10" class="text-center">No Transaction Found</td>
+                                </tr>
+                                @endif
+
+
                               </tbody>
                             </table>
+
+                            
                           </div>
                         </div>
                       </div>

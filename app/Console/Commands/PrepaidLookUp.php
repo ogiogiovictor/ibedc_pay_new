@@ -46,9 +46,14 @@ class PrepaidLookUp extends Command
                 ->where('account_type', 'Prepaid')
                 ->where('status', 'processing')
                 ->whereNotNull('providerRef')
-                ->chunk(20, function($prepaidpayments) use (&$paymentData) {
+                ->chunk(30, function($prepaidpayments) use (&$paymentData) {
 
                     foreach($prepaidpayments as $paymentLog){
+
+                        if (!is_numeric($paymentLog->amount) || $paymentLog->amount < 0) {
+                            Log::error("Invalid amount for transaction ID {$paymentLog->transaction_id}: {$paymentLog->amount}");
+                            continue; // Skip to the next payment
+                        }
 
                         $baseUrl = env('MIDDLEWARE_URL');
                         $addCustomerUrl = $baseUrl. 'vendelect';
@@ -117,7 +122,7 @@ class PrepaidLookUp extends Command
                                  "routing" => 3,
                              ];
      
-                             $iresponse = Http::asForm()->post($baseUrl, $idata);
+                             
     
                              $this->info('***** SMS SUCCESSFULLY SENT :: SMS has been sent to the customer *************');
                              \Log::info("SMS SENT SUCCESSFULLY: ".   json_encode($idata));
@@ -133,6 +138,8 @@ class PrepaidLookUp extends Command
     
                             $user = Auth::user();
                             Mail::to($user->email)->cc($paymentLog->email)->send(new PrePaidPaymentMail($emailData));
+
+                            $iresponse = Http::asForm()->post($baseUrl, $idata);
      
                             return $newResponse;
                           }
