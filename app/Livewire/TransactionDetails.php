@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Session;
 use App\Mail\PrePaidPaymentMail;
 use App\Models\ECMI\EcmiPayments;
 use App\Services\PolarisLogService;
+use Illuminate\Support\Facades\Auth;
 
 class TransactionDetails extends Component
 {
@@ -80,6 +81,12 @@ class TransactionDetails extends Component
 
     public function processTransaction($id){
         
+        $user = Auth::user();
+
+        if($user->authority != "super_admin"){
+            Session::flash('error', 'You do not have access to this function');
+            return;
+        }
         
         $this->transactions = PaymentTransactions::where("id", $id)->first();
 

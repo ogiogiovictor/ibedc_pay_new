@@ -37,14 +37,20 @@ class PaymentLookUp extends Command
             $today = now()->toDateString();
 
             //$checkTransaction = PaymentTransactions::whereIn('status', ['started', 'processing'])
-            $checkTransaction = PaymentTransactions::whereDate('created_at',  $today)
-             ->whereIn('status', ['started', 'processing'])
+            $checkTransaction = PaymentTransactions::whereDate('created_at',  $today)  //'2024-08-26'
+            ->whereIn('status', ['started', 'processing'])
             ->chunk(5, function ($paymentLogs) use (&$paymentData) {
 
+                
                 foreach ($paymentLogs as $paymentLog) {
+
+                   // $providerKey = $paymentLog->provider === 'Polaris' ? env("FLUTTER_POLARIS_KEY") : env('FLUTTER_FCMB_KEY');
+                    $providerKey = in_array($paymentLog->provider, ['Polaris', null]) ? env("FLUTTER_POLARIS_KEY") : env('FLUTTER_FCMB_KEY');
+
+
         
                     $flutterData = [
-                        'SECKEY' =>  env("FLUTTER_POLARIS_KEY"), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
+                        'SECKEY' =>  $providerKey, // env("FLUTTER_POLARIS_KEY"), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
                         "txref" => $paymentLog->transaction_id
                     ];
 

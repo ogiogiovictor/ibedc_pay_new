@@ -19,7 +19,10 @@ class  PaymentFactory extends BaseAPIController {
 
         } else if($type == PaymentEnum::FCMB()->value){
 
-            return new FcmbPaymentRepository($type, $checkTrans, $request);
+            
+            return new NewFCMBPaymentRepository($type, $checkTrans, $request);
+
+           // return new FcmbPaymentRepository($type, $checkTrans, $request);
 
         } else if($type == PaymentEnum::Wallet()->value){
 

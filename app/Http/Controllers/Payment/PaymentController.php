@@ -41,6 +41,11 @@ class PaymentController extends BaseAPIController
 
     public function store(PaymentRequest $request){
        // return $this->sendError("System Downtime", 'System Unavailable, please try again later', Response::HTTP_BAD_REQUEST); 
+
+
+       if($request->amount < 1000) {
+        return $this->sendError("Invalid Amount. Minimum Amount is 1,000", 'ERROR - minimum amount 1,000', Response::HTTP_BAD_REQUEST); 
+       }
     
         try{
 
@@ -67,7 +72,7 @@ class PaymentController extends BaseAPIController
     }
 
 
-    private function createPostPaidPayment($request){
+    private function createPostPaidPayment($request) {
 
         $checkService = (new AppService)->processApp("Postpaid");
 
@@ -215,7 +220,7 @@ class PaymentController extends BaseAPIController
         // ->first();
 
     
-            // If Customer have outstanding return the error message
+        // If Customer have outstanding return the error message
         // if($eligibilityCheck){
         //     $balance = floatval($eligibilityCheck->Balance);
         //         if($request->amount < $eligibilityCheck->PaymentAmount && $balance != 0.00){
@@ -272,6 +277,34 @@ class PaymentController extends BaseAPIController
             DB::rollBack();
             return $this->sendError('Error', "Error Initiating Payment: " . $e->getMessage(), Response::HTTP_BAD_REQUEST);
         }
+
+    }
+
+
+
+
+    public function continuePayment(Request $request){
+
+        $checkTrans = $this->transaction->show($request->tx_ref);
+
+        //Check for undefined and Null paymentRef
+        if(!$request->redirect_url){
+            return $this->sendError('Invalid Redirect!', 'Error!', Response::HTTP_UNAUTHORIZED);
+        }
+
+        if(!$checkTrans){
+            return $this->sendError('The Transaction does not exist', "Error!", Response::HTTP_BAD_REQUEST);
+        }
+
+        $response = Http::withoutVerifying()->withHeaders([
+            'Authorization' => 'Bearer FLWSECK-effa327dab3411ddeb7730dd0e5e38bf-191d6565d8dvt-X',  // Live Keys
+           //'Authorization' => 'Bearer FLWSECK_TEST-3d68b68ad292988f76a5ea280acf6521-X', //Test Key
+            'Content-Type' => "application/json"
+        ])->post("https://api.flutterwave.com/v3/payments", $request->all());
+
+        $newResponse =  $response->json();
+
+        return $this->sendSuccess($newResponse, "Proceed to Make Payment", Response::HTTP_OK);
 
     }
 

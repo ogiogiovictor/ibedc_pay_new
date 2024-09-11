@@ -15,6 +15,7 @@ use App\Http\Controllers\Notification\PolarisPaymentNotification;
 use App\Http\Controllers\Wallet\WalletController;
 use App\Http\Controllers\Remove\DeleteController;
 use App\Http\Controllers\Token\TokenController;
+use App\Http\Controllers\VirtualAccount\VirtualController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,6 +27,9 @@ use App\Http\Controllers\Token\TokenController;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
+ 
+ 
 
 Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth'], function () {
 
@@ -57,6 +61,7 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
         Route::post('change-password', 'changePass')->name('change-password');
     });
     
+   
 
     Route::middleware('auth:sanctum')->group(function() {
     
@@ -72,13 +77,17 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
         ///////////////////////// PAYMENT INITIATION FOR POSTPAID | PREPAID //////////////////
         Route::group(['prefix' => 'payment'], function () {  
             Route::resource('initiate-payment', PaymentController::class);
-           // Route::post('complete-payment', [CompletePayment::class, 'CompletePayment']);
-           // Route::get('get-token-notification', [CompletePayment::class, 'TokenNotifications']);
+        
+            Route::post('continue-payment', [PaymentController::class, 'continuePayment']);  // v2 process payment for flutterwave
 
             Route::controller(CompletePayment::class)->group(function() {
                 Route::post('complete-payment', 'CompletePayment')->name('complete-payment');
                 Route::get('get-token-notification', 'TokenNotifications')->name('get-token-notification');
             });
+        });
+
+        Route::group(['prefix' => 'virtual'], function () {  
+            Route::post('account', [VirtualController::class, 'createVirtualAccount']);
         });
 
          ///////////////////////// PAYMENT INITIATION FOR POSTPAID | PREPAID //////////////////
@@ -138,6 +147,12 @@ Route::group(['prefix' => 'V2_polaris_OAUTHSIGNATURE_confirmation'], function ()
     Route::resource('notify_payment_account', PolarisPaymentNotification::class)->only(['index', 'store', 'show'])->middleware('verify.signature');
     //Route::resource('registration', RegisterController::class)->only(['index', 'store', 'show']);
 });
+
+
+//virtual account webhook
+Route::post('/webhook/flutterwave', [VirtualController::class, 'handleFlutterwaveWebhookFCMB']);
+//Failed Transaction 
+Route::post('/webhook/failed/flutterwave', [VirtualController::class, 'handleFailedWebhookFCMB']);
 
 
 require_once __DIR__.'/agency.php';

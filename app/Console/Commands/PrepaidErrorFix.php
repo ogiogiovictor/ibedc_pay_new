@@ -45,6 +45,7 @@ class PrepaidErrorFix extends Command
                 ->where('account_type', 'Prepaid')
                 ->where('status', 'processing')
                 ->whereNotNull('providerRef')
+                ->orderby('created_at', 'desc')
                 ->chunk(1, function($prepaidpayments) use (&$paymentData) {
 
                     foreach($prepaidpayments as $paymentLog){

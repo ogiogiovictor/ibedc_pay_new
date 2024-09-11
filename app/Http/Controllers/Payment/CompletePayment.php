@@ -73,6 +73,17 @@ class CompletePayment extends BaseAPIController
        
 
 
+        if($request->provider == 'FCMB') {
+            $paymentResponse = $payment->pay();
+
+            if (isset($paymentResponse['data']['status']) && $paymentResponse['data']['status'] == 'successful') {
+                return $this->checkSwitch($request->account_type, $request, $checkTrans, $payment->pay());
+            } else {
+                return $this->sendError('Error Verifying FCMB Payments', "Error!", Response::HTTP_BAD_REQUEST);
+            }
+        }
+
+
         ///////////////////////// CLOSING FCMB COMPLETE TRANSACTION /////////////////////////////////////////////////
         // if($request->provider == 'FCMB' && $payment->pay()['data']['transactionStatus'] == "Success"){   //$fcmbResponse->data->transactionStatus != "Success"
         //      return $this->checkSwitch($request->account_type, $request, $checkTrans, $payment->pay());
@@ -80,15 +91,15 @@ class CompletePayment extends BaseAPIController
         //     return $this->sendError('Error Verifying Payments', "Error!", Response::HTTP_BAD_REQUEST);
         // }
 
-        if($request->provider == 'FCMB') {
-            $paymentResponse = $payment->pay();
+        // if($request->provider == 'FCMB') {
+        //     $paymentResponse = $payment->pay();
 
-            if (isset($paymentResponse['data']['transactionStatus']) && $paymentResponse['data']['transactionStatus'] == 'Success') {
-                return $this->checkSwitch($request->account_type, $request, $checkTrans, $payment->pay());
-            } else {
-                return $this->sendError('Error Verifying FCMB Payments', "Error!", Response::HTTP_BAD_REQUEST);
-            }
-        }
+        //     if (isset($paymentResponse['data']['transactionStatus']) && $paymentResponse['data']['transactionStatus'] == 'Success') {
+        //         return $this->checkSwitch($request->account_type, $request, $checkTrans, $payment->pay());
+        //     } else {
+        //         return $this->sendError('Error Verifying FCMB Payments', "Error!", Response::HTTP_BAD_REQUEST);
+        //     }
+        // }
 
 
         ///////////////////////// CLOSING WALLET COMPLETE TRANSACTION ///////////////////////////////////////////
