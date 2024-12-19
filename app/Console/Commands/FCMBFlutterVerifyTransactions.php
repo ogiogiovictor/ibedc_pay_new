@@ -9,26 +9,26 @@ use App\Models\Transactions\PaymentTransactions;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\PolarisLogService;
 
-class PaymentLookUp extends Command
+class FCMBFlutterVerifyTransactions extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:payment-look-up';
+    protected $signature = 'app:fcmbflutter-verify-transactions';
 
     /**
      * The console command description.
      *
-     * @var string
+
+
      */
-    protected $description = 'Check Payment Jobs';
+    protected $description = 'Command description';
 
     /**
      * Execute the console command.
      */
-    
     public function handle()
     {
         try {
@@ -38,20 +38,15 @@ class PaymentLookUp extends Command
             $today = now()->toDateString();
 
             //$checkTransaction = PaymentTransactions::whereIn('status', ['started', 'processing'])
-            $checkTransaction = PaymentTransactions::whereDate('created_at',  '2024-12-18')  //'2024-09-20'   $today
+            $checkTransaction = PaymentTransactions::whereDate('created_at',  $today)  //'2024-09-20'   $today
             ->whereIn('status', ['started', 'processing'])
             ->chunk(5, function ($paymentLogs) use (&$paymentData) {
 
                 
                 foreach ($paymentLogs as $paymentLog) {
 
-                   // $providerKey = $paymentLog->provider === 'Polaris' ? env("FLUTTER_POLARIS_KEY") : env('FLUTTER_FCMB_KEY');
-                    //$providerKey = in_array($paymentLog->provider, ['Polaris', 'null']) ? env("FLUTTER_POLARIS_KEY") : env('FLUTTER_FCMB_KEY');
-
-
-        
                     $flutterData = [
-                        'SECKEY' =>  env("FLUTTER_POLARIS_KEY"), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
+                        'SECKEY' =>   env('FLUTTER_FCMB_KEY'), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
                         "txref" => $paymentLog->transaction_id
                     ];
 
@@ -75,6 +70,7 @@ class PaymentLookUp extends Command
                         } else if ($paymentLog->status == "started") {
                             $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                                 'providerRef' => $flutterResponse['data']['flwref'],
+                                'provider' => 'FCMB',
                                 'status' => 'processing'
                             ]);
                             $this->info('***** FLUTTERWAVE Transaction is set to processing *************');
@@ -98,10 +94,6 @@ class PaymentLookUp extends Command
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
 
                     } else {
-
-                        $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
-                            'status' => 'cancelled'
-                        ]);
 
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
                     }

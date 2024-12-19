@@ -35,7 +35,7 @@ class NewFCMBPaymentRepository extends BaseApiController implements PayableInter
 
          if (!isset($flutterResponse['status']) || ($flutterResponse['status'] != "success" && (!isset($flutterResponse['data']['status']) || $flutterResponse['data']['status'] != 'successful'))) {
             return $flutterResponse;  
-        }
+         }
 
         if ($flutterResponse['status'] == "success" && $flutterResponse['data']['status'] == 'successful') {
             $update = PaymentTransactions::where("transaction_id", $this->checkTrans->transaction_id)->update([

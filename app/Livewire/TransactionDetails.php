@@ -42,8 +42,11 @@ class TransactionDetails extends Component
             return redirect()->route('log_transactions');
         }
 
+       
+        $providerKey = $this->transactions->provider === 'FCMB' ? env('FLUTTER_FCMB_KEY')  : env("FLUTTER_POLARIS_KEY");
+
         $flutterData = [
-            'SECKEY' =>  env("FLUTTER_POLARIS_KEY"), // FLWSECK-641d8833b7c2105ad0d38fbf7001cf13-18d7868ed56vt-X || 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
+            'SECKEY' =>  $providerKey,  //env("FLUTTER_POLARIS_KEY"), // FLWSECK-641d8833b7c2105ad0d38fbf7001cf13-18d7868ed56vt-X || 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
             "txref" => $this->transactions->transaction_id
         ];
 
@@ -103,9 +106,11 @@ class TransactionDetails extends Component
         }
 
 
+        $providerKey = $this->transactions->provider === 'FCMB' ? env('FLUTTER_FCMB_KEY')  : env("FLUTTER_POLARIS_KEY");
+
         //Before the proceed to process the token
         $flutterData = [
-            'SECKEY' =>  env("FLUTTER_POLARIS_KEY"), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
+            'SECKEY' => $providerKey, // env("FLUTTER_POLARIS_KEY"), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
             "txref" => $this->transactions->transaction_id
         ];
 
@@ -221,7 +226,7 @@ class TransactionDetails extends Component
            // dd($flutterResponse);
            // Session::flash('error', $flutterResponse['data']['status']);
             if(isset($flutterResponse['data']['message'])) {
-                Session::flash('error', $flutterResponse['data']['message']);
+                Session::put('error', $flutterResponse['data']['message']);
             } else {
                 Session::flash('error', $flutterResponse['data']['status']);
             }

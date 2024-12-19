@@ -36,7 +36,7 @@ class FailedTransactions extends Command
             $today = now()->toDateString();
 
             PaymentTransactions::whereDate('created_at', $today)->where('status', 'failed')
-            ->chunk(10, function ($paymentLogs) use (&$paymentData) {
+            ->chunk(5, function ($paymentLogs) use (&$paymentData) {
 
                 foreach ($paymentLogs as $paymentLog) {
         

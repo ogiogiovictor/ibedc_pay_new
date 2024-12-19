@@ -32,6 +32,6 @@ class NotificationJob implements ShouldQueue
      */
     public function handle(): void
     {
-        Mail::to(["victor.ogiogio@ibedc.com", "fatima.ayandeko@ibedc.com", "babatunde.bodunde@ibedc.com", "adekemi.ajiboye@ibedc.com"])->send(new NotificationEmail( $this->transID, $this->user_email, $this->payload));
+        Mail::to(["victor.ogiogio@ibedc.com", "fatima.ayandeko@ibedc.com", "babatunde.bodunde@ibedc.com", "adekemi.ajiboye@ibedc.com"])->send(new NotificationEmail($this->transID, $this->user_email, $this->payload));
     }
 }

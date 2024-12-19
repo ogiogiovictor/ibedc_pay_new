@@ -141,8 +141,11 @@ class RegisterController extends BaseAPIController
             $pin = strval(rand(100000, 999999));
             $user->update(['pin' => $pin]);
 
+            if (!str_starts_with($request->email, 'default')) {
             //dispatch a welcome email to the user
-            dispatch(new RegistrationJob($user));
+             dispatch(new RegistrationJob($user));
+             
+            }
 
             // Return the user object, token, and authorization
             return $this->sendSuccess([

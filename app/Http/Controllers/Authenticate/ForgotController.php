@@ -23,8 +23,13 @@ class ForgotController extends BaseAPIController
 
         $user = User::where("email", $validatedData['email'])->first();
 
+
         if(!$user){
             return $this->sendError('User does not exist', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        }
+
+        if (str_starts_with($validatedData->email, 'default')) {
+            return $this->sendError('Please update your email address, default email not allowed', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
 
         $pin = strval(rand(100000, 999999));

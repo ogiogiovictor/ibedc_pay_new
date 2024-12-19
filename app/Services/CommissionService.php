@@ -14,6 +14,30 @@ use Illuminate\Support\Facades\Crypt;
 
 class CommissionService  extends BaseAPIController
 {
+    public function calculateCommission($latestBillAmount, $checkRef, $getBalance) {
+        $user = Auth::user();
+
+        if(is_numeric($getBalance)){
+            $createCommission = CommissionHistory::create([
+                'user_id' => $user->id,
+                'amount_paid' => $checkRef->amount,
+                'outstanding' => $getBalance,
+                'commission_amount' =>  ($getBalance - $checkRef->amount),
+                'commission_percent' => $commissionPercent,
+                'acount_type' => 'Postpaid',
+                'account_id' => $checkRef->account_number,
+                'agency' => $checkRef->agency,
+                'transaction_id' => $checkRef->id,
+                'status_settled'=> 'Pending',
+                'bill_year' => date('Y'),
+                'bill_month' => date('m'),
+                'bill_amount' => $latestBillAmount
+            ]);
+        }
+       
+    }
+
+    //'bill_year', 'bill_month', 'bill_amount'
     public function processCommission($checkRef, $commission, $commissionPercent)
     {
 

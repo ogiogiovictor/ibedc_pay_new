@@ -309,6 +309,11 @@ class PaymentController extends BaseAPIController
     }
 
 
+    public function retryPayment(Request $request) {
+        
+    }
+
+
 
 
 

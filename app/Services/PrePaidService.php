@@ -23,7 +23,10 @@ class PrePaidService extends BaseAPIController
         $checkExist = PaymentTransactions::where("transaction_id", $checkRef->transaction_id)->value("receiptno");
 
          //The log the payment response first
-         (new PolarisLogService)->processLogs($checkRef->transaction_id, $request->account_id,  $zoneECMI->AccountNo, $payment);
+         if($request->provider == "Polaris") {
+            (new PolarisLogService)->processLogs($checkRef->transaction_id, $request->account_id,  $zoneECMI->AccountNo, $payment);
+         }
+        
 
         //if($checkExist && $checkExist != "NULL"){
         if($checkExist){
@@ -51,7 +54,9 @@ class PrePaidService extends BaseAPIController
             //     'Descript' => 'Processing, Your token is underway'
             // ]);
 
-            dispatch(new PrepaidJob($payment));
+            if (!str_starts_with($checkRef->email, 'default')) {
+                dispatch(new PrepaidJob($payment));
+            } 
 
             return $this->sendSuccess($payment, "Payment Successfully Token will be sent to your email", Response::HTTP_OK);
 

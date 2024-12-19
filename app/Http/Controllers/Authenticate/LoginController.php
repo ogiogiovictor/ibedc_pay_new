@@ -248,6 +248,8 @@ class LoginController extends BaseAPIController
             Auth::login($user);
 
             if (Auth::check()) {
+
+                
                 // User is authenticated, proceed with sending the success response
                 return $this->sendSuccess([
                     'user' => $user,

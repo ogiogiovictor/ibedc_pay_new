@@ -87,6 +87,8 @@
                                                                                 <p class="text-muted mb-4"></p>
                                                                             </li>
 
+                                                                           
+
                                                                             <li>
                                                                                 <h6>Account Number </h6>
                                                                                 <p>{{ $all_transactions->account_numer }} </p>
@@ -270,6 +272,10 @@
 
                                                                         @if (!$all_transactions->providerRef && $all_transactions->status == 'started')
                                                                                 <button wire:click="checkPaymentStatus({{ $all_transactions->id }})" class="btn btn-xs btn-primary">Validate Payment</button>
+                                                                        @endif
+
+                                                                        @if (!$all_transactions->providerRef && $all_transactions->status == 'cancelled')
+                                                                                <button wire:click="checkPaymentStatus({{ $all_transactions->id }})" class="btn btn-xs btn-warning">Validate Payment</button>
                                                                         @endif
 
                                                                         @if ($all_transactions->providerRef && $all_transactions->status == 'failed')

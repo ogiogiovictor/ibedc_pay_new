@@ -9,26 +9,25 @@ use App\Models\Transactions\PaymentTransactions;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\PolarisLogService;
 
-class PaymentLookUp extends Command
+class WeeklyPaymentCheckup extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:payment-look-up';
+    protected $signature = 'app:weekly-payment-checkup';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Check Payment Jobs';
+    protected $description = 'Weekly Payment Setup';
 
     /**
      * Execute the console command.
      */
-    
     public function handle()
     {
         try {
@@ -37,21 +36,26 @@ class PaymentLookUp extends Command
 
             $today = now()->toDateString();
 
+             // Get the start and end of the current week (Monday to Sunday)
+            $startOfWeek = now()->startOfWeek(); // Monday
+            $endOfWeek = now()->endOfWeek();     // Sunday
+
             //$checkTransaction = PaymentTransactions::whereIn('status', ['started', 'processing'])
-            $checkTransaction = PaymentTransactions::whereDate('created_at',  '2024-12-18')  //'2024-09-20'   $today
+            $checkTransaction = PaymentTransactions::whereDate('created_at',   [$startOfWeek, $endOfWeek])  //'2024-09-20'   $today
             ->whereIn('status', ['started', 'processing'])
+            ->inRandomOrder() // Select transactions in random order
             ->chunk(5, function ($paymentLogs) use (&$paymentData) {
 
                 
                 foreach ($paymentLogs as $paymentLog) {
 
                    // $providerKey = $paymentLog->provider === 'Polaris' ? env("FLUTTER_POLARIS_KEY") : env('FLUTTER_FCMB_KEY');
-                    //$providerKey = in_array($paymentLog->provider, ['Polaris', 'null']) ? env("FLUTTER_POLARIS_KEY") : env('FLUTTER_FCMB_KEY');
+                    $providerKey = in_array($paymentLog->provider, ['Polaris', null]) ? env("FLUTTER_POLARIS_KEY") : env('FLUTTER_FCMB_KEY');
 
 
         
                     $flutterData = [
-                        'SECKEY' =>  env("FLUTTER_POLARIS_KEY"), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
+                        'SECKEY' =>  $providerKey, // env("FLUTTER_POLARIS_KEY"), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
                         "txref" => $paymentLog->transaction_id
                     ];
 
@@ -98,10 +102,6 @@ class PaymentLookUp extends Command
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
 
                     } else {
-
-                        $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
-                            'status' => 'cancelled'
-                        ]);
 
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
                     }

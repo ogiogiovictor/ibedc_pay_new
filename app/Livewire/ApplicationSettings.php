@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\Transactions\PaymentTransactions;
 use Symfony\Component\HttpFoundation\Response;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class ApplicationSettings extends Component
 {
@@ -33,6 +35,63 @@ class ApplicationSettings extends Component
         return redirect()->route('application_settings');
 
     }
+
+    public function optimizationClean() {
+
+
+        $tableName = 'mdwibedc.transactions_in';  // Update with the actual table name
+
+     
+          // Include current date and time in the filename
+          $fileName = 'transaction_in'. date('Y_m_d_His') . '.csv';
+          $filePath = storage_path('app/public/' . $fileName);
+  
+          session()->flash('info', "Exporting data from $tableName to CSV...");
+          
+          // Step 1: Connect to the specified database and retrieve data
+          $data = DB::connection("middleware2")->table($tableName)->get();
+          //$data = DB::table($tableName)->get();
+  
+          if ($data->isEmpty()) {
+            session()->flash('success', "No data found in $tableName to export.");
+          } else {
+              $csvContent = $this->convertToCSV($data);
+  
+              // Save the CSV content to the file
+              Storage::disk('public')->put($fileName, $csvContent);
+              session()->flash('info', "Data exported successfully to $filePath");
+          }
+  
+          // Step 2: Truncate the table
+         // DB::table($tableName)->truncate();
+          DB::connection("middleware2")->table($tableName)->truncate();
+          session()->flash('success', "Optimization Successful.");
+  
+    }
+
+
+      /**
+     * Convert data to CSV format.
+     *
+     * @param  \Illuminate\Support\Collection  $data
+     * @return string
+     */
+    private function convertToCSV($data)
+    {
+        $csvContent = '';
+
+        // Get headers from the first row's keys
+        $headers = array_keys((array)$data->first());
+        $csvContent .= implode(',', $headers) . "\n";
+
+        // Loop through each row and convert it to CSV format
+        foreach ($data as $row) {
+            $csvContent .= implode(',', array_map('strval', (array)$row)) . "\n";
+        }
+
+        return $csvContent;
+    }
+
 
 
     public function runPaymentLookUp() {
@@ -165,6 +224,40 @@ class ApplicationSettings extends Component
             $updateData['status'] = $status;
         }
         PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update($updateData);
+    }
+
+
+
+    public function mgtOptimization() {
+
+        $tableName = 'management_transactions';  // Update with the actual table name
+
+     
+          // Include current date and time in the filename
+          $fileName = 'management_transact_'. date('Y_m_d_His') . '.csv';
+          $filePath = storage_path('app/public/' . $fileName);
+  
+          session()->flash('info', "Exporting data from $tableName to CSV...");
+          
+          // Step 1: Connect to the specified database and retrieve data
+          $data = DB::connection("castingmvp")->table($tableName)->get();
+          //$data = DB::table($tableName)->get();
+  
+          if ($data->isEmpty()) {
+            session()->flash('success', "No data found in $tableName to export.");
+          } else {
+              $csvContent = $this->convertToCSV($data);
+  
+              // Save the CSV content to the file
+              Storage::disk('public')->put($fileName, $csvContent);
+              session()->flash('info', "Data exported successfully to $filePath");
+          }
+  
+          // Step 2: Truncate the table
+         // DB::table($tableName)->truncate();
+          DB::connection("castingmvp")->table($tableName)->truncate();
+          session()->flash('success', "MVP Processing Successful.");
+
     }
 
 

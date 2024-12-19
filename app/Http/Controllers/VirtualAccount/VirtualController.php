@@ -35,11 +35,17 @@ class VirtualController extends BaseAPIController
             'is_permanent' => true,
             'narration' => "Virtual Account Creation for " . $validatedData['firstname'] . ' ' . $validatedData['lastname'],
         ];
+
     
         // Merge the validated data with other data
         $newRequest = array_merge($validatedData, $otherData); // for array
      //   $newRequest = $validatedData->merge($otherData); // for object
 
+        $checkEmail = User::where("email", $validatedData['email'])->first();
+
+        if(!$checkEmail) {
+            return $this->sendError("User Email Does Not Exist In Our System", 'ERROR', Response::HTTP_UNAUTHORIZED);
+        }
        
         $response = Http::withoutVerifying()->withHeaders([
             'Authorization' => 'Bearer '.  env('FLUTTER_FCMB_KEY'), //env('FLUTTER_FCMB_KEY'),  FLUTTER_FCMB_TEST_KEYS
@@ -77,8 +83,11 @@ class VirtualController extends BaseAPIController
 
         }
 
-        return $this->sendError('Error Creating Virtual Account', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        return $this->sendError($newResponse, 'ERROR', Response::HTTP_UNAUTHORIZED);
     }
+
+
+
 
 
 
@@ -86,8 +95,6 @@ class VirtualController extends BaseAPIController
     public function handleFlutterwaveWebhookFCMB(Request $request){
 
     //    $getLog =  Log::warning('First Logs', ['First Log' => $request]);
-
-    //    return "We got Here";
 
         // Retrieve the secret hash from the environment file
         $secretHash = env('FLUTTERWAVE_SECRET_HASH');
@@ -170,7 +177,26 @@ class VirtualController extends BaseAPIController
             
             $validationVerifiedResponse =  $verificationResponse->json();
 
+            //Check if the transaction has RND
+            //$transactionReference = $validationVerifiedResponse['data']['tx_ref'];
+
             if($validationVerifiedResponse['status'] == "success" && $validationVerifiedResponse['data']['status'] == "successful" ) {
+
+
+
+                if (!str_contains($validationVerifiedResponse['data']['tx_ref'], 'RND')) {
+
+                    // Update the transaction reference as completed
+                    $checkTransaction = VirtualAccountTrasactions::where("tx_ref",  $validationVerifiedResponse['data']['tx_ref'])
+                    ->update(['status' => $data['status']]);
+   
+                      //dispatch a job   $transID, $user_email, $payload
+                   dispatch(new NotificationJob($validationVerifiedResponse['data']['tx_ref'], $validationVerifiedResponse['customer']['customer_email'], $validationVerifiedResponse));
+   
+                   // Return a 200 OK response to acknowledge receipt of the webhook
+                    return response()->json(['message' => 'Webhook received and data saved successfully for Bank'], Response::HTTP_OK);
+               }
+
 
                 //Credit the customer wallet
                 $user = User::where("email", $validationVerifiedResponse['customer']['email'])->first();
@@ -229,6 +255,26 @@ class VirtualController extends BaseAPIController
 
 
 
+
+    public function handleSuccessWebHookDespatch(Request $request){
+        
+         // Extract the required data from the request
+        $tx_ref = $request->input('tx_ref');
+        $customer_email = $request->input('customer');
+        $payload = $request->input('customer');
+
+        // Dispatch the job with the extracted data
+        dispatch(new NotificationJob($tx_ref, $customer_email, $payload));
+
+        //dispatch a job   $transID, $user_email, $payload
+        //dispatch(new NotificationJob($data['tx_ref'], $data['customer']['email'], $payload));
+    }
+
+
+
+
+
+
     public function handleFailedWebhookFCMB(Request $request){
 
          // Retrieve the secret hash from the environment file
@@ -267,4 +313,7 @@ class VirtualController extends BaseAPIController
             return response()->json(['message' => 'Webhook transaction failed'], Response::HTTP_OK);
 
     }
+
+
+
 }

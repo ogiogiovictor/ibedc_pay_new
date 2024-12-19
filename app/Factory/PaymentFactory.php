@@ -7,6 +7,7 @@ use App\Http\Controllers\BaseAPIController;
 use App\Repositories\Payment\PolarisPaymentRepository;
 use App\Repositories\Payment\FcmbPaymentRepository;
 use App\Repositories\Payment\WalletPaymentRepository;
+use App\Repositories\Payment\NewFCMBPaymentRepository;
 use App\Enums\PaymentEnum;
 
 class  PaymentFactory extends BaseAPIController {

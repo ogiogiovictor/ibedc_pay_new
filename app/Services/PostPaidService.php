@@ -66,7 +66,12 @@ class PostPaidService extends BaseAPIController
           
             'udertaking' => isset($newResponse['customer']['businessUnitId']) ? $newResponse['customer']['businessUnitId'] : '',
         ]);
-        dispatch(new PostPaidJob($checkRef));
+
+
+        if (!str_starts_with($checkRef->email, 'default')) {
+            dispatch(new PostPaidJob($checkRef)); //$checkRef->account_type
+        }
+       
 
 
         //COMMISSION CALCULATION FOR AGENTS
@@ -101,6 +106,10 @@ class PostPaidService extends BaseAPIController
                                ->orderBy('created_at', 'desc')
                                ->first();
 
+    //Get the Outstanding Balance,  last_payment
+    $latestBillAmount = $latestBill->TotalDue;
+    $getBalance = $this->outBalance($checkRef);
+
     //check the type of payment, if the payment is for the current charge.
     if($checkRef->payment_source == "current_charge"){
 
@@ -108,19 +117,23 @@ class PostPaidService extends BaseAPIController
         $commission = CommissionSettings::where("appied_to", 'current_charge')->first();
 
         if($latestBill->TotalDue <= 0) {
-            $commission = $checkRef->amount * $commission->percentage; // 0.5% commission
-            (new CommissionService)->processCommission($checkRef, $commission, $commission->percentage);
+           // $commission = $checkRef->amount * $commission->percentage; // 0.5% commission
+           // (new CommissionService)->processCommission($checkRef, $commission, $commission->percentage);
+           (new CommissionService)->calculateCommission($latestBillAmount, $checkRef, $getBalance);
         }
             
     }
 
      // check if the customer have an outstanding balance;
     if($checkRef->payment_source == "oustanding_balance"){
-        
-        //if the customer have outstanding balance and have not paid consistency for the past 3 months and its a NMD customer calculate the payment for the 3 months
-        // remove the difference from the oustanding_balance which in this case is the amount.
 
-        // then pay the agent 5% of the difference
+        // Check if $getBalance is a number (positive or negative)
+        if (!is_numeric($getBalance)) {
+            //throw new \Exception("Invalid balance value. Balance must be a valid number.");
+        }
+        
+        (new CommissionService)->calculateCommission($latestBillAmount, $checkRef, $getBalance);
+
     }
     
 
@@ -130,21 +143,31 @@ class PostPaidService extends BaseAPIController
 
    private function outBalance($request){
 
-    //Get the Current Bill for that customer or say get the last bill for the customer 
+    $data = [
+        "meter_number" => $request->account_number,
+        "vendtype" => "Postpaid"
+    ];
 
-    //Check the customerArears to know how much he is still owning. please take to of -(negative) means we are owing the customer
+        try {
 
-    // Get the customer last payment
+            $response = Http::withoutVerifying()->withHeaders([
+                'Authorization' => 'Bearer LIVEKEY_711E5A0C138903BBCE202DF5671D3C18',
+            ])->post("https://middleware3.ibedc.com/api/v1/verifymeter", $data);
+    
+        
+            $finalResponse = $response->json();
+    
+           
+            return $finalResponse['data']['customerArrears'];
+            
 
+        }catch(\Exception $e) {
 
-    // $data = [
-    //     "meter_number" => $request->account_number,
-    //     "vendtype" => "Postpaid"
-    // ];
+            return $e->getMessage();
+        }
 
-    //     $response = Http::withoutVerifying()->withHeaders([
-    //         'Authorization' => 'Bearer LIVEKEY_711E5A0C138903BBCE202DF5671D3C18',
-    //     ])->post("https://middleware3.ibedc.com/api/v1/verifymeter", $data);
+        
+        
 
     
    }

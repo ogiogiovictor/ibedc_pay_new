@@ -10,6 +10,7 @@ use App\Models\Wallet\WalletUser;
 use App\Models\Wallet\WalletHistory;
 use App\Models\Transactions\PaymentTransactions;
 use App\Helpers\StringHelper;
+use Illuminate\Support\Facades\DB;
 
 class WalletPaymentRepository extends BaseApiController implements PayableInterface
 {
@@ -25,41 +26,81 @@ class WalletPaymentRepository extends BaseApiController implements PayableInterf
     public function pay()
     {
        
-        $authUser = Auth::user();
-       // return $authUser->wallet->wallet_amount;
-       if($this->checkTrans->amount > $authUser->wallet->wallet_amount) {
-        return $this->sendError('Low Wallet Amount. Please fund Wallet', "Error", Response::HTTP_BAD_REQUEST);
+       $authUser = Auth::user();
+ 
+        // Ensure the user has a wallet
+      if (!$authUser->wallet) {
+          return $this->sendError('User does not have a wallet.', "Error", Response::HTTP_BAD_REQUEST);
        }
+
+
+       // Lock the wallet record for the user
+       $wallet = WalletUser::where('user_id', $authUser->id)->lockForUpdate()->first();
+
+       // Check if the wallet has enough balance
+       $walletBalance = (float) $wallet->wallet_amount;
+       $transactionAmount = (float) abs($this->checkTrans->amount);
+
+
+       if ($transactionAmount > $walletBalance) {
+        //return "Insufficient wallet balance";
+        return $this->sendError('Insufficient wallet balance. Please fund your wallet.', "Error", Response::HTTP_BAD_REQUEST);
+      }
+
 
          // Check if wallet history entry already exists for this transaction ID
         $existingWalletHistory = WalletHistory::where('transactionId', $this->checkTrans->transaction_id)->first();
         if ($existingWalletHistory) {
             // Entry already exists, return error or handle as needed
+            return 'Wallet history entry already exists';
             return $this->sendError('Wallet history entry already exists for this transaction', "Error", Response::HTTP_BAD_REQUEST);
         }
 
-       // deduct the money from the wallet
-       $authUser->wallet->decrement('wallet_amount', $this->checkTrans->amount);
+         // Start a database transaction for atomic operations
+         DB::beginTransaction();
 
-          //update the transaction reference
-          $update = PaymentTransactions::where("transaction_id", $this->checkTrans->transaction_id)->update([
+        try {
+
+           // deduct the money from the wallet  $transactionAmount = abs($this->checkTrans->amount);
+           $authUser->wallet->decrement('wallet_amount', $transactionAmount);
+
+           PaymentTransactions::where("transaction_id", $this->checkTrans->transaction_id)->update([
             'providerRef' => StringHelper::generateUUIDReference(),
             'Descript' => "Wallet Fund Sucessfully Deducted",
             'response_status' => 1,
             'provider' => "Wallet",
-        ]);
-       
-      $walletDeducted =  WalletHistory::create([
-        'user_id' => $authUser->id,
-        'payment_channel' => 'Wallet', 
-        'price' => $this->checkTrans->amount,
-        'transactionId' => $this->checkTrans->transaction_id,
-        'status' => '1',
-        'entry' => 'DR'
-        ]);
-       
-       //send token to the user
-       return $this->sendSuccess($this->checkTrans, "PaymentSource Successfully Loaded", Response::HTTP_OK);
+           ]);
+
+           // Create wallet history entry
+           WalletHistory::create([
+            'user_id' => $authUser->id,
+            'payment_channel' => 'Wallet',
+            'price' => $this->checkTrans->amount,
+            'transactionId' => $this->checkTrans->transaction_id,
+            'status' => 'successful',
+            'entry' => 'DR', // DR = Debit Record
+            ]);
+
+             // Commit the transaction
+             DB::commit();
+
+             // Send success response
+            // return $this->checkTrans;
+             return $this->sendSuccess($this->checkTrans, "Success", Response::HTTP_OK);
+ 
+
+
+         } catch (\Exception $e) {
+            // Rollback the transaction in case of failure
+            DB::rollBack();
+
+            // Log the error for further investigation
+          //  Log::error("Payment processing failed: " . $e->getMessage());
+
+            // Return an error response
+            //return 'Error';
+           return $this->sendError($e->getMessage(), "Error", Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
       
     }
 }

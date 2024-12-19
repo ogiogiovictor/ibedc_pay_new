@@ -26,4 +26,18 @@ class TokenController extends BaseAPIController
             'token' => $transactionsArray,
          ], 'TOKEN LOADED', Response::HTTP_OK);
     }
+
+
+    public function SavedMeters() {
+
+        $user = Auth::user();
+
+          // Retrieve payment transactions for the authenticated user
+        $savedMeters = PaymentTransactions::where("email", $user->email)->get();
+
+        return $this->sendSuccess([
+            'meters' => $savedMeters,
+         ], 'METERS LOADED', Response::HTTP_OK);
+
+    }
 }

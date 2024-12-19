@@ -132,6 +132,66 @@ return [
             'prefix_indexes' => true,
         ],
 
+
+        'middleware' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST4', 'localhost'),
+            'port' => env('DB_PORT4', '1433'),
+            'database' => env('DB_DATABASE4', 'forge'),
+            'username' => env('DB_USERNAME4', 'forge'),
+            'password' => env('DB_PASSWORD4', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+        ],
+
+
+        'middleware2' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST_MIDDLEWARE2', 'localhost'),
+            'port' => env('DB_PORT_MIDDLEWARE2', '1433'),
+            'database' => env('DB_DATABASE_MIDDLEWARE2', 'forge'),
+            'username' => env('DB_USERNAME_MIDDLEWARE2', 'forge'),
+            'password' => env('DB_PASSWORD_MIDDLEWARE2', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
+        'middleware1' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST_MIDDLEWARE1', 'localhost'),
+            'port' => env('DB_PORT_MIDDLEWARE1', '1433'),
+            'database' => env('DB_DATABASE_MIDDLEWARE1', 'forge'),
+            'username' => env('DB_USERNAME_MIDDLEWARE1', 'forge'),
+            'password' => env('DB_PASSWORD_MIDDLEWARE1', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
+        'castingmvp' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST_VP', 'localhost'),
+            'port' => env('DB_PORT_VP', '1433'),
+            'database' => env('DB_DATABASE_VP', 'forge'),
+            'username' => env('DB_USERNAME_VP', 'forge'),
+            'password' => env('DB_PASSWORD_VP', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
     ],
 
     /*

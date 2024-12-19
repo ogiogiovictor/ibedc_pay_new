@@ -44,7 +44,7 @@ class PrepaidLookUp extends Command
 
             $prepaidTransaction = PaymentTransactions::whereNull('receiptno')
                 ->where('account_type', 'Prepaid')
-                ->where('status', 'processing')
+                ->where('status', 'processing')  //processing
                 ->whereNotNull('providerRef')
                 ->orderby('created_at', 'desc')
                 ->chunk(30, function($prepaidpayments) use (&$paymentData) {
@@ -138,7 +138,16 @@ class PrepaidLookUp extends Command
                             ];
     
                             $user = Auth::user();
-                            Mail::to($user->email)->cc($paymentLog->email)->send(new PrePaidPaymentMail($emailData));
+
+
+                            if (!str_starts_with($user->email, 'default')) {
+                                Mail::to($user->email)->cc($paymentLog->email)->send(new PrePaidPaymentMail($emailData));
+                            }
+
+                            if($paymentLog->email && !str_starts_with($paymentLog->email, 'default')) {
+                                Mail::to($user->email)->cc($paymentLog->email)->send(new PrePaidPaymentMail($emailData));
+                            }
+                            
 
                             $iresponse = Http::asForm()->post($baseUrl, $idata);
      

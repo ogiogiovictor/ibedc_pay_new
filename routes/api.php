@@ -16,6 +16,8 @@ use App\Http\Controllers\Wallet\WalletController;
 use App\Http\Controllers\Remove\DeleteController;
 use App\Http\Controllers\Token\TokenController;
 use App\Http\Controllers\VirtualAccount\VirtualController;
+use App\Http\Controllers\Payment\WalletPaymentConfirmation;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -80,9 +82,16 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
         
             Route::post('continue-payment', [PaymentController::class, 'continuePayment']);  // v2 process payment for flutterwave
 
+           
+
             Route::controller(CompletePayment::class)->group(function() {
                 Route::post('complete-payment', 'CompletePayment')->name('complete-payment');
                 Route::get('get-token-notification', 'TokenNotifications')->name('get-token-notification');
+                Route::post('retry-payment', 'retryPayment')->name('retry-payment');
+            });
+
+            Route::controller(WalletPaymentConfirmation::class)->group(function() {
+                Route::post('wallet-payment', 'CompletePayment')->name('wallet-payment');
             });
         });
 
@@ -133,6 +142,7 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
           ///////////////////////////TOKEN NOTIFICATION //////////////////////
           Route::prefix('token')->controller(TokenController::class)->group(function () {
             Route::get('notification', 'GetNotification')->name('notification');
+            Route::get('saved-meters', 'SavedMeters')->name('saved-meters');
           });
 
     });
@@ -151,6 +161,9 @@ Route::group(['prefix' => 'V2_polaris_OAUTHSIGNATURE_confirmation'], function ()
 
 //virtual account webhook
 Route::post('/webhook/flutterwave', [VirtualController::class, 'handleFlutterwaveWebhookFCMB']);
+
+Route::post('/webhook/dispatch/flutterwave', [VirtualController::class, 'handleSuccessWebHookDespatch']);
+
 //Failed Transaction 
 Route::post('/webhook/failed/flutterwave', [VirtualController::class, 'handleFailedWebhookFCMB']);
 

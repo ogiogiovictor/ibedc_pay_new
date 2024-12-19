@@ -11,7 +11,7 @@ class WalletHistory extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'payment_channel', 'price', 'transactionId', 'status', 'entry'
+        'user_id', 'payment_channel', 'price', 'transactionId', 'status', 'entry', 'provider_reference'
     ];
 
     /**

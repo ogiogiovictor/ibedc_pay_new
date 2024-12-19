@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:failed-transactions')->everyFiveMinutes();
         $schedule->command('app:postpaid-error-fix')->everyFiveMinutes();
         $schedule->command('app:prepaid-error-fix')->everyFiveMinutes();
+        $schedule->command('app:weekly-payment-checkup')->weekly()->mondays()->at(rand(0, 23) . ':' . rand(0, 59));
       //  $schedule->command('telescope:prune')->daily();  app:prepaid-error-fix
         
        //Enable task scheduler logging

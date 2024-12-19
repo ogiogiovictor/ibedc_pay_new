@@ -34,6 +34,35 @@
                                   <!-- <h2 class="mr-3" wire:poll> </h2> -->
                                   @can('super_admin')
                                     <button wire:click="runPaymentLookUp()" class="btn btn-xs btn-danger">Run PaymentLookUp</button>
+
+                                  @endcan
+                                </div>
+                               
+                              </div>
+                              
+                            </div>
+                           
+                            
+                          </div>
+                        </div>
+                      </div> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+
+                      <div class="card">
+                        <div class="card-body">
+                          <div class="d-flex flex-wrap justify-content-between">
+                            <h4 class="card-title">Clean Up</h4>
+                            
+                          </div>
+                          <div id="sales" class="carousel slide dashboard-widget-carousel position-static pt-2" data-ride="carousel">
+                            <div class="carousel-inner">
+                              <div class="carousel-item active">
+                                <div class="d-flex flex-wrap align-items-baseline"><br/><br/>
+                                  <!-- <h2 class="mr-3" wire:poll> </h2> -->
+                                  @can('super_admin')
+
+                                    <button wire:click="optimizationClean()" class="btn btn-xs btn-success">Run Script (in)</button><br/>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                    <button wire:click="mgtOptimization()" class="btn btn-xs btn-primary">Run Script (mgt)</button>
                                   @endcan
                                 </div>
                                
