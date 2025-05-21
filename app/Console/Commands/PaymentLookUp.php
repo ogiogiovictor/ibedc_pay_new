@@ -38,20 +38,24 @@ class PaymentLookUp extends Command
             $today = now()->toDateString();
 
             //$checkTransaction = PaymentTransactions::whereIn('status', ['started', 'processing'])
-            $checkTransaction = PaymentTransactions::whereDate('created_at',  '2024-12-18')  //'2024-09-20'   $today
+            $checkTransaction = PaymentTransactions::whereDate('created_at',  $today)  //'2024-09-20'   $today
             ->whereIn('status', ['started', 'processing'])
+            //->where('provider', '!=', 'FCMB')
             ->chunk(5, function ($paymentLogs) use (&$paymentData) {
 
                 
                 foreach ($paymentLogs as $paymentLog) {
 
-                   // $providerKey = $paymentLog->provider === 'Polaris' ? env("FLUTTER_POLARIS_KEY") : env('FLUTTER_FCMB_KEY');
-                    //$providerKey = in_array($paymentLog->provider, ['Polaris', 'null']) ? env("FLUTTER_POLARIS_KEY") : env('FLUTTER_FCMB_KEY');
-
-
+                  //  $providerKey = $paymentLog->provider === 'Polaris' ? env("FLUTTER_POLARIS_KEY") : env('FLUTTER_FCMB_KEY');
+                   
+                   $providerKey = match ($paymentLog->provider) {
+                        'FCMB' => env('FLUTTER_FCMB_KEY'),
+                        'Polaris' => env('FLUTTER_POLARIS_KEY'),
+                        default => env('FLUTTER_POLARIS_KEY'), // Use a default key if provider is not specified
+                      };
         
                     $flutterData = [
-                        'SECKEY' =>  env("FLUTTER_POLARIS_KEY"), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
+                        'SECKEY' =>  env("FLUTTER_POLARIS_KEY"), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X', $providerKey, //
                         "txref" => $paymentLog->transaction_id
                     ];
 
@@ -98,10 +102,13 @@ class PaymentLookUp extends Command
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
 
                     } else {
+                        
 
-                        $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
-                            'status' => 'cancelled'
-                        ]);
+                        $this->info('***** FLUTTERWAVE TRANSACTION NOT APPLICABLE *************');
+                        // $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                        //     'status' => 'cancelled'
+                        // ]);
+                        // $this->info('***** FLUTTERWAVE TRANSACTION CANCELLED :- CANCELLED STATUS *************');
 
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
                     }

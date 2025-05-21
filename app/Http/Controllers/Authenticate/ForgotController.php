@@ -23,12 +23,14 @@ class ForgotController extends BaseAPIController
 
         $user = User::where("email", $validatedData['email'])->first();
 
+        //$user = User::where("email", $request->email)->first();
+
 
         if(!$user){
             return $this->sendError('User does not exist', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
 
-        if (str_starts_with($validatedData->email, 'default')) {
+        if (str_starts_with($validatedData['email'], 'default')) {
             return $this->sendError('Please update your email address, default email not allowed', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
 
@@ -40,6 +42,7 @@ class ForgotController extends BaseAPIController
 
         return $this->sendSuccess( [
             'payload' => $user,
+            'pin' => $user->pin,
             'message' => 'A PIN has been generated for your account. Please check your email for the PIN to continue the process.',
         ], 'PIN generated', Response::HTTP_OK);
 
@@ -84,7 +87,7 @@ class ForgotController extends BaseAPIController
 
         // Find the user by their email address
        // $user = User::where('email', $validatedData['email'])->first();
-        $user = User::where([  "email" => $validatedData['email'], 'pin' =>$validatedData['pin'] ])->first();
+        $user = User::where(["email" => $validatedData['email'], 'pin' =>$validatedData['pin'] ])->first();
 
         // Check if the user exists
         if ($user) {

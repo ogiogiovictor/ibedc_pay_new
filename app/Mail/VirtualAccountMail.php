@@ -42,13 +42,22 @@ class VirtualAccountMail extends Mailable
     {
         return new Content(
             view: 'email.virtual_account',
-            with: ['name' => $this->user->name, 'email' => $this->user->email, 
-            'reference' => $this->polarisData['data']['provider_response']['reference'],
-            "account_name" =>  $this->polarisData['data']['provider_response']['account_name'],
-            "bank_name" =>  $this->polarisData['data']['provider_response']['bank_name'],
-            "account_number" => $this->polarisData['data']['provider_response']['account_number'],
-            "status" => $this->polarisData['data']['provider_response']['status'],
-        ],
+            // with: ['name' => $this->user->name, 'email' => $this->user->email, 
+            // 'reference' => $this->polarisData['data']['provider_response']['reference'],
+            // "account_name" =>  $this->polarisData['data']['provider_response']['account_name'],
+            // "bank_name" =>  $this->polarisData['data']['provider_response']['bank_name'],
+            // "account_number" => $this->polarisData['data']['provider_response']['account_number'],
+            // "status" => $this->polarisData['data']['provider_response']['status'],
+            // ],
+
+            with: [
+            'name' => $this->user->name, 'email' => $this->user->email, 
+            'reference' => $this->polarisData['transaction_ref'],
+            "account_name" =>  $this->polarisData['account_no'],
+            "bank_name" =>  $this->polarisData['bank_name'],
+            "account_number" => $this->polarisData['account_no'],
+            "status" => $this->polarisData['status'],
+            ],
         );
     }
 

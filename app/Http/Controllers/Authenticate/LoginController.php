@@ -234,11 +234,18 @@ class LoginController extends BaseAPIController
 
         //If the customer is not a Customer of IBEDC just return that the account number does not exist or no record found
         if(!$getResponse){
-            return $this->sendError('Invalid Meter/Account No', 'ERROR', Response::HTTP_UNAUTHORIZED);
+            return $this->sendError('ERROR', 'Invalid Meter/Account No', Response::HTTP_UNAUTHORIZED);
         }
        
          //Check if the meter is already mapped with the user
         $checkifExist = User::where("meter_no_primary", $request->meter_no)->first();
+
+
+        //$updateEmail = str_starts_with($checkifExist->email, 'default') || str_starts_with($checkifExist->email, 'noemail');
+
+        // if(!$updateEmail){
+        //     return $this->sendError('ERROR', 'You can only login with Username/Password for this meter', Response::HTTP_UNAUTHORIZED);
+        // }
 
         if($checkifExist) {
             // Do auth check and login 
@@ -261,15 +268,15 @@ class LoginController extends BaseAPIController
 
         } else {
 
-       // $checkifExist = User::where("id", "1543")->first();
-       // return $getResponse;
-        $transactionID = StringHelper::generateUUIDReference().rand(0, 10);
-       //Create an account for the user
-       $checkPhone = User::where("phone", $getResponse->Mobile)->first();
-       
-      //  $newPhone = $this->generatePhone();
-       // $newPhone = "0".$getResponse->Mobile ?: $getResponse->Telephone;  8062665117
-       
+            // $checkifExist = User::where("id", "1543")->first();
+            // return $getResponse;
+            $transactionID = StringHelper::generateUUIDReference().rand(0, 10);
+            //Create an account for the user
+            $checkPhone = User::where("phone", $getResponse->Mobile)->first();
+            
+            //  $newPhone = $this->generatePhone();
+            // $newPhone = "0".$getResponse->Mobile ?: $getResponse->Telephone;  8062665117
+            
 
         if (!$checkPhone) {
             // Handle the case where the phone number already exists, maybe generate a new unique phone number

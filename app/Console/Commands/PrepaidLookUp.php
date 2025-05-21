@@ -38,8 +38,6 @@ class PrepaidLookUp extends Command
         $this->info('***** STARTING PREPAID PROCESSING: Starting to push Pending Prepaid Payments *************');
         $paymentData = []; 
 
-        DB::connection()->enableQueryLog();
-
         try {
 
             $prepaidTransaction = PaymentTransactions::whereNull('receiptno')
@@ -47,7 +45,7 @@ class PrepaidLookUp extends Command
                 ->where('status', 'processing')  //processing
                 ->whereNotNull('providerRef')
                 ->orderby('created_at', 'desc')
-                ->chunk(30, function($prepaidpayments) use (&$paymentData) {
+                ->chunk(10, function($prepaidpayments) use (&$paymentData) {
 
                     foreach($prepaidpayments as $paymentLog){
 
@@ -163,7 +161,6 @@ class PrepaidLookUp extends Command
 
         }catch(\Exception $e){
             \Log::info('ERROR MESSAGE - PREPAID LOG: ' . json_encode($e));
-            \Log::info(DB::getQueryLog());
             $this->info('***** TOKENLOOKUP API PAYMENT COMPLETED:: All payments processed successfully *************');
         }
     }

@@ -106,6 +106,19 @@ return [
             'prefix_indexes' => true,
         ],
 
+         'data_warehouse' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST_DATAWAREHOUSE', 'localhost'),
+            'port' => env('DB_PORT_DATAWAREHOUSE', '1433'),
+            'database' => env('DB_DATABASE_DATAWAREHOUSE', 'forge'),
+            'username' => env('DB_USERNAME_DATAWAREHOUSE', 'forge'),
+            'password' => env('DB_PASSWORD_DATAWAREHOUSE', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+        ],
+
         'ecmi_prod' => [
             'driver' => 'sqlsrv',
             'url' => env('DATABASE_URL'),

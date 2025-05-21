@@ -8,8 +8,10 @@ use Illuminate\Foundation\Support\Providers\EventServiceProvider as ServiceProvi
 use Illuminate\Support\Facades\Event;
 use App\Models\User;
 use App\Observers\RegisterObserver;
+use App\Observers\AccountOberver;
 use App\Events\VirtualAccount;
 use App\Listeners\SendVirtualAccount;
+use App\Models\NAC\AccoutCreaction;
 
 class EventServiceProvider extends ServiceProvider
 {
@@ -37,6 +39,7 @@ class EventServiceProvider extends ServiceProvider
     public function boot(): void
     {
         User::observe(RegisterObserver::class);
+        AccoutCreaction::observe(AccountOberver::class);
     }
 
     /**

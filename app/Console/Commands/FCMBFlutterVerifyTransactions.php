@@ -39,6 +39,7 @@ class FCMBFlutterVerifyTransactions extends Command
 
             //$checkTransaction = PaymentTransactions::whereIn('status', ['started', 'processing'])
             $checkTransaction = PaymentTransactions::whereDate('created_at',  $today)  //'2024-09-20'   $today
+            ->where("provider", "FCMB")
             ->whereIn('status', ['started', 'processing'])
             ->chunk(5, function ($paymentLogs) use (&$paymentData) {
 
@@ -64,10 +65,18 @@ class FCMBFlutterVerifyTransactions extends Command
                         if ($paymentLog->status == "processing") {
                             $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                                 'providerRef' => $flutterResponse['data']['flwref'],
+                                'provider' => 'FCMB'
                             ]);
-                            $this->info('***** FLUTTERWAVE Verification Was Successful *************');
+                            $this->info('***** FLUTTERWAVE Verification Was was update with provider and reference *************');
 
                         } else if ($paymentLog->status == "started") {
+                            $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                                'providerRef' => $flutterResponse['data']['flwref'],
+                                'provider' => 'FCMB',
+                                'status' => 'processing'
+                            ]);
+                            $this->info('***** FLUTTERWAVE Transaction is set to processing *************');
+                        } else if ($paymentLog->status == "cancelled") {
                             $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                                 'providerRef' => $flutterResponse['data']['flwref'],
                                 'provider' => 'FCMB',
@@ -88,12 +97,30 @@ class FCMBFlutterVerifyTransactions extends Command
 
                         $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                             'providerRef' => $flutterResponse['data']['flwref'],
-                            'status' => 'failed'
+                            'status' => 'failed',
+                            'provider' => 'FCMB'
+                        ]);
+                        // Send Failed Response to Customer
+                        (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
+
+                    }  elseif (isset($flutterResponse['status']) && isset($flutterResponse['data']['status']) && $flutterResponse['data']['status'] == 'cancelled') {
+    
+                        $this->info('***** FLUTTERWAVE TRANSACTION FAILED :- FAILED STATUS *************');
+
+                        $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                            'providerRef' => $flutterResponse['data']['flwref'],
+                            'status' => 'cancelled',
+                            'provider' => 'FCMB'
                         ]);
                         // Send Failed Response to Customer
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
 
                     } else {
+
+                        // $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                        //     'status' => 'cancelled',
+                        //     'provider' => 'FCMB'
+                        // ]);
 
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
                     }

@@ -33,6 +33,14 @@ class PolarisPaymentRepository extends BaseApiController implements PayableInter
          $flutterResponse = $iresponse->json(); 
 
          if (!isset($flutterResponse['status']) || ($flutterResponse['status'] != "success" && (!isset($flutterResponse['data']['status']) || $flutterResponse['data']['status'] != 'successful'))) {
+
+            //added this line of code
+            $update = PaymentTransactions::where("transaction_id", $this->checkTrans->transaction_id)->update([
+                'providerRef' => $flutterResponse['data']['flwref'],
+                'status' => 'failed',
+                'provider' => $this->request->provider,
+            ]);
+
             return $flutterResponse;  
         }
 
@@ -45,6 +53,15 @@ class PolarisPaymentRepository extends BaseApiController implements PayableInter
                 'status' => 'processing'
             ]);
             
+        }
+
+        if(isset($flutterResponse['status']) && isset($flutterResponse['data']['status']) && $flutterResponse['data']['status'] == 'failed') {
+            
+            $update = PaymentTransactions::where("transaction_id", $this->checkTrans->transaction_id)->update([
+                'providerRef' => $flutterResponse['data']['flwref'],
+                'status' => 'failed',
+                'provider' => $this->request->provider,
+            ]);
         }
 
         return $flutterResponse;

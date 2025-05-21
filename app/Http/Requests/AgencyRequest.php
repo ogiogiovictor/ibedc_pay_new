@@ -26,6 +26,7 @@ class AgencyRequest extends FormRequest
             "agent_email" => 'required|email|unique:agency,agent_email',
             "agent_official_phone" => 'required',
             "no_of_agents" => 'required',
+            "authourity" =>  "required",
         ];
     }
 }

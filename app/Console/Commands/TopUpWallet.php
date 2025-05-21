@@ -46,7 +46,7 @@ class TopUpWallet extends Command
                 //send email to the aggregators
                  // Send the email
                  if($check->id == 5) {
-                    Mail::to(['tosin.akinwunmi@fetslimited.com', 'info@fetslimited.com']) // Send to the relevant aggregator email
+                    Mail::to(['tosin.akinwunmi@fetslimited.com', 'info@fetslimited.com', 'timilehin.ayeni@fetslimited.com', 'thomas.attah@fetslimited.com', 'clement.asibeluo@fetslimited.com']) // Send to the relevant aggregator email
                     ->send(new LowBalanceAlert($check)); // Use the mailable class to send the email
                  }
                 

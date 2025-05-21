@@ -83,6 +83,9 @@ class CompletePayment extends BaseAPIController
 
 
         if($request->provider == 'FCMB') {
+
+            //return $this->sendError('Error Please use Polaris', "Error!", Response::HTTP_BAD_REQUEST);
+
             $paymentResponse = $payment->pay();
 
             if (isset($paymentResponse['data']['status']) && $paymentResponse['data']['status'] == 'successful') {

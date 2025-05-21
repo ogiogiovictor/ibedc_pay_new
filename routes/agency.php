@@ -11,6 +11,7 @@ use App\Http\Controllers\Billing\ArcGISValidation;
 use App\Livewire\AgencyDashboard;
 use App\Http\Controllers\History\CustomerBillHistory;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -27,24 +28,34 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_agency_sync', 'middleware' => 'myAuth'
       
     Route::post('agent_authenticate', [AgencyController::class, 'authenticate']);
 
+
+
+
     Route::middleware('auth:sanctum')->group(function() {
         
-    
+         Route::resource('register', AgencyController::class)->only(['create']);  // Only Super Administrator and Agency Admin Can Create Agents
+
+
         Route::resource('agency', AgencyController::class)->only(['index', 'store', 'show']); // only administrator
         Route::post('search', [AgencySearchController::class, 'searchCustomers']); // only administrator
-        
-        //Agency Collection | Target
-        Route::get('collection_target', [AgencyCollection::class, 'agentCollection']);
-
-        Route::prefix('customerhistory')->controller(CustomerPaymentHistory::class)->group(function () {
-            Route::post('customer-history', 'customerHistory')->name('customer-history');
-        });
-
-        //Customer Pills
+         //Customer Pills
         Route::prefix('customerhistory')->controller(CustomerBillHistory::class)->group(function () {
             Route::post('bill-history', 'customerBills')->name('bill-history');
         });
 
+
+
+        //////////////////// SEARCH CUSTOMER HISTORY ///////////////////////////////////////
+        //  Route::prefix('customerhistory')->controller(CustomerPaymentHistory::class)->group(function () {
+        //     Route::post('customer-history', 'customerHistory')->name('customer-history');
+        // });
+
+        //Agency Collection | Target
+       // Route::get('collection_target', [AgencyCollection::class, 'agentCollection']);
+
+       
+
+       
         //POST BILLS
 
 

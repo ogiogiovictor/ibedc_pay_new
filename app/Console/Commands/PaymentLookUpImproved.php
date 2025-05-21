@@ -46,9 +46,19 @@ class PaymentLookUpImproved extends Command
                     break;
                 }
 
+                
+
                 foreach ($paymentLogs as $paymentLog) {
+
+                    $providerKey = match ($paymentLog->provider) {
+                        'FCMB' => env('FLUTTER_FCMB_KEY'),
+                        'Polaris' => env('FLUTTER_POLARIS_KEY'),
+                        default => env('FLUTTER_POLARIS_KEY'), // Use a default key if provider is not specified
+                          };
+
+
                     $flutterData = [
-                        'SECKEY' => env("FLUTTER_POLARIS_KEY"),
+                        'SECKEY' =>  $providerKey, // env("FLUTTER_POLARIS_KEY"),
                         "txref" => $paymentLog->transaction_id
                     ];
                     $flutterUrl = env("FLUTTER_WAVE_URL");

@@ -52,9 +52,15 @@ $user = auth()->user();
                                 @endcan
 
                                 @can('payment_channel') 
+
                                 <li class="nav-item">
                                 <a  href="/log_transactions"  wire:navigate class="nav-link" id="users-tab" data-toggle="tab" href="#" role="tab" aria-controls="users" aria-selected="false">IBEDC Transactions - (v1)</a>
                                 </li>
+
+                                <li class="nav-item">
+                                <a  href="/user_virtual_account"  wire:navigate class="nav-link" id="more-tab" data-toggle="tab" href="#" role="tab" aria-controls="more" aria-selected="false">Virtual Accounts</a>
+                                </li>
+                                
                                 @endcan
 
                                 @can('super_admin')
@@ -62,11 +68,24 @@ $user = auth()->user();
                                 <a  href="/users"  wire:navigate class="nav-link" id="returns-tab" data-toggle="tab" href="#" role="tab" aria-controls="returns" aria-selected="false">Users</a>
                                 </li>
                                 @endcan
+
                                 @can('super_admin')
                                 <li class="nav-item">
                                 <a  href="/syslog"  wire:navigate class="nav-link" id="more-tab" data-toggle="tab" href="#" role="tab" aria-controls="more" aria-selected="false">System Logs</a>
                                 </li>
+
+                                <li class="nav-item">
+                                <a  href="/wallet_user_accounts"  wire:navigate class="nav-link" id="more-tab" data-toggle="tab" href="#" role="tab" aria-controls="more" aria-selected="false">Users Wallet</a>
+                                </li>
+
+                                <li class="nav-item">
+                                <a  href="/user_virtual_account"  wire:navigate class="nav-link" id="more-tab" data-toggle="tab" href="#" role="tab" aria-controls="more" aria-selected="false">Virtual Accounts</a>
+                                </li>
                                 @endcan
+
+
+
+                                
                             </ul>
                             </div>
                             <div class="col-12 col-sm-6 mb-xs-4 mb-xl-0 pt-2 pb-2 text-md-right d-none d-md-block">

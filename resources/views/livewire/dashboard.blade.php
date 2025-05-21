@@ -255,8 +255,9 @@
                                   <th>Customer Name</th>
                                   <th>Email</th>
                                   <th>Amount</th>
-                                  <th>Acount Type</th>
-                                  <th>Business Hub</th>
+                                  <th>Account</th>
+                                  <th>Provider</th>
+                                  <!-- <th>Business Hub</th> -->
                                   <th>Status</th>
                                   <th>Actions</th>
                                 </tr>
@@ -275,7 +276,8 @@
                                   <td>{{ $transaction->email }}</td>
                                   <td>₦{{ number_format($transaction->amount, 2) }}</td>
                                   <td>{{ $transaction->account_type }}</td>
-                                  <td>{{ $transaction->BUID }}</td>
+                                  <!-- <td>{{ $transaction->BUID }}</td> -->
+                                  <td>{{ $transaction->provider }}</td>
                                   <td>
                                     @if($transaction->status == "started")
                                     <label class="badge badge-info">Started</label>

@@ -48,11 +48,11 @@ class PrePaidService extends BaseAPIController
                 'id' => $checkRef->id
             ];
 
-            // $update = PaymentTransactions::where("transaction_id", $checkRef->transaction_id)->update([
-            //     'response_status' => 1,
-            //     'status' => "processing",
-            //     'Descript' => 'Processing, Your token is underway'
-            // ]);
+            $update = PaymentTransactions::where("transaction_id", $checkRef->transaction_id)->update([
+                'provider' => $request->provider,
+               // 'status' => "processing",
+                'Descript' => 'Processing, Your token is underway'
+            ]);
 
             if (!str_starts_with($checkRef->email, 'default')) {
                 dispatch(new PrepaidJob($payment));

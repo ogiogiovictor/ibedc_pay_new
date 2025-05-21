@@ -166,6 +166,14 @@
                                         @endif
                                     @endcan
 
+
+                                    @can('payment_channel')
+                                        @if (!$transactions->receiptno && $transactions->account_type == 'Prepaid' && $transactions->status != 'failed')
+                                              <button wire:click="processTransaction({{ $transactions->id }})" class="btn btn-xs btn-primary">Resync (Click Once)</button>  
+                                        @endif
+                                    @endcan
+
+
                                     @if ($transactions->providerRef && $transactions->status == 'pending')
                                             <button wire:click="checkPaymentStatus({{ $transactions->id }})" class="btn btn-xs btn-primary">Check Payment</button>
                                     @endif

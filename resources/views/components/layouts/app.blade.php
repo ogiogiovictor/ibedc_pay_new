@@ -21,6 +21,8 @@
    <!-- Integrating Toast -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
+  <!-- ✅ Add Livewire Styles -->
+    @livewireStyles
     </head>
     <body class="sidebar-fixed">
 
@@ -40,11 +42,14 @@
   <script src="{{ asset('template/js/off-canvas.js') }}"></script>
   <script src="{{ asset('template/js/hoverable-collapse.js') }}"></script>
   <script src="{{ asset('template/js/template.js') }}"></script>
-  <script src="v{{ asset('template/js/settings.js') }}"></script>
+  <script src="{{ asset('template/js/settings.js') }}"></script>
   <script src="{{ asset('template/js/todolist.js') }}"></script>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
 
+   <!-- ✅ Add Livewire Scripts -->
+    @livewireScripts
+    
   @if (session()->has('success'))
         <script>
             toastr.success('{{ session('success') }}');

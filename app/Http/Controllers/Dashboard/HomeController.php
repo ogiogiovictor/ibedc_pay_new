@@ -95,7 +95,9 @@ class HomeController extends BaseAPIController
             "account_type" => 'required'
         ]);
 
-        $sendPin = (new PinService)->processPin(Auth::user()->email);
+        $email = $request->email ?: Auth::user()->email;
+
+        $sendPin = (new PinService)->processPin($email);
            // $user = $this->profile->userprofile(Auth::user()->id);
 
             return $this->sendSuccess([

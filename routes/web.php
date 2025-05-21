@@ -22,6 +22,16 @@ use App\Livewire\AgencyDashboard;
 use App\Livewire\ViewComplains;
 use App\Livewire\ApplicationSettings;
 use App\Livewire\CommissionSettings;
+use App\Livewire\WalletAccount;
+use App\Livewire\WalletDetaisls;
+use App\Livewire\AuditLogs;
+use App\Livewire\UserVirtualAccount;
+use App\Livewire\UserVirtualAccountDetails;
+
+use App\Livewire\AccountDetails;
+use App\Livewire\TrackApplication;
+use App\Livewire\NewAccount;
+use App\Livewire\TrackingDetails;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -34,6 +44,8 @@ use App\Livewire\CommissionSettings;
 */
 Route::get('/', Login::class);
 Route::get('/login', Login::class)->name('login');
+Route::get('/track', TrackApplication::class)->name('track');
+Route::get('/tracking_details', TrackingDetails::class)->name('tracking_details');
 
 
 Route::middleware(['auth', 'check_access'])->group(function () {
@@ -57,6 +69,10 @@ Route::middleware(['auth', 'check_access'])->group(function () {
     Route::get('/agency_transaction/{id}', AgenctTransactions::class)->name('agency_transaction');
     Route::get('/complaints', Complaints::class)->name('complaints');
     Route::get('/view_complaints/{id}', ViewComplains::class)->name('view_complaints');
+    Route::get('/user_virtual_account', UserVirtualAccount::class)->name('user_virtual_account');
+    Route::get('/view_user_virtual_account/{id}/{user_id}/{email}', UserVirtualAccountDetails::class)->name('view_user_virtual_account');
+    
+    
 
     Route::middleware(['auth', 'agency_access'])->group(function () { 
         Route::get('/agency_dashboard', AgencyDashboard::class)->name('agency_dashboard');
@@ -67,7 +83,13 @@ Route::middleware(['auth', 'check_access'])->group(function () {
     Route::middleware(['auth', 'super_admin_access'])->group(function () { 
       Route::get('/application_settings', ApplicationSettings::class)->name('application_settings');
       Route::get('/syslog', AppLog::class)->name('syslog');
+      Route::get('/auditlogs', AuditLogs::class)->name('auditlog');
+      Route::get('/wallet_user_accounts', WalletAccount::class)->name('wallet_user_accounts');
+      Route::get('/view_wallet/{id}/{user_id}', WalletDetaisls::class)->name('view_wallet');
       Route::get('/commission_settings', CommissionSettings::class)->name('commission_settings');
+
+      Route::get('/new_account', NewAccount::class)->name('new_account');
+      Route::get('/account_details/{tracking_id}', AccountDetails::class)->name('account_details');
     });
 
    

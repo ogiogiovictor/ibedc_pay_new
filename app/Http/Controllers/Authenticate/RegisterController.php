@@ -12,6 +12,7 @@ use App\Jobs\RegistrationJob;
 use Illuminate\Support\Facades\Auth;
 use App\Events\VirtualAccount;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\DB;
 
 
 class RegisterController extends BaseAPIController
@@ -32,15 +33,79 @@ class RegisterController extends BaseAPIController
         //
     } 
 
+
+    public function store(RegisterRequest $request)  //RegisterRequest
+    {
+        
+        DB::beginTransaction();
+        
+        try {
+            // Create the user
+
+          
+            $user = User::create($request->all());
+           
+
+            // Generate a PIN
+            $pin = strval(rand(100000, 999999));
+            $user->update(['pin' => $pin]);
+
+            // Assign role if authority exists
+            if (isset($request->authority)) {
+                $user->assignRole(strtolower($request->authority));
+            }
+
+            // Dispatch welcome email
+            dispatch(new RegistrationJob($user));
+
+            DB::commit(); // Commit transaction
+
+            return $this->sendSuccess([
+                'payload' => $user,
+                'pin' => $user->pin,
+                'message' => 'A PIN has been generated for your account. Please check your email for the PIN to complete the registration process.',
+            ], 'PIN generated', Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction on error
+            return $this->sendError('Error occurred: ' . $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+        
+    }
+
+
+    public function storeRegister(RegisterRequest $request){
+
+        DB::beginTransaction();
+        try {
+
+            // Create the user
+            $user = User::create($request->all());
+
+        
+
+         
+            return $this->sendSuccess([
+                'payload' => $user,
+                'message' => 'A PIN has been generated for your account. Please check your email for the PIN to complete the registration process.',
+            ], 'PIN generated', Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+            DB::rollBack(); // Rollback transaction on error
+            return $this->sendError('Error occurred: ' . $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
+    }
+
     /**
      * Store a newly created resource in storage.
      */
-    public function store(RegisterRequest $request)
+    public function store2(RegisterRequest $request)
     {
-        
         
         //create the user
         $user = User::create($request->all());
+
+        //return $user;
 
         $pin = strval(rand(100000, 999999));
         $user->update(['pin' => $pin]);
@@ -150,6 +215,7 @@ class RegisterController extends BaseAPIController
             // Return the user object, token, and authorization
             return $this->sendSuccess([
                 'user' => $user,
+                'pin' => $user->pin,
             ], 'Pin successfully Generated', Response::HTTP_OK);
         }
 

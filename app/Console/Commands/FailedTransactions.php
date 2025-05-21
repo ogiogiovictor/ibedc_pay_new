@@ -6,7 +6,7 @@ use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use App\Models\Transactions\PaymentTransactions;
-use Symfony\Component\HttpFoundation\Response;
+use App\Services\PolarisLogService;
 
 class FailedTransactions extends Command
 {
@@ -30,53 +30,88 @@ class FailedTransactions extends Command
     public function handle()
     {
         try {
-
-            $this->info('***** FLUTTERWAVE FAILED RESPONSES PAYMENT API :: Lookup Failed *************');
+            $this->info('***** FLUTTERWAVE BEGIN LOOP IMPLEMENTATION *************');
 
             $today = now()->toDateString();
 
-            PaymentTransactions::whereDate('created_at', $today)->where('status', 'failed')
-            ->chunk(5, function ($paymentLogs) use (&$paymentData) {
+            PaymentTransactions::whereDate('created_at', $today)
+                ->whereIn('status', ['failed', 'cancelled'])
+                ->chunk(5, function ($paymentLogs) {
+                    foreach ($paymentLogs as $paymentLog) {
+                        // Determine the provider key for each payment log
+                        $providerKey = match ($paymentLog->provider) {
+                            'FCMB' => env('FLUTTER_FCMB_KEY'),
+                            'Polaris' => env('FLUTTER_POLARIS_KEY'),
+                            default => env('FLUTTER_POLARIS_KEY'), // Use a default key if provider is not specified
+                        };
 
-                foreach ($paymentLogs as $paymentLog) {
-        
-                    $flutterData = [
-                        'SECKEY' =>  env("FLUTTER_POLARIS_KEY"), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
-                        "txref" => $paymentLog->transaction_id
-                    ];
+                        $flutterData = [
+                            'SECKEY' => $providerKey,
+                            "txref" => $paymentLog->transaction_id,
+                        ];
 
-                    $flutterUrl = env("FLUTTER_WAVE_URL");
+                        $flutterUrl = env("FLUTTER_WAVE_URL");
 
-                    $iresponse = Http::post($flutterUrl, $flutterData);
-                    $flutterResponse = $iresponse->json(); 
+                        $iresponse = Http::post($flutterUrl, $flutterData);
+                        $flutterResponse = $iresponse->json();
 
-                    $this->info('***** AWAITING RESPONSE FROM FLUTTERWAVE :: Lookup Failed 2 *************');
+                        $this->info('***** AWAITING RESPONSE FROM FLUTTERWAVE *************');
 
-                    if ($flutterResponse['status'] == "success" && $flutterResponse['data']['status'] == 'successful') {
+                        if ($flutterResponse['status'] == "success" && $flutterResponse['data']['status'] == 'successful') {
 
-                        $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
-                           // 'providerRef' => $flutterResponse['data']['flwref'],
-                            'status' => 'processing'
-                        ]);
+                            PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                                'providerRef' => $flutterResponse['data']['flwref'],
+                                'status' => 'processing',
+                            ]);
 
-                        $this->info('***** ONE TRANSACTION UPDATED ::A TRANSACTION HAS BEEN UPDATED *************');
+                            (new PolarisLogService)->processLogs(
+                                $paymentLog->transaction_id,
+                                $paymentLog->meter_no,
+                                $paymentLog->account_number,
+                                $flutterResponse
+                            );
 
-                    } else { 
-                        // $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
-                        //     'providerRef' => $flutterResponse['data']['flwref'],
-                        //     'status' => 'failed'
-                        // ]);
-                        $this->info('***** ONE TRANSACTION FAILED ::A TRANSACTION IS FAILING *************');
-                        // Send Failed Response to Customer
+                            $this->info('***** ONE TRANSACTION UPDATED :: A TRANSACTION HAS BEEN UPDATED  AS SUCCESSFUL *************');
+                        } elseif (
+                            isset($flutterResponse['status']) &&
+                            isset($flutterResponse['data']['status']) &&
+                            $flutterResponse['data']['status'] == 'failed'
+                        ) {
+                            PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                                'providerRef' => $flutterResponse['data']['flwref'],
+                                'status' => 'failed',
+                            ]);
+
+                            (new PolarisLogService)->processLogs(
+                                $paymentLog->transaction_id,
+                                $paymentLog->meter_no,
+                                $paymentLog->account_number,
+                                $flutterResponse
+                            );
+                            $this->info('***** ONE TRANSACTION UPDATED :: A TRANSACTION HAS BEEN UPDATED  AS FAILED *************');
+                        } elseif (
+                            isset($flutterResponse['status']) &&
+                            isset($flutterResponse['data']['status']) &&
+                            $flutterResponse['data']['status'] == 'cancelled'
+                        ) {
+                            PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                                'providerRef' => $flutterResponse['data']['flwref'],
+                                'status' => 'cancelled',
+                            ]);
+
+                            (new PolarisLogService)->processLogs(
+                                $paymentLog->transaction_id,
+                                $paymentLog->meter_no,
+                                $paymentLog->account_number,
+                                $flutterResponse
+                            );
+                            $this->info('***** ONE TRANSACTION UPDATED :: A TRANSACTION HAS BEEN UPDATED  AS CANCELLED *************');
+                        } else {
+                            $this->info('***** ONE TRANSACTION FAILED :: THE TRANSACTION HAS NO STATUS *************');
+                        }
                     }
-                }
-
-            });
-    
-    
-
-
-        }catch(\Exception $e){
+                });
+        } catch (\Exception $e) {
             $this->info('***** ERROR PROCESSING PAYMENT :: Error Processing and updating payments *************');
             Log::error('Error Failed LookUp: ' . $e->getMessage());
         }

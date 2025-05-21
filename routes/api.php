@@ -17,6 +17,7 @@ use App\Http\Controllers\Remove\DeleteController;
 use App\Http\Controllers\Token\TokenController;
 use App\Http\Controllers\VirtualAccount\VirtualController;
 use App\Http\Controllers\Payment\WalletPaymentConfirmation;
+use App\Http\Controllers\AppVersionController;
 
 
 /*
@@ -35,6 +36,9 @@ use App\Http\Controllers\Payment\WalletPaymentConfirmation;
 
 Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth'], function () {
 
+    Route::group(['prefix' => 'app'], function () {  
+        Route::get('version', [AppVersionController::class, 'getVersionNumber']);
+    });
     // Route::resource('registration', RegisterController::class)->only(['index', 'store', 'show']);
     // Route::post('verify-pin', [RegisterController::class, 'verifyPin']);
     // Route::post('retry-verification-code', [RegisterController::class, 'retyCode']);
@@ -46,6 +50,8 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
         Route::post('verify-pin', 'verifyPin')->name('verify-pin');
         Route::post('retry-verification-code', 'retyCode')->name('retry-verification-code');
         Route::post('add-meter', 'addMeter')->name('add-meter');
+
+        Route::post('start_registration', 'storeRegister')->name('startRegistration');
     });
 
     Route::post('authenticate', [LoginController::class, 'store']);
@@ -169,3 +175,4 @@ Route::post('/webhook/failed/flutterwave', [VirtualController::class, 'handleFai
 
 
 require_once __DIR__.'/agency.php';
+require_once __DIR__.'/account.php';

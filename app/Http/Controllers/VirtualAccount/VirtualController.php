@@ -18,6 +18,7 @@ use App\Models\Wallet\WalletHistory;
 use App\Models\FailedVirtualAccount;
 use App\Jobs\NotificationJob;
 use Illuminate\Support\Facades\Log;
+use App\Services\AuditLogService;
 
 class VirtualController extends BaseAPIController
 {
@@ -42,6 +43,12 @@ class VirtualController extends BaseAPIController
      //   $newRequest = $validatedData->merge($otherData); // for object
 
         $checkEmail = User::where("email", $validatedData['email'])->first();
+
+        $updateEmail = str_starts_with($validatedData['email'], 'default') || str_starts_with($validatedData['email'], 'noemail');
+
+        if($updateEmail) {
+            return $this->sendError("Only users with registered email /password can create wallet", 'ERROR', Response::HTTP_UNAUTHORIZED);  
+        }
 
         if(!$checkEmail) {
             return $this->sendError("User Email Does Not Exist In Our System", 'ERROR', Response::HTTP_UNAUTHORIZED);
@@ -74,7 +81,12 @@ class VirtualController extends BaseAPIController
                 'bvn' => $validatedData['bvn']
             ]);
 
-            dispatch(new VirtualAccountJob($newResponse, $user));
+            //dispatch(new VirtualAccountJob($newResponse, $user));
+            dispatch(new VirtualAccountJob($account, $user));
+
+            $audit_description = "Virtual Account Created for ". $validatedData['firstname'] . ' ' . $validatedData['lastname']. ' with email '. $validatedData['email']
+            . ' and account no '. $newResponse['data']['account_number'];
+            AuditLogService::logAction('Virtual Account', 'customer',  $audit_description, $user->id, 200);
 
             return $this->sendSuccess( [
                 'account' => $account,
@@ -118,7 +130,9 @@ class VirtualController extends BaseAPIController
         Log::warning('Second Logs', ['First Log' => $payload]);
 
         //Check if the transaction does not exist in the database before and it has been completed.
-        $checkForTransaction = VirtualAccountTrasactions::where('tx_ref', $payload['data']['tx_ref'])->first();
+       // $checkForTransaction = VirtualAccountTrasactions::where('tx_ref', $payload['data']['tx_ref'])->first();
+
+        $checkForTransaction = VirtualAccountTrasactions::where('flw_ref', $payload['data']['flw_ref'])->first();
         
         if($checkForTransaction){
 
@@ -204,16 +218,17 @@ class VirtualController extends BaseAPIController
                 // Check if customer wallet exists; if not, create one with initial balance
                 $wallet = WalletUser::where('user_id', $user->id)->first();
 
-                if($wallet){
+                if($wallet && str_contains($validationVerifiedResponse['data']['tx_ref'], 'RND') ){
                     // If the wallet exists, increment the balance
                     $wallet->increment('wallet_amount', $validationVerifiedResponse['data']['amount']);
-                } else {
-                     // If the wallet does not exist, create a new one with the initial balance
-                     WalletUser::create([
-                        'user_id' => $user->id,
-                        'wallet_amount' =>  $validationVerifiedResponse['data']['amount'],
-                    ]);
                 }
+                // } else {
+                //      // If the wallet does not exist, create a new one with the initial balance
+                //      WalletUser::create([
+                //         'user_id' => $user->id,
+                //         'wallet_amount' =>  $validationVerifiedResponse['data']['amount'],
+                //     ]);
+                // }
 
                 // Update the transaction reference as completed
                 $checkTransaction = VirtualAccountTrasactions::where("tx_ref",  $validationVerifiedResponse['data']['tx_ref'])

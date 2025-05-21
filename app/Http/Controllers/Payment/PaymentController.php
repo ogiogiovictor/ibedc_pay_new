@@ -43,8 +43,8 @@ class PaymentController extends BaseAPIController
        // return $this->sendError("System Downtime", 'System Unavailable, please try again later', Response::HTTP_BAD_REQUEST); 
 
 
-       if($request->amount < 1000) {
-        return $this->sendError("Invalid Amount. Minimum Amount is 1,000", 'ERROR - minimum amount 1,000', Response::HTTP_BAD_REQUEST); 
+       if($request->amount < 1) {
+        return $this->sendError("Invalid Amount. Minimum Amount is 500", 'ERROR - minimum amount 2,000', Response::HTTP_BAD_REQUEST); 
        }
     
         try{
@@ -213,6 +213,10 @@ class PaymentController extends BaseAPIController
         }
 
 
+        if (strtoupper(substr($newResponse['data']['serviceBand'], 0, 1)) === 'A' && $request->amount < 2) {
+            return $this->sendError('Error', "Transaction Cannot be less than 500 for BAND A Customers", Response::HTTP_BAD_REQUEST);
+        }
+
          // Check Customer Eligibility for Payment
         //  $eligibilityCheck = SubAccount::where('AccountNo', $zoneECMI->AccountNo)
         // ->whereIn('SubAccountAbbre', ['OUTBAL', 'OUTBAL2',  'LOSREV', 'PENCHG'])
@@ -296,13 +300,24 @@ class PaymentController extends BaseAPIController
             return $this->sendError('The Transaction does not exist', "Error!", Response::HTTP_BAD_REQUEST);
         }
 
+        // if(!$request->provider) {
+        //     return $this->sendError('Provider does not exist', "Error!", Response::HTTP_BAD_REQUEST);
+        // }
+
+        $provider = isset($request->provider) && $request->provider == 'Polaris' ? env('FLUTTER_POLARIS_KEY') :
+        env('FLUTTER_FCMB_KEY');
+
         $response = Http::withoutVerifying()->withHeaders([
-            'Authorization' => 'Bearer FLWSECK-effa327dab3411ddeb7730dd0e5e38bf-191d6565d8dvt-X',  // Live Keys
+            'Authorization' => 'Bearer '.$provider,   // Live Keys//FLWSECK-effa327dab3411ddeb7730dd0e5e38bf-191d6565d8dvt-X',
            //'Authorization' => 'Bearer FLWSECK_TEST-3d68b68ad292988f76a5ea280acf6521-X', //Test Key
             'Content-Type' => "application/json"
         ])->post("https://api.flutterwave.com/v3/payments", $request->all());
 
         $newResponse =  $response->json();
+
+        if(!$newResponse) {
+            return $this->sendError($newResponse, "No Response from Payment Provider", Response::HTTP_BAD_REQUEST);
+        }
 
         return $this->sendSuccess($newResponse, "Proceed to Make Payment", Response::HTTP_OK);
 

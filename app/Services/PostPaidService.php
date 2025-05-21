@@ -59,7 +59,7 @@ class PostPaidService extends BaseAPIController
             'receiptno' => isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] :  '',
             'Descript' =>  isset($newResponse['message']) ? $newResponse['message'] :  '',
             'units' => isset($newResponse['Units']) ? $newResponse['Units'] : '0', 
-
+            'provider' => $request->provider,
             'minimumPurchase' => isset($newResponse['customer']['minimumPurchase']) ? $newResponse['customer']['minimumPurchase'] : '',
             'tariffcode'  => isset($newResponse['customer']['tariffcode']) ? $newResponse['customer']['tariffcode'] : '',
             'customerArrears' => isset($newResponse['customer']['customerArrears']) ? $newResponse['customer']['customerArrears'] : '',

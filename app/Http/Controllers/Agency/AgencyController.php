@@ -15,6 +15,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Wallet\WalletUser;
 use App\Enums\RoleEnum;
 use App\Models\Transactions\PaymentTransactions;
+use App\Http\Requests\RegisterRequest;
 
 
 class AgencyController extends BaseAPIController
@@ -58,7 +59,7 @@ class AgencyController extends BaseAPIController
             $getAgency = Agents::where('id', $user->agency)->with('users')->get();
             // Filter transactions by the user's agency and paginate results
             $agencyPayments = $query->where('agency', $user->agency)->orderby("created_at", "desc")->paginate(30);
-        }
+        } 
 
         return $this->sendSuccess([
             'payload' => [
@@ -72,9 +73,38 @@ class AgencyController extends BaseAPIController
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(RegisterRequest $request)
     {
-       
+         // Check if the user has one of the allowed roles
+        if (!auth()->user()->hasAnyRole([RoleEnum::super_admin()->value, RoleEnum::agency_admin()->value])) {
+            return $this->sendError('Unauthorized.', Response::HTTP_FORBIDDEN);
+        }
+
+        try {
+            // Create the user
+            $user = User::create($request->all());
+           
+            // Generate a PIN
+            $pin = strval(rand(100000, 999999));
+            $user->update(['pin' => $pin, 'status' => 1]);
+
+            // Assign role if authority exists
+            if (isset($request->authority)) {
+                $user->assignRole(strtolower($request->authority));
+            }
+
+            // Dispatch welcome email
+           // dispatch(new RegistrationJob($user));
+
+            return $this->sendSuccess([
+                'payload' => $user,
+                'message' => 'A PIN has been generated for your account. Please check your email for the PIN to complete the registration process.',
+            ], 'PIN generated', Response::HTTP_OK);
+
+        } catch (\Exception $e) {
+        
+            return $this->sendError('Error occurred: ' . $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+        }
     }
 
     /**
@@ -86,7 +116,7 @@ class AgencyController extends BaseAPIController
         $newRequest = $request->merge(['agent_code' => StringHelper::generateUUIDReference()]);
         $createAgency = Agents::create($newRequest->all());
 
-        return $this->sendSuccess( [
+        return $this->sendSuccess([
             'payload' => $createAgency,
             'message' => 'Agency Successfully Created',
         ], 'Successful', Response::HTTP_OK);

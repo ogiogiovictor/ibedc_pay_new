@@ -303,6 +303,21 @@
         <td class="container">
           <div class="content">
 
+
+          <!-- <table style="width:100%;max-width:620px;margin:0 auto;"> -->
+          <table style="width:100%;max-width:200px;margin:0 auto;">
+                        <tbody>
+                            <tr>
+                                <td style="text-align: center; padding-bottom:25px">
+                                    <!-- <a href="#"><img style="height: 40px" src="https://www.ibedc.com/assets/img/mail_footer.png" alt="logo"></a> -->
+                                    <a href="#"><img  style="height: 80px" src="https://www.ibedc.com/assets/img/mail_footer.png" alt="logo"></a>
+                                   
+                                </td>
+                            </tr>
+                        </tbody>
+            </table>
+
+
             <!-- START CENTERED WHITE CONTAINER -->
             <span class="preheader">Your IBECPay Prepaid Token Confirmation</span>
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
@@ -358,6 +373,7 @@
 
             <!-- START FOOTER -->
             <div class="footer">
+              <!-- <img src="" class="img-responsive" /> -->
               <table role="presentation" border="0" cellpadding="0" cellspacing="0">
                 <tr>
                   <td class="content-block">
