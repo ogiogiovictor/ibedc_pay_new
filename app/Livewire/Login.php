@@ -50,6 +50,14 @@ class Login extends Component
 
                 return redirect()->route('agency_dashboard');
                 
+            }else if($user->isdtm() || $user->isbhm() || $user->isregion() || $user->isbilling()) {
+
+                session()->flash('success', 'You are successfully loggedIn');
+
+                AuditLogService::logAction('User Login', $user->authority, 'User logged in successfully', $user->id, 200);
+
+                return redirect()->route('new_account');
+                
             } else {
                 // Logout non-admin users
                 Auth::logout();

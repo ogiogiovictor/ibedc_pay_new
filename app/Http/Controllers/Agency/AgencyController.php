@@ -73,55 +73,41 @@ class AgencyController extends BaseAPIController
     /**
      * Show the form for creating a new resource.
      */
-    public function create(RegisterRequest $request)
-    {
-         // Check if the user has one of the allowed roles
-        if (!auth()->user()->hasAnyRole([RoleEnum::super_admin()->value, RoleEnum::agency_admin()->value])) {
-            return $this->sendError('Unauthorized.', Response::HTTP_FORBIDDEN);
-        }
+    // public function create(RegisterRequest $request)
+    // {
+    //      // Check if the user has one of the allowed roles
+    //     if (!auth()->user()->hasAnyRole([RoleEnum::super_admin()->value, RoleEnum::agency_admin()->value])) {
+    //         return $this->sendError('Unauthorized.', Response::HTTP_FORBIDDEN);
+    //     }
 
-        try {
-            // Create the user
-            $user = User::create($request->all());
+    //     try {
+    //         // Create the user
+    //         $user = User::create($request->all());
            
-            // Generate a PIN
-            $pin = strval(rand(100000, 999999));
-            $user->update(['pin' => $pin, 'status' => 1]);
+    //         // Generate a PIN
+    //         $pin = strval(rand(100000, 999999));
+    //         $user->update(['pin' => $pin, 'status' => 1]);
 
-            // Assign role if authority exists
-            if (isset($request->authority)) {
-                $user->assignRole(strtolower($request->authority));
-            }
+    //         // Assign role if authority exists
+    //         if (isset($request->authority)) {
+    //             $user->assignRole(strtolower($request->authority));
+    //         }
 
-            // Dispatch welcome email
-           // dispatch(new RegistrationJob($user));
+    //         // Dispatch welcome email
+    //        // dispatch(new RegistrationJob($user));
 
-            return $this->sendSuccess([
-                'payload' => $user,
-                'message' => 'A PIN has been generated for your account. Please check your email for the PIN to complete the registration process.',
-            ], 'PIN generated', Response::HTTP_OK);
+    //         return $this->sendSuccess([
+    //             'payload' => $user,
+    //             'message' => 'A PIN has been generated for your account. Please check your email for the PIN to complete the registration process.',
+    //         ], 'PIN generated', Response::HTTP_OK);
 
-        } catch (\Exception $e) {
+    //     } catch (\Exception $e) {
         
-            return $this->sendError('Error occurred: ' . $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
-        }
-    }
+    //         return $this->sendError('Error occurred: ' . $e->getMessage(), Response::HTTP_INTERNAL_SERVER_ERROR);
+    //     }
+    // }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(AgencyRequest $request)
-    {
-       $this->middleware('can:'.RoleEnum::super_admin()->value);
-        $newRequest = $request->merge(['agent_code' => StringHelper::generateUUIDReference()]);
-        $createAgency = Agents::create($newRequest->all());
-
-        return $this->sendSuccess([
-            'payload' => $createAgency,
-            'message' => 'Agency Successfully Created',
-        ], 'Successful', Response::HTTP_OK);
-
-    }
+   
 
     /**
      * Display the specified resource.
@@ -163,7 +149,11 @@ class AgencyController extends BaseAPIController
 
     public function authenticate(LoginRequest $request){
 
-        if (!isset($request->authority) &&  $request->authority != "agent") {
+        // if (!isset($request->authority) &&  $request->authority != "agent") {
+        //     return $this->sendError('User do not have access to this app', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        // }
+
+        if (!isset($request->agency) &&  $request->agency != "") {
             return $this->sendError('User do not have access to this app', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
     
@@ -171,7 +161,7 @@ class AgencyController extends BaseAPIController
         //$user_status = User::where(["email" => $request->email, "authority" => "agent"])->first();
 
         $user_status = User::where('email', $request->email)->where(function($query) {
-            $query->where('authority', 'agent')->orWhere('authority', 'agency_admin');
+            $query->where('authority', 'agent')->orWhere('authority', 'agency_admin')->orWhere('authority', 'admin');
         })->first();
 
         if(!$user_status || $user_status->status != 1){
@@ -195,7 +185,7 @@ class AgencyController extends BaseAPIController
                 'token' => $user->createToken('Authorization')->plainTextToken,
                 'agency' => $user->agency ? Agents::where('id', $user->agency)->first() : 0, // Include the agency agent_name
                 'wallet' => $user->wallet,
-              //  'account' => $user->virtualAccount,
+                'virtual_account' => $user->virtualAccount,
             ], 'LOGIN SUCCESSFUL', Response::HTTP_OK);
         }
 

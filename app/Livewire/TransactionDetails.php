@@ -329,7 +329,7 @@ class TransactionDetails extends Component
 
     public function addProviderReference($id) {
 
-        //dd($this->transactions->transaction_id);
+        //dd($id);
 
         $this->transactions = PaymentTransactions::where("id", $id)->first();
 
@@ -424,6 +424,13 @@ class TransactionDetails extends Component
             return redirect()->route('log_transactions');
         }
 
+        if($providerText == 'Polaris') {
+            $providerText = "FCMB";
+        } else {
+             $providerText = "Polaris";
+        }
+       // $providerText = $providerText ? $providerText : 'FCMB';
+        
         $update = PaymentTransactions::where("transaction_id", $this->transactions->transaction_id)->update([
             'provider' => $providerText
         ]);

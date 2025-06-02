@@ -73,5 +73,6 @@ class Kernel extends HttpKernel
         'check_access' => \App\Http\Middleware\CheckMenuAccess::class,
         'agency_access' => \App\Http\Middleware\AgencyMiddleware::class,
         'super_admin_access' => \App\Http\Middleware\SuperAdminMiddleware::class,
+        'new_account_access' => \App\Http\Middleware\AccountMiddleware::class,
     ];
 }

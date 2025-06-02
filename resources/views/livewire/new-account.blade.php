@@ -107,7 +107,7 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">Application(s) Submitted Today</h4>
+                            <h4 class="card-title">Total Application</h4>
                             <div class="dropdown dropleft card-menu-dropdown">
                               <button class="btn p-0" type="button" id="dropdown3" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                 <i class="mdi mdi-dots-vertical card-menu-btn"></i>
@@ -243,6 +243,7 @@
                                   <th>Other Names</th>
                                   <th>Type of Premise</th>
                                   <th>Use Of Premise</th>
+                                  <th>Business Hub</th>
                                   <th>Status</th>
                                   <th>Actions</th>
                                 </tr>
@@ -261,6 +262,7 @@
                                   <td>{{ $transaction->other_name }} </td>
                                   <td>{{ $transaction->type_of_premise }}</td>
                                   <td>{{ $transaction->use_of_premise }}</td>
+                                  <td>{{ $transaction->business_hub }}</td>
                                   <td>
                                       @if($transaction->status == "started")
                                       <label class="badge badge-info">Started</label>

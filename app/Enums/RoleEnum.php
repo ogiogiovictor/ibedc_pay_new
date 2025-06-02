@@ -14,6 +14,10 @@ use \Spatie\Enum\Enum;
  * @method static self super_admin()
  * @method static self agency_admin()
  * @method static self payment_channel()
+ * @method static self dtm()
+ * @method static self bhm()
+ * @method static self region()
+ * @method static self billing()
  */
 
 class RoleEnum extends Enum
@@ -34,7 +38,11 @@ class RoleEnum extends Enum
             'agent' => 'agent',
             'super_admin' => 'super_admin',
             'agency_admin' => 'agency_admin',
-            'payment_channel' => 'payment_channel'
+            'payment_channel' => 'payment_channel',
+            'dtm' => 'dtm',
+            'bhm' => 'bhm',
+            'region' => 'region',
+            'billing' => 'billing',
         ];
     }
 
@@ -54,7 +62,11 @@ class RoleEnum extends Enum
             'agent' => 'agent',
             'super_admin' => 'super_admin',
             'agency_admin' => 'agency_admin',
-            'payment_channel' => 'payment_channel'
+            'payment_channel' => 'payment_channel',
+            'dtm' => 'dtm',
+            'bhm' => 'bhm',
+            'region' => 'region',
+            'billing' => 'billing',
         ];
     }
 }

@@ -32,6 +32,7 @@ use App\Livewire\AccountDetails;
 use App\Livewire\TrackApplication;
 use App\Livewire\NewAccount;
 use App\Livewire\TrackingDetails;
+use App\Livewire\NewAccountDetails;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -45,7 +46,7 @@ use App\Livewire\TrackingDetails;
 Route::get('/', Login::class);
 Route::get('/login', Login::class)->name('login');
 Route::get('/track', TrackApplication::class)->name('track');
-Route::get('/tracking_details', TrackingDetails::class)->name('tracking_details');
+
 
 
 Route::middleware(['auth', 'check_access'])->group(function () {
@@ -92,7 +93,18 @@ Route::middleware(['auth', 'check_access'])->group(function () {
       Route::get('/account_details/{tracking_id}', AccountDetails::class)->name('account_details');
     });
 
+
+     //// super_admin_access
+    Route::middleware(['auth', 'new_account_access'])->group(function () { 
+      Route::get('/new_account', NewAccount::class)->name('new_account');
+      Route::get('/account_details/{tracking_id}', AccountDetails::class)->name('account_details');
+      Route::get('/tracking_details/{id}/{tracking_id}', NewAccountDetails::class)->name('tracking_details');
+     // Route::get('/tracking_details', NewAccountDetails::class)->name('tracking_details');
+    });
+
    
+
+    
 
  // });
 

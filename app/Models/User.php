@@ -35,7 +35,10 @@ class User extends Authenticatable
         'authority',
         'meter_no_primary',
         'agency',
-        'account_type'
+        'account_type',
+        'region',
+        'business_hub',
+        'sc'
     ];
 
     /**
@@ -123,6 +126,28 @@ class User extends Authenticatable
     public function PaymentTransactions() {
         return $this->hasMany(PaymentTransactions::class, "user_id");
     }
+
+
+    public function isdtm()
+    {
+        return $this->authority === RoleEnum::dtm()->value;
+    }
+
+    public function isbhm()
+    {
+        return $this->authority === RoleEnum::bhm()->value;
+    }
+
+    public function isregion()
+    {
+        return $this->authority === RoleEnum::region()->value;
+    }
+
+    public function isbilling()
+    {
+        return $this->authority === RoleEnum::billing()->value;
+    }
+
 
     
 

@@ -12,6 +12,9 @@ use App\Livewire\AgencyDashboard;
 use App\Http\Controllers\History\CustomerBillHistory;
 
 
+use App\Http\Controllers\Agency\CreateAgents;
+use App\Http\Controllers\Agency\ManageAgencies;
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -33,25 +36,26 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_agency_sync', 'middleware' => 'myAuth'
 
     Route::middleware('auth:sanctum')->group(function() {
         
-         Route::resource('register', AgencyController::class)->only(['create']);  // Only Super Administrator and Agency Admin Can Create Agents
-
-
+          // Only Super Administrator and Agency Admin Can Create Agents
         Route::resource('agency', AgencyController::class)->only(['index', 'store', 'show']); // only administrator
+
         Route::post('search', [AgencySearchController::class, 'searchCustomers']); // only administrator
-         //Customer Pills
-        Route::prefix('customerhistory')->controller(CustomerBillHistory::class)->group(function () {
+
+
+
+        ///////////////////////////// CUSTOMERS ONLY ////////////////////////////////////////////
+         //Customer Search
+            Route::prefix('customerhistory')->controller(CustomerBillHistory::class)->group(function () {
             Route::post('bill-history', 'customerBills')->name('bill-history');
         });
 
 
+        //////////////////////////// ADMINISTRATIVE ROUTE ONLY /////////////////////////////////////////
+         Route::post('register', [CreateAgents::class, 'create']); 
+         Route::post('create_agency', [ManageAgencies::class, 'store']); 
+         Route::post('add_agency_to_bh', [ManageAgencies::class, 'create']); 
+         Route::get('get_business_hub', [ManageAgencies::class, 'getHubs']); 
 
-        //////////////////// SEARCH CUSTOMER HISTORY ///////////////////////////////////////
-        //  Route::prefix('customerhistory')->controller(CustomerPaymentHistory::class)->group(function () {
-        //     Route::post('customer-history', 'customerHistory')->name('customer-history');
-        // });
-
-        //Agency Collection | Target
-       // Route::get('collection_target', [AgencyCollection::class, 'agentCollection']);
 
        
 

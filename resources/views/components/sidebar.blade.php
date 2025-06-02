@@ -61,12 +61,23 @@
               </div>
             </div>
           </li>
-          <li class="nav-item">
+
+        @if($user->authority == 'dtm' || $user->authority == 'billing' || $user->authority == 'bhm')
+            <li class="nav-item"> </li>
+        @else
+            <li class="nav-item">
+                <a class="nav-link" href="/dashboard" wire:navigate>
+                    <i class="mdi mdi-shield-check menu-icon"></i>
+                    <span class="menu-title">Dashboard</span>
+                </a>
+            </li>
+        @endif
+          <!-- <li class="nav-item">
             <a class="nav-link"  href="/dashboard"  wire:navigate>
             <i class="mdi mdi-shield-check menu-icon"></i>
             <span class="menu-title">Dashboard</span>
             </a>
-          </li>
+          </li> -->
 
 
 

@@ -35,8 +35,12 @@ class Dashboard extends Component
           return redirect()->route('agency_dashboard');
         } 
 
-        if($user->authority == (RoleEnum::user()->value)  || $user->authority == (RoleEnum::supervisor()->value) ) {
-           abort(403, 'Unathorized action.');
+        if($user->authority == (RoleEnum::user()->value)  || $user->authority == (RoleEnum::supervisor()->value)
+        
+        || $user->authority == (RoleEnum::bhm()->value) || $user->authority == (RoleEnum::dtm()->value)
+        || $user->authority == (RoleEnum::region()->value) || $user->authority == (RoleEnum::billing()->value)
+        ) {
+           abort(403, 'Unathorized action. You do not have access to this page');
         } 
 
         $today = now()->toDateString();

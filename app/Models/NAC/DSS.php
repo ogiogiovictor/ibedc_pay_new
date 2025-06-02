@@ -14,4 +14,7 @@ class DSS extends Model
     protected $connection = 'data_warehouse';
 
     public $timestamps = false;
+    protected $primaryKey = 'Assetid'; // replace with actual primary key
+    public $incrementing = false; // if not integer
+    protected $keyType = 'string'; // or 'int'
 }

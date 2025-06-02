@@ -39,7 +39,7 @@ Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync', 'middleware' => 'myA
         ///////////////////////This is the last point of the API /////////////////////////////////////////////////////
         Route::get('regions', 'region')->name('regions');
         Route::get('business_hub/{region_name}', 'businesshub')->name('business_hub');
-        Route::get('get_dss/{region}/{business_hub_name}/{servicecenter}', 'getDss')->name('get_dss');
+        Route::get('get_dss', 'getDss')->name('get_dss');
         Route::get('service_centers/{business_hub_name}', 'getDssServiceCenter')->name('service_centers');
 
     });

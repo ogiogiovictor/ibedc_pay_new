@@ -9,6 +9,7 @@ use App\Models\NAC\DSS;
 class TrackingDetails extends Component
 {
     public $tracking;
+    public $id;
 
     public $validationcode;
 

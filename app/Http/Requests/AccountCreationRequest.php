@@ -33,6 +33,7 @@ class AccountCreationRequest extends FormRequest
             "lga" => 'required',
             "address" => 'required',
             "type_of_premise" => 'required',
+           // "region" => 'required',
 
             // Composite uniqueness
             'name_combination' => [

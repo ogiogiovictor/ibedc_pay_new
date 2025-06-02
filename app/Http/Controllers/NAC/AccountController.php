@@ -17,6 +17,9 @@ use App\Http\Requests\FinalCustomerRequest;
 use App\Models\NAC\Regions;
 use App\Models\NAC\DSS;
 use App\Models\NAC\UploadHouses;
+use App\Jobs\TrackingIDJob;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\File;
 
 
 
@@ -34,6 +37,7 @@ class AccountController extends BaseAPIController
         ->first();
 
         if( $existingUser) {
+
              return $this->sendSuccess([
                     'customer' => $existingUser,
                 ], 'CUSTOMER SUCCESSFULLY CREATED', Response::HTTP_OK);
@@ -72,10 +76,14 @@ class AccountController extends BaseAPIController
             $requestData = $request->all();
             $requestData['status'] = 'started'; // or '1'
             $requestData['status_name'] = 'Application Initiated'; // or '1'
-            $udeme = AccoutCreaction::create($requestData);
+            $userData = AccoutCreaction::create($requestData);
              // You can customize the response based on your needs
+
+             dispatch(new TrackingIDJob($userData));
+
+
             return $this->sendSuccess([
-                    'customer' => $udeme,
+                    'customer' => $userData,
                 ], 'CUSTOMER SUCCESSFULLY CREATED', Response::HTTP_OK);
         } 
             
@@ -145,7 +153,9 @@ class AccountController extends BaseAPIController
 
         // Handle picture upload if present
         if ($request->hasFile('landloard_picture')) {
-            $folder = 'customers/pictures';
+            //$folder = 'customers/pictures';
+
+            $folder = "/customers/pictures";
 
             // Check and create the folder if it doesn't exist
             if (!Storage::disk('public')->exists($folder)) {
@@ -155,31 +165,6 @@ class AccountController extends BaseAPIController
             $picturePath = $request->file('landloard_picture')->store($folder, 'public');
             $data['landloard_picture'] = $picturePath;
         }
-
-
-        //////////////////////////// PUBLIC PATH ////////////////////////
-            // if ($request->hasFile('landloard_picture')) {
-            //     $file = $request->file('landloard_picture');
-
-            //     // Example of a given path like: customers/pictures/IBD74D000001.jpg
-            //     $givenPath = 'customers/pictures/' . $request->tracking_id . '.' . $file->getClientOriginalExtension();
-                
-            //     // Extract folder part
-            //     $directory = dirname($givenPath);
-
-            //     // Create the directory if it doesn't exist
-            //     if (!Storage::disk('public')->exists($directory)) {
-            //         Storage::disk('public')->makeDirectory($directory, 0755, true);
-            //     }
-
-            //     // Store file at given path
-            //     Storage::disk('public')->put($givenPath, file_get_contents($file));
-
-            //     // Save the path to DB if needed
-            //     $data['picture'] = $givenPath;
-            // }
-
-        ///////////////////////// END OF PUBLIC PATH////////////////////////////////
 
            // Create the continue customer record
         $createdCustomer = ContinueAccountCreation::create($data); 
@@ -200,17 +185,18 @@ class AccountController extends BaseAPIController
 
     public function upload(UploadRequest $request) {
 
+        $data = $request->validated();
         $existingUser = AccoutCreaction::where('tracking_id', $request->tracking_id)->first();
-        
-         if(!$existingUser) {
-             return $this->sendError('Invalid Tracking ID', 'ERROR', Response::HTTP_UNAUTHORIZED);
+         
+        if (!$existingUser) {
+                return $this->sendError('Invalid Tracking ID', 'ERROR', Response::HTTP_UNAUTHORIZED);
         }
 
-         $data = $request->validated();
 
-        // Handle picture upload for identification
-        if ($request->hasFile('identification')) {
-            $folder = 'customers/pictures';
+         if ($request->hasFile('identification') && $request->file('identification')->isValid()) {
+            //$folder = 'customers/pictures';
+
+            $folder = "/customers/pictures";
 
             // Check and create the folder if it doesn't exist
             if (!Storage::disk('public')->exists($folder)) {
@@ -221,9 +207,11 @@ class AccountController extends BaseAPIController
             $data['identification'] = $picturePath;
         }
 
-         // Handle picture upload for identification
-        if ($request->hasFile('photo')) {
-            $folder = 'customers/pictures';
+
+         if ($request->hasFile('photo') && $request->file('photo')->isValid()) {
+            //$folder = 'customers/pictures';
+
+            $folder = "/customers/pictures";
 
             // Check and create the folder if it doesn't exist
             if (!Storage::disk('public')->exists($folder)) {
@@ -234,28 +222,33 @@ class AccountController extends BaseAPIController
             $data['photo'] = $picturePath;
         }
 
-          $data['customer_id'] =  $existingUser->id; 
-          $data['no_of_account_apply_for'] = $request->no_of_account_apply_for;
 
-          // Check if record already exists in UploadAccountCreation
-            $existingUpload = UploadAccountCreation::where('tracking_id', $request->tracking_id)->first();
+        $data['customer_id'] = $existingUser->id;
 
-            if ($existingUpload) {
-                //Update existing record
-                $existingUpload->update($data);
-                return $this->sendSuccess(['customer' => $existingUpload], 'CUSTOMER SUCCESSFULLY UPDATED', Response::HTTP_OK);
+            $existingUser->update([
+                'no_of_account_apply_for' => $request->no_of_account_apply_for,
+            ]);
 
-            } else {
-                // Create new record
-                $createdCustomer = UploadAccountCreation::create($data);
+         // Check if the record exists and update or create
+        $existingUpload = UploadAccountCreation::where('tracking_id', $request->tracking_id)->first();
 
-                if ($createdCustomer) {
+        if ($existingUpload) {
+        $existingUpload->update($data);
+        return $this->sendSuccess(['customer' => $existingUpload], 'CUSTOMER SUCCESSFULLY UPDATED', Response::HTTP_OK);
+        } else {
+            $createdCustomer = UploadAccountCreation::create($data);
+           
+             if ($createdCustomer) {
                     return $this->sendSuccess(['customer' => $createdCustomer], 'CUSTOMER SUCCESSFULLY CREATED', Response::HTTP_OK);
+                } else {
+                    return $this->sendError('There was an error creating your account.', 'ERROR', Response::HTTP_UNAUTHORIZED);
                 }
-            }
 
 
-          return $this->sendError('There was an error creating your account .', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        }
+
+      //  return $this->sendError('There was an error creating your account.', 'ERROR', Response::HTTP_UNAUTHORIZED);
+
 
     }
 
@@ -301,9 +294,13 @@ class AccountController extends BaseAPIController
     public function final(Request $request) {
 
         $checkID =  $this->checktracking($request->tracking_id);
-       
 
-            $request->validate([
+       // 🛑 If checktracking() returned an error response, return early
+        if ($checkID instanceof \Illuminate\Http\JsonResponse) {
+            return $checkID;
+        }
+
+        $request->validate([
             'tracking_id' => 'required|string',
             'uploads' => 'required|array',
             'uploads.*.picture' => 'required|image|max:5120',
@@ -314,8 +311,7 @@ class AccountController extends BaseAPIController
             'uploads.*.service_center' => 'required|string',
             'uploads.*.dss' => 'required|string',
             'uploads.*.house_no' => 'required|string',
-            'uploads.*.full_address' => 'required|string',
-            
+            'uploads.*.full_address' => 'required|string',  
         ]);
 
         $folder = 'customers/pictures';
@@ -323,8 +319,7 @@ class AccountController extends BaseAPIController
         // Create folder if it doesn't exist
         if (!Storage::disk('public')->exists($folder)) {
             Storage::disk('public')->makeDirectory($folder, 0755, true);
-        }
-
+        }       
 
         // you need to check if the tracking no exist() oin UploadHouse
          // ✅ Check if uploads for this tracking_id already exist
@@ -334,6 +329,17 @@ class AccountController extends BaseAPIController
             return $this->sendError('Uploads for this tracking ID already exist.', 'DUPLICATE ENTRY', Response::HTTP_CONFLICT);
         }
 
+        // ✅ Extract business hub, region, and service center from first upload
+         $firstUpload = $request->uploads[0] ?? null;
+         if ($firstUpload) {
+                $checkID->update([
+                    'business_hub' => $firstUpload['business_hub'],
+                    'region' => $firstUpload['region'],
+                    'service_center' => $firstUpload['service_center'],
+                ]);
+         }
+
+      
         foreach ($request->uploads as $upload) {
             $path = $upload['picture']->store($folder, 'public');
 
@@ -369,34 +375,53 @@ class AccountController extends BaseAPIController
 
          $checkID =  $this->checktracking($request->tracking_id);
 
-        $existingUpload = UploadAccountCreation::where('tracking_id', $request->tracking_id)->first();
+         $request->validate([
+            'tracking_id' => 'required|string',
+            'uploads' => 'required|array',
+           // 'uploads.*.lecan_link' => 'required|mimes:pdf'
+            'uploads.*.lecan_link' => 'required|mimetypes:application/pdf',
+            'uploads.*.id' => 'required|integer',
+            //'uploads.*.lecan_link' => 'required|image|max:5120'
+        ]);
 
-        if($existingUpload->lecan_image) {
+        //$existingUploads = UploadHouses::whereIn('id', $request->id)->get();
+        $uploadIds = collect($request->uploads)->pluck('id')->all();
 
-             return $this->sendError('Lekan Form already Updated', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        $existingUploads = UploadHouses::whereIn('id', $uploadIds)->get();
+
+        // Check count consistency
+        if (count($uploadIds) !== count($request->uploads)) {
+            return response()->json(['error' => 'Mismatch between IDs and uploads.'], 422);
         }
 
+        $folder = 'customers/pictures';
 
-          // Handle picture upload for identification, should be pdf only
-            $data = [];
+        // Create folder if it doesn't exist
+        if (!Storage::disk('public')->exists($folder)) {
+            Storage::disk('public')->makeDirectory($folder, 0755, true);
+        }       
 
-            if ($request->hasFile('photo')) {
-                $folder = 'customers/pictures';
 
-                // Ensure the directory exists
-                if (!Storage::disk('public')->exists($folder)) {
-                    Storage::disk('public')->makeDirectory($folder, 0755, true);
-                }
+         // Handle PDF uploads and update existing records
+        foreach ($request->uploads as $index => $upload) {
+            //$uploadRecord = $existingUploads->firstWhere('id', $request->id[$index]);
+            $uploadRecord = $existingUploads->firstWhere('id', $upload['id']);
 
-                $picturePath = $request->file('photo')->store($folder, 'public');
-                $data['lecan_image'] = $picturePath;
+            if ($uploadRecord && isset($upload['lecan_link'])) {
+                $path = $upload['lecan_link']->store('lecan_uploads', 'public');
+
+                $uploadRecord->update([
+                    'lecan_link' =>  $path,
+                    'status' => 0,
+                ]);
             }
+        }
 
-            // Update the record
-            $existingUpload->update($data);
+        $checkID->update([
+            'status' => 'with-dtm'
+        ]);
 
-
-        return $this->sendSuccess([ 'customer' => $existingUpload ], 'CUSTOMER APPLICATION SUCCESSFUL SUBMITTED', Response::HTTP_OK);
+        return $this->sendSuccess([ 'customer' => $existingUploads ], 'CUSTOMER APPLICATION SUCCESSFUL SUBMITTED', Response::HTTP_OK);
     }
     
 
@@ -434,6 +459,7 @@ class AccountController extends BaseAPIController
 
      public function businesshub($region_name){
 
+        $region_name  = $region_name. " REGION";
         $get_business_hubs = Regions::where("Region", $region_name)->get();
           
         return $this->sendSuccess([ 'business_hubs' => $get_business_hubs ], 'All Business Hubs', Response::HTTP_OK);
@@ -441,10 +467,17 @@ class AccountController extends BaseAPIController
     }
 
 
-     public function getDss($region, $business_hub_name, $servicecenter){
+     public function getDss(Request $request){
+
+         $region = $request->query('region');
+         $hub = $request->query('hub');
+         $servicecenter = $request->query('service_center');
+   
+
+        $region =  $region == "IBADAN" ? "OYO" : $region;
 
         $get_dss = DSS::select("Assetid", "assettype", "DSS_11KV_415V_Owner", "DSS_11KV_415V_Name", "DSS_11KV_415V_Address", 
-        "hub_name", "Status", "Feeder_Name", "Feeder_ID", "BAND")->where(["Dss_State" =>$region,   "hub_name" => $business_hub_name, "DSS_11KV_415V_Owner" => $servicecenter ])->get();
+        "hub_name", "Status", "Feeder_Name", "Feeder_ID", "BAND")->where(["Dss_State" =>$region,   "hub_name" => $hub, "DSS_11KV_415V_Owner" => $servicecenter ])->get();
           
         return $this->sendSuccess([ 'dss' => $get_dss ], 'DSS Loaded', Response::HTTP_OK);
 

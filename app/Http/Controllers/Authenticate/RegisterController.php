@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Events\VirtualAccount;
 use Spatie\Permission\Models\Role;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 
 class RegisterController extends BaseAPIController
@@ -38,14 +39,12 @@ class RegisterController extends BaseAPIController
     {
         
         DB::beginTransaction();
-        
+
+       // return $request->validated();
         try {
             // Create the user
-
-          
-            $user = User::create($request->all());
+            $user = User::create($request->validated());
            
-
             // Generate a PIN
             $pin = strval(rand(100000, 999999));
             $user->update(['pin' => $pin]);

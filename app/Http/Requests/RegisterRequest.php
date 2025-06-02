@@ -26,6 +26,10 @@ class RegisterRequest extends FormRequest
             "name" => 'required',
             "email" => 'required|email|unique:users,email',
             "phone" => "required|digits:11|unique:users,phone",
+            "region" => "nullable|string|max:20",
+            "business_hub" => "nullable|string",
+            "sc" => "sometimes|string",
+            "authority" => "sometimes|string",
            // "pin" => "required|numeric",
              'password' => [
                  'required',

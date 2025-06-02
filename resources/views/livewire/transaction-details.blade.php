@@ -261,28 +261,53 @@
 
 
 
-
-                                                                
-
                                                                     @canany(['super_admin', 'payment_channel'])
-                                                                        @if (!$all_transactions->receiptno && $all_transactions->account_type == 'Prepaid' && $all_transactions->status != 'success')
+                                                                        @if (!$all_transactions->receiptno && $all_transactions->account_type == 'Prepaid' && $all_transactions->status != 'success' && $all_transactions->provider != "Wallet" )
                                                                             <button wire:click="processTransaction({{ $all_transactions->id }})" class="btn btn-xs btn-danger">Resync</button>
+                                                                        @endif
+
+                                                                          @if (!$all_transactions->receiptno && $all_transactions->account_type == 'Prepaid' && $all_transactions->status == 'processing' && $all_transactions->provider == "Wallet" )
+                                                                            <button wire:click="processWalletTransaction({{ $all_transactions->id }})" class="btn btn-xs btn-secondary">Resync Wallet Transaction</button>
+                                                                        @endif
+
+                                                                         @if (!$all_transactions->providerRef )
+                                                                            <button wire:click="addProviderReference({{ $all_transactions->id }})" class="btn btn-xs btn-secondary">Add Provider Reference</button>
+                                                                        @endif
+                                                                    @endcanany
+
+
+                                                                     @canany(['super_admin'])
+                                                                          @if ($all_transactions->provider != "Wallet" && in_array($all_transactions->status, ['started', 'processing']))
+                                                                            <button wire:click="changeprovider('{{ $all_transactions->id }}', '{{ $all_transactions->provider }}')" class="btn btn-xs btn-danger">Change Provider</button>
                                                                         @endif
                                                                     @endcanany
 
                                                                        
+                                                                     @canany(['super_admin', 'payment_channel'])
 
                                                                         @if (!$all_transactions->providerRef && $all_transactions->status == 'started')
                                                                                 <button wire:click="checkPaymentStatus({{ $all_transactions->id }})" class="btn btn-xs btn-primary">Validate Payment</button>
                                                                         @endif
 
-                                                                        @if (!$all_transactions->providerRef && $all_transactions->status == 'cancelled')
-                                                                                <button wire:click="checkPaymentStatus({{ $all_transactions->id }})" class="btn btn-xs btn-warning">Validate Payment</button>
+                                                                         @if (!$all_transactions->providerRef && $all_transactions->status == 'started')
+                                                                                <button wire:click="checkFCMBPayment({{ $all_transactions->id }})" class="btn btn-xs btn-danger">Check FCMB</button>
                                                                         @endif
+
+                                                                       
 
                                                                         @if ($all_transactions->providerRef && $all_transactions->status == 'failed')
                                                                                 <button wire:click="checkPaymentStatus({{ $all_transactions->id }})" class="btn btn-xs btn-primary">Validate Payment</button>
                                                                         @endif
+
+                                                                        @if ($all_transactions->providerRef && $all_transactions->status == 'started')
+                                                                                <button wire:click="checkFCMBPayment({{ $all_transactions->id }})" class="btn btn-xs btn-primary">Check FCMB Payment</button>
+                                                                        @endif
+
+                                                                         @if (!$all_transactions->providerRef && $all_transactions->status == 'processing')
+                                                                                <button wire:click="addProviderReference({{ $all_transactions->id }})" class="btn btn-xs btn-primary">Update Reference</button>
+                                                                        @endif
+
+                                                                    @endcanany
 
 
 
