@@ -10,7 +10,7 @@ class AccountOberver
 {
      public function creating(AccoutCreaction $user) {
         // Logic before user creation
-        $user->tracking_id = (new UniqueNo)->generate(fn($companyNo) => DB::table('account_creations')->select('tracking_id')->where('tracking_id', $companyNo)->exists(), 12, true, 'IBD' );
+        $user->tracking_id = (new UniqueNo)->generate(fn($companyNo) => DB::table('account_creations')->select('tracking_id')->where('tracking_id', $companyNo)->exists(), 8, true, 'IBD' );
     }
 
     public function created(AccoutCreaction $user) {

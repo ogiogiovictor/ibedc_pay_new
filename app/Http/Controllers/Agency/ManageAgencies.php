@@ -28,7 +28,7 @@ class ManageAgencies extends BaseAPIController
        // Validate the request
         $validated = $request->validate([
             'agent_name' => 'required|string|max:255',
-            'agent_email' => 'required|email|max:255|unique:agencies,agent_email',
+            'agent_email' => 'required|email|max:255|unique:agency,agent_email',
             'agent_official_phone' => 'required|string|max:20',
             'no_of_agents' => 'required|integer|min:1',
             'status' => 'required|boolean',
@@ -55,7 +55,7 @@ class ManageAgencies extends BaseAPIController
     public function create(Request $request) {
 
        $businesshub =  AgencyBH::create([
-            'agency_id' => $request->agency,
+            'agency_id' => $request->agency_id,
             'business_hub' => $request->business_hub
         ]);
 

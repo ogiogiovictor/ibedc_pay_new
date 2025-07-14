@@ -183,9 +183,9 @@ class PaymentController extends BaseAPIController
             return $this->sendError('Error', "Non STS Customer Cannot use this platform. Please visit our office", Response::HTTP_BAD_REQUEST);
         }
 
-        if (strpos($zoneECMI->AccountNo, '.') !== false) {
-            return $this->sendError('Error', "Non STS Customer Cannot use this platform. Please visit our office", Response::HTTP_BAD_REQUEST);
-        }
+        // if (strpos($zoneECMI->AccountNo, '.') !== false) {
+        //     return $this->sendError('Error', "Non STS Customer Cannot use this platform. Please visit our office", Response::HTTP_BAD_REQUEST);
+        // }
 
           // Check if transfer amount exceeds 25 million
         if($request->amount > 25000000) {
@@ -289,6 +289,8 @@ class PaymentController extends BaseAPIController
 
     public function continuePayment(Request $request){
 
+        //return;
+
         $checkTrans = $this->transaction->show($request->tx_ref);
 
         //Check for undefined and Null paymentRef
@@ -304,8 +306,24 @@ class PaymentController extends BaseAPIController
         //     return $this->sendError('Provider does not exist', "Error!", Response::HTTP_BAD_REQUEST);
         // }
 
-        $provider = isset($request->provider) && $request->provider == 'Polaris' ? env('FLUTTER_POLARIS_KEY') :
-        env('FLUTTER_FCMB_KEY');
+        $provider = isset($request->provider) && $request->provider == 'Polaris' ? env('FLUTTER_POLARIS_KEY') : env('FLUTTER_FCMB_KEY');
+
+        //    $flutterData = [
+        //         'SECKEY' => $provider, // env("FLUTTER_POLARIS_KEY"), // 'FLWSECK-d1c7523a58aad65d4585d47df227ee25-X',
+        //         "txref" => $request->tx_ref
+        //     ];
+
+        //     $flutterUrl = env("FLUTTER_WAVE_URL");
+
+        //     $iresponse = Http::post($flutterUrl, $flutterData);
+        //     $flutterResponse = $iresponse->json(); 
+
+        //     dd($flutterResponse);
+
+        //     if (isset($flutterResponse['status']) && $flutterResponse['status'] == "success" &&  $flutterResponse['data']['status'] == 'successful' ) {
+
+
+        //     }
 
         $response = Http::withoutVerifying()->withHeaders([
             'Authorization' => 'Bearer '.$provider,   // Live Keys//FLWSECK-effa327dab3411ddeb7730dd0e5e38bf-191d6565d8dvt-X',
@@ -327,14 +345,6 @@ class PaymentController extends BaseAPIController
     public function retryPayment(Request $request) {
         
     }
-
-
-
-
-
-
-
-
 
 
 

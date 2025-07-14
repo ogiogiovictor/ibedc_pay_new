@@ -38,6 +38,8 @@ class CheckMenuAccess
         // $user->roles->first()->id;
         $rolesID = $user->roles->first()->id;
 
+       
+
         //Check the user role and return the menu
         $usermenuID = MenuAccess::where("user_role", $rolesID)->first();
 

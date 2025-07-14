@@ -10,4 +10,6 @@ class AgencyBH extends Model
     use HasFactory;
 
     protected $table = "agency_b_h_s";
+
+    protected $guarded = [];
 }

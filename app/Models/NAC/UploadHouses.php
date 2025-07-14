@@ -17,4 +17,9 @@ class UploadHouses extends Model
     {
         return $this->belongsTo(AccoutCreaction::class, 'tracking_id', 'tracking_id');
     }
+
+    public function customer()
+    {
+        return $this->hasOne(AccoutCreaction::class, 'tracking_id', 'tracking_id');
+    }
 }

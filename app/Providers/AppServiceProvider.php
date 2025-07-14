@@ -56,5 +56,17 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('isSupervisor', function(User $user) {
             return $user->authority == RoleEnum::supervisor()->value;
         });
+
+        Gate::define('isMso', function(User $user) {
+            return $user->authority == RoleEnum::mso()->value;
+        });
+
+        Gate::define('isrico', function(User $user) {
+            return $user->authority == RoleEnum::rico()->value;
+        });
+
+        Gate::define('isauditor', function(User $user) {
+            return $user->authority == RoleEnum::audit()->value;
+        });
     }
 }

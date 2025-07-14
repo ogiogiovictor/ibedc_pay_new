@@ -22,11 +22,11 @@ class UploadRequest extends FormRequest
     public function rules(): array
     {
        return [
-            "means_of_identification" => "required",
-            "tracking_id" => "required",
-            "identification" => "required|image|mimes:jpg,jpeg,png|max:4096",
-            "photo" => "required|image|mimes:jpg,jpeg,png|max:4096",
-            "no_of_account_apply_for" =>  "required"
+           // "means_of_identification" => "required",
+           // "tracking_id" => "required",
+           // "identification" => "required|image|mimes:jpg,jpeg,png|max:4096",
+           // "photo" => "required|image|mimes:jpg,jpeg,png|max:4096",
+           // "no_of_account_apply_for" =>  "required"
         ];
     }
 }

@@ -20,7 +20,7 @@ class AccountMiddleware
         $user = Auth::user();
 
         if($user->authority == (RoleEnum::dtm()->value )   || $user->authority == (RoleEnum::super_admin()->value )  || $user->authority == (RoleEnum::bhm()->value ) ||
-        $user->authority == (RoleEnum::billing()->value ))  {
+        $user->authority == (RoleEnum::billing()->value )  || $user->authority == (RoleEnum::mso()->value)  || $user->authority == (RoleEnum::rico()->value)  || $user->authority == (RoleEnum::audit()->value)   )  {
           //redirect to agency dashboard
           return $next($request);
         } 

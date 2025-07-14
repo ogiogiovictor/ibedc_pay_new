@@ -102,6 +102,16 @@
                         <span class="badge bg-info text-dark">{{ $details->status }}</span>
                     </div>
 
+                    <div class="col-sm-4 mb-3">
+                        <strong>Progress:</strong>
+                        <span class="badge bg-info text-dark">{{ $details->status_name }}</span>
+                    </div>
+
+                    <div class="col-sm-4 mb-3">
+                        <strong>ID:</strong>
+                        <span class="badge bg-info text-dark">{{ $details->id }}</span>
+                    </div>
+
 
                     
 
@@ -157,11 +167,14 @@
                                     <td>{{ $account->latitude }}</td>
                                     <td>{{ $account->longitude }}</td>
                                     <td>{{ $account->account_no }}</td>
-                                    <td>{{ $account->status == 0 ? 'Pending' : 'Completed' }}</td>
+                                    <td>{{ $account->status == 4 ? 'Completed' : 'in-progress' }}</td>
                                     <td> <a target="_blank" href="/tracking_details/{{$account->id }}/{{$account->tracking_id}}" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a></td>
                                     @canany(['billing', 'super_admin'])
-                                        @if ($details->status == 'with-billing' && $account->status == 1 )
-                                         <th><button wire:click="generateAccount( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Generate Accounts</button></th>
+                                        @if ($details->status == 'with-billing' && $account->status == 2 )
+                                         <th>
+                                        <button class="btn btn-xs btn-success" wire:click="generate( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Generate</button>&nbsp;&nbsp;
+                                        <button class="btn btn-xs btn-danger" wire:click="billingreject( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Reject</button>
+                                        </th>
                                         @endif
                                      @endcanany
                                 </tr>
@@ -230,8 +243,8 @@
 
                             <div class="card-body text-center">  
                                  <p><strong>Landlord Photo</p>
-                                <!-- <img src="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->landlord_picture }}" class="img-fluid rounded mb-3 w-50 " alt="Customer Image"> -->
-                                <img src="{{ asset('lun_pictures/' . basename($details->continuation?->landloard_picture)) }}" class="img-fluid rounded mb-3 w-50 " alt="Customer Image">
+                                <img src="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->landloard_picture }}" class="img-fluid rounded mb-3 w-50 " alt="Customer Image">
+                                <!-- <img src="{{ asset('lun_pictures/' . basename($details->continuation?->landloard_picture)) }}" class="img-fluid rounded mb-3 w-50 " alt="Customer Image"> -->
                                
                             </div>
 

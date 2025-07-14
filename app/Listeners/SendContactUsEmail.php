@@ -26,7 +26,8 @@ class SendContactUsEmail implements ShouldQueue
     public function handle(ContactUs $event): void
     {
         $contact = $event->contact;
-        Mail::to($contact->emails)->cc(["customercare@ibedc.com", "fatima.ayandeko@ibedc.com", "victor.ogiogio@ibedc.com"])->send(new ContactMail(
+        Mail::to($contact->emails)->cc(["ebasupport@ibedc.com", "fatima.ayandeko@ibedc.com", "victor.ogiogio@ibedc.com"])->send(new ContactMail(
+       // Mail::to($contact->emails)->cc(["customercare@ibedc.com", "fatima.ayandeko@ibedc.com", "victor.ogiogio@ibedc.com"])->send(new ContactMail(
             $contact->name,
             $contact->email,
             $contact->subject,

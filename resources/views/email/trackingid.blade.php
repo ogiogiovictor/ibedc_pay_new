@@ -351,6 +351,8 @@
 
 
 <p><b>You can vend or pay bills using https://pay.ibedc.com</b></p>
+<p><b>Download App For Andriod</b> &nbsp; &nbsp; <a href="https://play.google.com/store/apps/details?id=com.ibedc.ibedcpay">Download</a></p>
+<p><b>Download App for IOS</b>  &nbsp; &nbsp; <a href="https://apps.apple.com/us/app/ibedc-pay/id6478964557">Download</a></p>
 
 
 <p>Best regards</p>   

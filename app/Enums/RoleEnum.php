@@ -18,6 +18,9 @@ use \Spatie\Enum\Enum;
  * @method static self bhm()
  * @method static self region()
  * @method static self billing()
+ * @method static self mso()
+ * @method static self audit()
+ * @method static self rico()
  */
 
 class RoleEnum extends Enum
@@ -43,6 +46,9 @@ class RoleEnum extends Enum
             'bhm' => 'bhm',
             'region' => 'region',
             'billing' => 'billing',
+            'mso' => 'mso',
+            'audit' => 'audit',
+            'rico' => 'rico',
         ];
     }
 
@@ -67,6 +73,9 @@ class RoleEnum extends Enum
             'bhm' => 'bhm',
             'region' => 'region',
             'billing' => 'billing',
+            'mso' => 'mso',
+            'audit' => 'audit',
+            'rico' => 'rico',
         ];
     }
 }

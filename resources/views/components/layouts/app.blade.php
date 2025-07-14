@@ -21,6 +21,8 @@
    <!-- Integrating Toast -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
 
+
+
   <!-- ✅ Add Livewire Styles -->
     @livewireStyles
     </head>
@@ -49,7 +51,24 @@
 
    <!-- ✅ Add Livewire Scripts -->
     @livewireScripts
+
     
+
+
+  <script>
+    // ✅ Set options BEFORE calling toastr
+    toastr.options = {
+        "closeButton": true,
+        "progressBar": true,
+        "positionClass": "toast-top-right",
+        "timeOut": "150000",           // 15 seconds
+        "extendedTimeOut": "20000",    // 2 seconds after hover
+        "showDuration": "400",
+        "hideDuration": "1000"
+    };
+</script>
+
+
   @if (session()->has('success'))
         <script>
             toastr.success('{{ session('success') }}');

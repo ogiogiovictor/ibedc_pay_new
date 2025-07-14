@@ -18,11 +18,11 @@
                             <li><strong>Business Hub:</strong> {{ $details->business_hub }} </li>
                             <li><strong>Service Center:</strong> {{ $details->service_center }} </li>
                             <li><strong>DSS:</strong> {{ $details->dss }} </li>
-                            <li><strong>Lecan Completed Form:</strong> <a href=" {{ $details->lecan_link }}"> VIEW PDF - (LECAN) </a> </li>
+                            <li><strong>Lecan Completed Form:</strong> <a href="/storage/{{ $details->lecan_link }}"> VIEW PDF - (LECAN) </a> </li>
                             <li><strong>Generated Account:</strong> {{ $details->account_no }} </li>
                             <li><strong>Validated By:</strong> {{ \App\Models\User::where('id', $details->validated_by)->value('name') ?? '' }} </li>
                             <li><strong>Status:</strong> {{ $details->status == 0 ? 'Pending' : 'Completed' }} </li>
-                        </ul>
+                        </ul>     
                     @endif
 
                     {{-- Error message --}}
@@ -81,6 +81,41 @@
                                     @endforeach
                                 </select>
                             </div>
+
+
+                             <div class="form-group">
+                                <label>Select New Tarriff</label>
+                                <select wire:model="newTarriff" class="form-control">
+                                    <option value="">-- Select New Tarriff --</option>
+                                    @foreach ($tarriff  as $t)
+                                        <option value="{{ $t->TariffCode }}">{{ $t->TariffCode }} - {{ $t->Description }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+
+                             <div class="form-group">
+                                <label>Select Old Tarriff</label>
+                                <select wire:model="oldTarriff" class="form-control">
+                                    <option value="">-- Select New Tarriff --</option>
+                                    @foreach ($tarriff  as $o)
+                                        <option value="{{ $o->TariffID }}">{{ $o->OldTariffCode }} - {{ $o->Description }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+                             <div class="form-group">
+                                <label>Select Band</label>
+                                <select wire:model="band" class="form-control">
+                                    <option value="">-- Select Band --</option>
+                                    @foreach ($iband  as $b)
+                                        <option value="{{ $b->ServiceID }}">{{ $b->ServiceID }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+
+
+                           
                         @endif
 
 
@@ -122,10 +157,67 @@
                         <img src="/storage/{{ $details->picture }}" alt="{{ $details->tracking_id}}" style="height: 400px;">
                      @endif
 
+
+                     @if (isset($details))
+                      
+                        <div id="map" style="height: 500px; width: 100%; margin-top: 1rem; border-radius: 10px;"></div>
+
+                    @endif
+
                     <p class="mt-5">&copy; {{ date('Y') }} All rights reserved.</p>
                 </div>
             </div>
 
         </div>
     </div>
+
+
+
+  @if (isset($details) && $details->latitude && $details->longitude)
+    <!-- Leaflet CSS & JS (Add these to your main layout if not already present) -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const latitude = {{ $details->latitude }};
+            const longitude = {{ $details->longitude }};
+
+            const esri = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 22,
+                attribution: 'Tiles &copy; Esri, i-cubed, USDA, etc.'
+            });
+
+            const osm = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '&copy; OpenStreetMap contributors'
+            });
+
+            const map = L.map('map', {
+                center: [latitude, longitude],
+                zoom: 18,
+                layers: [esri]
+            });
+
+            L.marker([latitude, longitude]).addTo(map)
+                .bindPopup('House Location')
+                .openPopup();
+
+            const baseMaps = {
+                "Satellite (Esri)": esri,
+                "Street Map (OSM)": osm
+            };
+
+            L.control.layers(baseMaps).addTo(map);
+
+            // Delay resize to fix rendering if container was hidden initially
+            setTimeout(() => {
+                map.invalidateSize();
+            }, 200);
+        });
+    </script>
+@endif
+
+
+
 </div>

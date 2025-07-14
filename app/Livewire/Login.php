@@ -35,7 +35,7 @@ class Login extends Component
           
 
             if ($user->isSuperAdmin() || $user->isAdmin() || $user->isManager() || $user->isSupervisor() 
-            || $user->isPaymentChannel() || $user->isManager() ) {
+            || $user->isPaymentChannel() || $user->isManager() || $user->isauditor() ) {
                 
                AuditLogService::logAction('User Login', $user->authority, 'User logged in successfully', $user->id, 200);
 
@@ -50,12 +50,12 @@ class Login extends Component
 
                 return redirect()->route('agency_dashboard');
                 
-            }else if($user->isdtm() || $user->isbhm() || $user->isregion() || $user->isbilling()) {
+            }else if($user->isdtm() || $user->isbhm() || $user->isregion() || $user->isbilling() || $user->isMso() || $user->isrico()) {
 
                 session()->flash('success', 'You are successfully loggedIn');
 
                 AuditLogService::logAction('User Login', $user->authority, 'User logged in successfully', $user->id, 200);
-
+               
                 return redirect()->route('new_account');
                 
             } else {

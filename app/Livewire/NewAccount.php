@@ -31,23 +31,14 @@ class NewAccount extends Component
         } 
 
         if($user->authority == (RoleEnum::user()->value)  || $user->authority == (RoleEnum::supervisor()->value) ) {
-           abort(403, 'Unathorized action.');
+           abort(403, 'Unathorized action. No Access Allowed');
         } 
 
          $customers = new AccoutCreaction();
 
           $this->customers = $customers
-          ->with(['continuation', 'uploadinformation', 'caccounts', 'uploadedPictures'])
+          ->with(['continuation', 'uploadinformation', 'caccounts', 'uploadedPictures'])->withCount('uploadedPictures')
           ->whereIn('status', ['started', 'processing', 'with-dtm', 'with-bhm', 'with-billing', 'completed']);
-
-
-           $this->submittedToday = AccoutCreaction::whereMonth('created_at', Carbon::now()->month)
-            ->whereYear('created_at', Carbon::now()->year)->whereIn('status', ['started', 'processing', 'with-dtm', 'with-bhm', 'with-billing'])->count();
-
-
-             $this->submittedThisMonth = UploadHouses::whereMonth('created_at', Carbon::now()->month)
-            ->whereYear('created_at', Carbon::now()->year)->where('status', 0)
-            ->count();
 
             // Completed accounts (status = 'completed')
             $this->completedAccounts = AccoutCreaction::where('status', 'completed')->count();
@@ -57,6 +48,13 @@ class NewAccount extends Component
                 // No filtering – super admin and billing see everything
                  $this->customers = $this->customers->get();
 
+                 $this->submittedThisMonth = UploadHouses::whereMonth('created_at', Carbon::now()->month)
+                ->whereYear('created_at', Carbon::now()->year)->where('status', 0)
+                ->count();
+
+                 $this->submittedToday = AccoutCreaction::whereMonth('created_at', Carbon::now()->month)
+                    ->whereYear('created_at', Carbon::now()->year)->whereIn('status', ['started', 'processing', 'with-dtm', 'with-bhm', 'with-billing'])->count();
+
             } elseif ($user->authority == RoleEnum::dtm()->value) {
                 // Filter by region only
                 // If region is missing, return empty
@@ -64,19 +62,33 @@ class NewAccount extends Component
                     if (empty($user->region) || empty($user->business_hub)) {
                         $this->customers = collect(); // empty collection
                     } else {
-                        $this->customers = $this->customers->where('region', $user->region)->where('business_hub', $user->business_hub)
-                        ->whereIn('status', ['processing', 'with-dtm'])->get();
+                        $this->customers = $this->customers->where('region', $user->region)->whereIn('status', ['processing', 'with-dtm'])->get();
+
+                        $this->submittedThisMonth = UploadHouses::whereMonth('created_at', Carbon::now()->month)
+                        ->whereYear('created_at', Carbon::now()->year)->where('status', 0)->where('region', $user->region)
+                        ->count();
+
+                        $this->submittedToday = AccoutCreaction::whereMonth('created_at', Carbon::now()->month)->where('region', $user->region)->whereYear('created_at', Carbon::now()->year)->whereIn('status', ['started', 'processing', 'with-dtm', 'with-bhm', 'with-billing'])->count();
+
                     }
 
-            } elseif ($user->authority == RoleEnum::bhm()->value) {
+            } elseif ($user->authority == RoleEnum::bhm()->value || $user->authority == RoleEnum::mso()->value) {
                 // Filter by region and business hub
                // If either region or business_hub is missing, return empty
                 if (empty($user->region) || empty($user->business_hub)) {
                     $this->customers = collect(); // empty collection
                 } else {
-                    $this->customers = $this->customers->where('region', $user->region)->where('business_hub', $user->business_hub)
+                    $this->customers = $this->customers->where('region', $user->region)
                     ->whereIn('status', ['with-dtm', 'with-bhm'])->get();
+
+                      $this->submittedThisMonth = UploadHouses::whereMonth('created_at', Carbon::now()->month)
+                        ->whereYear('created_at', Carbon::now()->year)->where('status', 0)->where('region', $user->region)
+                        ->count();
+
+                         $this->submittedToday = AccoutCreaction::whereMonth('created_at', Carbon::now()->month)->where('region', $user->region)
+                         ->whereYear('created_at', Carbon::now()->year)->whereIn('status', ['started', 'processing', 'with-dtm', 'with-bhm', 'with-billing'])->count();
                 }
+
             }elseif ($user->authority == RoleEnum::billing()->value) {
                 
                 // Filter by region and business hub
@@ -84,8 +96,32 @@ class NewAccount extends Component
                 if (empty($user->region) || empty($user->business_hub)) {
                     $this->customers = collect(); // empty collection
                 } else {
-                    $this->customers = $this->customers->where('region', $user->region)->where('business_hub', $user->business_hub)
-                    ->whereIn('status', ['with-billing'])->get();
+                    $this->customers = $this->customers->where('region', $user->region)
+                    ->whereIn('status', ['with-billing', 'completed'])->orderByRaw("CASE WHEN status = 'with-billing' THEN 1 ELSE 2 END")->get();
+
+                     $this->submittedThisMonth = UploadHouses::whereMonth('created_at', Carbon::now()->month)
+                        ->whereYear('created_at', Carbon::now()->year)->where('status', 0)->where('region', $user->region)
+                        ->count();
+
+                     $this->submittedToday = AccoutCreaction::whereMonth('created_at', Carbon::now()->month)->where('region', $user->region)
+                         ->whereYear('created_at', Carbon::now()->year)->whereIn('status', ['started', 'processing', 'with-dtm', 'with-bhm', 'with-billing'])->count();
+                }
+            }elseif ( $user->authority == RoleEnum::rico()->value) {
+                
+                // Filter by region and business hub
+               // If either region or business_hub is missing, return empty
+                if (empty($user->region) || empty($user->business_hub)) {
+                    $this->customers = collect(); // empty collection
+                } else {
+                    $this->customers = $this->customers->where('region', $user->region)
+                    ->whereIn('status', ['with-dtm', 'with-billing', 'completed'])->orderByRaw("CASE WHEN status = 'with-billing' THEN 1 ELSE 2 END")->get();
+
+                     $this->submittedThisMonth = UploadHouses::whereMonth('created_at', Carbon::now()->month)
+                        ->whereYear('created_at', Carbon::now()->year)->where('status', 0)->where('region', $user->region)
+                        ->count();
+
+                     $this->submittedToday = AccoutCreaction::whereMonth('created_at', Carbon::now()->month)->where('region', $user->region)
+                         ->whereYear('created_at', Carbon::now()->year)->whereIn('status', ['started', 'processing', 'with-dtm', 'with-bhm', 'with-billing'])->count();
                 }
             }
 

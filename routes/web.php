@@ -33,6 +33,9 @@ use App\Livewire\TrackApplication;
 use App\Livewire\NewAccount;
 use App\Livewire\TrackingDetails;
 use App\Livewire\NewAccountDetails;
+use App\Livewire\Evaluation;
+
+use App\Livewire\CustomerPendingAccount;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -99,6 +102,9 @@ Route::middleware(['auth', 'check_access'])->group(function () {
       Route::get('/new_account', NewAccount::class)->name('new_account');
       Route::get('/account_details/{tracking_id}', AccountDetails::class)->name('account_details');
       Route::get('/tracking_details/{id}/{tracking_id}', NewAccountDetails::class)->name('tracking_details');
+      Route::get('/customers_pending_accounts', CustomerPendingAccount::class)->name('customers_pending_accounts');
+      Route::get('/evaluation/{tracking_id}', Evaluation::class)->name('evaluation');
+      Route::get('/auditlogs', AuditLogs::class)->name('auditlog');
      // Route::get('/tracking_details', NewAccountDetails::class)->name('tracking_details');
     });
 

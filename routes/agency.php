@@ -14,6 +14,7 @@ use App\Http\Controllers\History\CustomerBillHistory;
 
 use App\Http\Controllers\Agency\CreateAgents;
 use App\Http\Controllers\Agency\ManageAgencies;
+use App\Http\Controllers\Agency\AgentProfile;
 
 /*
 |--------------------------------------------------------------------------
@@ -39,14 +40,26 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_agency_sync', 'middleware' => 'myAuth'
           // Only Super Administrator and Agency Admin Can Create Agents
         Route::resource('agency', AgencyController::class)->only(['index', 'store', 'show']); // only administrator
 
-        Route::post('search', [AgencySearchController::class, 'searchCustomers']); // only administrator
-
-
+        // only administrator
 
         ///////////////////////////// CUSTOMERS ONLY ////////////////////////////////////////////
          //Customer Search
-            Route::prefix('customerhistory')->controller(CustomerBillHistory::class)->group(function () {
+        Route::prefix('customerhistory')->controller(CustomerBillHistory::class)->group(function () {
             Route::post('bill-history', 'customerBills')->name('bill-history');
+            Route::get('get-customers', 'getCustomers')->name('get-customers');
+        });
+
+         Route::post('search', [AgencySearchController::class, 'searchCustomers']);
+         Route::get('getprofile', [AgentProfile::class, 'getProfile']); 
+         Route::get('getagenthistory', [AgentProfile::class, 'getHistory']); 
+         Route::get('getpaymentbyBH', [AgentProfile::class, 'getpaymentbyBH']); 
+
+        Route::prefix('collection')->controller(AgencyCollection::class)->group(function () {
+            Route::get('agentcollection', 'agentCollection')->name('agentcollection');
+            
+            Route::get('agencycollection', 'agencyCollection')->name('agencycollection');
+           
+            Route::get('commission', 'commission')->name('commission');
         });
 
 

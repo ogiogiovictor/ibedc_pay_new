@@ -37,10 +37,10 @@ class PaymentLookUp extends Command
 
             $today = now()->toDateString();
 
-            //$checkTransaction = PaymentTransactions::whereIn('status', ['started', 'processing'])
+            //$checkTransaction = PaymentTransactions::whereIn('status', ['started', 'processing'])  // ->whereIn('status', ['started', 'processing'])
             $checkTransaction = PaymentTransactions::whereDate('created_at',  $today)  //'2024-09-20'   $today
-            ->whereIn('status', ['started', 'processing'])
-            //->where('provider', '!=', 'FCMB')
+            ->whereIn('status', ['started'])
+            ->where('response_status', '!=', '3')
             ->chunk(5, function ($paymentLogs) use (&$paymentData) {
 
                 
@@ -79,7 +79,8 @@ class PaymentLookUp extends Command
                         } else if ($paymentLog->status == "started") {
                             $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                                 'providerRef' => $flutterResponse['data']['flwref'],
-                                'status' => 'processing'
+                                'status' => 'processing',
+                                 'response_status' => 3
                             ]);
                             $this->info('***** FLUTTERWAVE Transaction is set to processing *************');
                         } else {
@@ -96,7 +97,18 @@ class PaymentLookUp extends Command
 
                         $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                             'providerRef' => $flutterResponse['data']['flwref'],
-                            'status' => 'failed'
+                            'status' => 'failed',
+                            'response_status' => 3
+                        ]);
+                        // Send Failed Response to Customer
+                        (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
+
+                    } elseif (isset($flutterResponse['status']) && isset($flutterResponse['data']['status']) && $flutterResponse['data']['status'] == 'cancelled') {
+    
+                        $this->info('***** FLUTTERWAVE TRANSACTION FAILED :- FAILED STATUS *************');
+
+                        $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                            'response_status' => 3
                         ]);
                         // Send Failed Response to Customer
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
@@ -105,9 +117,9 @@ class PaymentLookUp extends Command
                         
 
                         $this->info('***** FLUTTERWAVE TRANSACTION NOT APPLICABLE *************');
-                        // $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
-                        //     'status' => 'cancelled'
-                        // ]);
+                        $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                            'response_status' => 3
+                        ]);
                         // $this->info('***** FLUTTERWAVE TRANSACTION CANCELLED :- CANCELLED STATUS *************');
 
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);

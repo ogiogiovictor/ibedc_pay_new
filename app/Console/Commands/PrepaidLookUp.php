@@ -79,6 +79,8 @@ class PrepaidLookUp extends Command
                         \Log::info('RESPONSE FROM MOMAS API - PREPAID LOG: ' . json_encode($newResponse));
                         $totalRecords = count($prepaidpayments);
 
+                       
+
                         if($newResponse['status'] == "true"){      
                         
                             $paymentData[] = $data;
@@ -149,7 +151,8 @@ class PrepaidLookUp extends Command
 
                             $iresponse = Http::asForm()->post($baseUrl, $idata);
      
-                            return $newResponse;
+                          //  return $newResponse;
+                            Log::info("Successfully processed transaction: " . $paymentLog->transaction_id);
                           }
 
                     }

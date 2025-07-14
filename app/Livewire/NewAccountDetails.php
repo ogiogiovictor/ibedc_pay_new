@@ -7,6 +7,8 @@ use App\Models\NAC\Regions;
 use App\Models\NAC\DSS;
 use App\Models\NAC\UploadHouses;
 use Illuminate\Support\Facades\Session;
+use App\Models\ECMI\NewTarrif;
+use App\Models\ECMI\ServiceClass;
 
 
 class NewAccountDetails extends Component
@@ -16,7 +18,7 @@ class NewAccountDetails extends Component
     public $id;
     public $details;
    // public $region;
-   public $comment;
+    public $comment;
 
     
     public $businesshub;
@@ -26,6 +28,10 @@ class NewAccountDetails extends Component
     public $selectedBusinesshub = null;
     public $selectedServicecenter = null;
     public $selectedDss = null;
+    public $newTarriff; 
+    public $oldTarriff;
+    public $band;
+
     
 
     public function mount($id, $tracking_id, $selectedDss = null)
@@ -38,6 +44,9 @@ class NewAccountDetails extends Component
         $this->servicecenter = collect();
         $this->dss = collect();
         $this->selectedDss = $selectedDss;
+
+       
+       // $this->band = ServiceClass::get();
        
     }
 
@@ -104,13 +113,22 @@ class NewAccountDetails extends Component
              Session::flash('error', 'Customer Mapping have already been completed');
            }
 
+           if(!$this->newTarriff  || !$this->oldTarriff || !$this->band){
+             Session::flash('error', 'Please select all fields');
+           }
+
+
            $updated = UploadHouses::where("id", $this->id)->update([
                 'business_hub' => $this->selectedBusinesshub,
                 'service_center' => $this->selectedServicecenter,
                 'dss' => $this->selectedDss,
                 'status' => 1,
                 'validated_by' => auth()->user()->id, 
-                'comment' => $this->comment
+                'comment' => $this->comment,
+                'service_class' => $this->band,
+                'tarrif' => $this->newTarriff,
+                'old_tarriff' => NewTarrif::where("TariffID", $this->oldTarriff)->value("OldTariffCode"),
+                'tarrif_id' => $this->oldTarriff
             ]);
 
             Session::flash('success', 'Customer Successfully Mapped.');
@@ -122,6 +140,9 @@ class NewAccountDetails extends Component
 
     public function render()
     {
-        return view('livewire.new-account-details');
+        return view('livewire.new-account-details', [
+             'tarriff' => NewTarrif::get(),
+             'iband' => ServiceClass::get(),
+        ]);
     }
 }

@@ -11,6 +11,10 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\CommissionSettings;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Crypt;
+use App\Models\EMS\ZoneBills;
+use Illuminate\Support\Facades\Http;
+use App\Models\EMS\ZonePayments;
+use App\Models\CommissionLog;
 
 class CommissionService  extends BaseAPIController
 {
@@ -100,7 +104,103 @@ class CommissionService  extends BaseAPIController
     }
 
 
-    public function outstandingCommission() {
 
+    
+    public function commissioncalculation($checkRef) {
+
+        $tariffCode = $this->customerType($checkRef);
+        $monthsToCheck = strtoupper($tariffCode) === 'MD1' ? 6 : 3;
+
+        $latestBill = ZoneBill::where('AccountNo', $checkRef->account_number)
+                            ->orderByDesc('BillYear')
+                            ->orderByDesc('BillMonth')
+                            ->first();
+
+        if (!$latestBill) {
+             \Log::info('No bill found ' . json_encode($checkRef));
+          //  return response()->json(['error' => 'No bill found'], 404);
+        }
+
+        // Fetch last N payments NOT YET USED
+        $pastPayments = ZonePayments::where('AccountNo', $checkRef->account_number)
+            ->orderByDesc('PayYear')
+            ->orderByDesc('PayMonth')
+            ->get()
+            ->filter(function ($payment) use ($checkRef) {
+                return !CommissionLog::where('account_number', $checkRef->account_number)
+                                    ->where('pay_month', $payment->PayMonth)
+                                    ->where('pay_year', $payment->PayYear)
+                                    ->exists();
+            })
+            ->take($monthsToCheck);
+
+        if ($pastPayments->isEmpty()) {
+             \Log::info('No new payments found for commission ' . json_encode($checkRef));
+           // return response()->json(['error' => 'No new payments found for commission'], 404);
+        }
+
+        $totalPaid = $pastPayments->sum('Payments');
+        $balance = $latestBill->TotalDue - $totalPaid;
+        $commission = $balance > 0 ? round($balance * 0.05, 2) : 0;
+
+        // Log used payments
+        foreach ($pastPayments as $payment) {
+            CommissionLog::create([
+                'account_number' => $checkRef->account_number,
+                'pay_month' => $payment->PayMonth,
+                'pay_year' => $payment->PayYear,
+                'total_amount' => $payment->totalPaid,
+                'total_due' =>  $latestBill->TotalDue,
+                'amount' =>  $balance,
+                'commission' => $commission,
+                'payment_id' => $payment->PaymentID, // optional
+                'agency' => Auth::user()->agency,
+                'user_id' => Auth::user()->id,
+                'agency' => Auth::user()->agency,
+            ]);
+        }
+
+         \Log::info('Comission Successfuly Created' . json_encode($checkRef));
+
+    // return response()->json([
+    //     'account_number' => $checkRef->account_number,
+    //     'customer_type' => $tariffCode,
+    //     'months_considered' => $pastPayments->count(),
+    //     'total_paid' => $totalPaid,
+    //     'current_due' => $latestBill->TotalDue,
+    //     'balance' => $balance,
+    //     'commission' => $commission,
+    // ]);
+
+        
     }
+
+
+    private function customerType($request){
+
+            $data = [
+                "meter_number" => $request->account_number,
+                "vendtype" => "Postpaid"
+            ];
+
+                try {
+
+                    $response = Http::withoutVerifying()->withHeaders([
+                        'Authorization' => 'Bearer LIVEKEY_711E5A0C138903BBCE202DF5671D3C18',
+                    ])->post("https://middleware3.ibedc.com/api/v1/verifymeter", $data);
+            
+                
+                    $finalResponse = $response->json();
+            
+                
+                    return $finalResponse['data']['tariffcode'];
+                    
+
+                }catch(\Exception $e) {
+
+                    return $e->getMessage();
+                }
+        
+    }
+
 }

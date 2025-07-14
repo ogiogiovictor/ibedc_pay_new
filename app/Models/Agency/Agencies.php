@@ -10,4 +10,6 @@ class Agencies extends Model
     use HasFactory;
 
     protected $table = "agency";
+
+    protected $guarded = [];
 }

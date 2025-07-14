@@ -16,6 +16,7 @@ use App\Models\EMS\ZoneBills;
 use App\Models\CommissionSettings;
 use App\Services\CommissionService;
 use App\Services\PolarisLogService;
+use App\Models\EMS\ZonePayments;
 
 
 
@@ -77,10 +78,14 @@ class PostPaidService extends BaseAPIController
         //COMMISSION CALCULATION FOR AGENTS
         $user_authority = Auth::user();
 
-        // if (in_array($custInfo->TariffID, [1, 4, 6, 7, 9, 11, 13, 16, 19]) &&  $user_authority->authority == 'agent' ) {
-        //     // Your commission calculation logic here
-        //     $this->calculateCommission($checkRef);
-        // }
+        if (in_array($custInfo->TariffID, [1, 4, 6, 7, 9, 11, 13, 16, 19]) &&  $user_authority->authority == 'agent' ) {
+            // Your commission calculation logic here
+            (new CommissionService)->commissioncalculation($checkRef);
+          
+             // Optionally: You can queue this instead of running synchronously
+            // dispatch(new CalculateCommissionJob($checkRef));
+
+        } // we will do a dispatch here
         
         
         \Log::info('Postpaid Payment Successful Response: ' . json_encode($newResponse));
@@ -143,52 +148,31 @@ class PostPaidService extends BaseAPIController
 
    private function outBalance($request){
 
-    $data = [
-        "meter_number" => $request->account_number,
-        "vendtype" => "Postpaid"
-    ];
+        $data = [
+            "meter_number" => $request->account_number,
+            "vendtype" => "Postpaid"
+        ];
 
-        try {
+            try {
 
-            $response = Http::withoutVerifying()->withHeaders([
-                'Authorization' => 'Bearer LIVEKEY_711E5A0C138903BBCE202DF5671D3C18',
-            ])->post("https://middleware3.ibedc.com/api/v1/verifymeter", $data);
-    
+                $response = Http::withoutVerifying()->withHeaders([
+                    'Authorization' => 'Bearer LIVEKEY_711E5A0C138903BBCE202DF5671D3C18',
+                ])->post("https://middleware3.ibedc.com/api/v1/verifymeter", $data);
         
-            $finalResponse = $response->json();
-    
-           
-            return $finalResponse['data']['customerArrears'];
             
-
-        }catch(\Exception $e) {
-
-            return $e->getMessage();
-        }
-
+                $finalResponse = $response->json();
         
-        
+            
+                return $finalResponse['data']['customerArrears'];
+                
 
+            }catch(\Exception $e) {
+
+                return $e->getMessage();
+            }
     
    }
 
-//    private function isConsistentPayer($customerId, $months)
-//     {
-//         // Check if the customer has paid consistently for the past X months
-//         $payments = Payment::where('customer_id', $customerId)
-//                             ->where('created_at', '>=', now()->subMonths($months))
-//                             ->count();
-
-//         return $payments == $months;
-//     }
-
-    // private function calculateThreeMonthsPayment($customerId)
-    // {
-    //     // Calculate the total payments made by the customer in the past 3 months
-    //     return Payment::where('customer_id', $customerId)
-    //                 ->where('created_at', '>=', now()->subMonths(3))
-    //                 ->sum('amount');
-    // }
 
 
 

@@ -23,8 +23,11 @@ class ContinueCustomerRequest extends FormRequest
     {
          return [
             "tracking_id" => 'required',
-            "longitude" => "required",
-            "latitude" => "required",
+             "no_of_account_apply_for" =>  "required",
+             "landlord_surname" => ['required', 'min:3', 'regex:/^[a-zA-Z ]+$/'],
+             "landlord_othernames" => ['required', 'min:3', 'regex:/^[a-zA-Z ]+$/'],
+            //"longitude" => "required",
+            //"latitude" => "required",
             "landloard_picture" => 'nullable|image|mimes:jpg,jpeg,png|max:4096',
          ];
     }

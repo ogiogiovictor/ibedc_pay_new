@@ -38,7 +38,8 @@ class PaymentLookUpImproved extends Command
 
             do {
                 $paymentLogs = PaymentTransactions::whereDate('created_at', $today)
-                    ->whereIn('status', ['started', 'processing'])
+                    ->whereIn('status', ['started'])
+                    ->where('response_status', '3')
                     ->take($batchSize)
                     ->get();
 

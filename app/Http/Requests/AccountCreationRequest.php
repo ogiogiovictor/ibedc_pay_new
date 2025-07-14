@@ -29,10 +29,11 @@ class AccountCreationRequest extends FormRequest
             "surname" => ['required', 'min:3', 'regex:/^[A-Z ]+$/'],
             "firstname" => ['required', 'min:3', 'regex:/^[A-Z ]+$/'],
            // "surname" => ['required', 'min:3', 'regex:/^[A-Z ]+$/'],
-            "nearest_bustop" => 'required',
-            "lga" => 'required',
-            "address" => 'required',
-            "type_of_premise" => 'required',
+            //"nearest_bustop" => 'required',
+            //"lga" => 'required',
+            //"address" => 'required',
+            //"type_of_premise" => 'required',
+            "other_name" => 'nullable|string',
            // "region" => 'required',
 
             // Composite uniqueness
@@ -65,7 +66,7 @@ class AccountCreationRequest extends FormRequest
             'firstname' => ucwords(strtoupper(trim($this->firstname))),
             'other_name' => ucwords(strtoupper(trim($this->other_name))),
             'email' => strtolower(trim($this->email)),
-            'nearest_bustop' => strtolower(trim($this->nearest_bustop)),
+           // 'nearest_bustop' => strtolower(trim($this->nearest_bustop)),
             'phone' => trim($this->phone),
         ]);
     }
@@ -74,7 +75,7 @@ class AccountCreationRequest extends FormRequest
     public function filters(){
         return [
             'email' => 'trim|escape|lowercase',
-            'nearest_bustop' => 'trim|escape|lowercase',
+           // 'nearest_bustop' => 'trim|escape|lowercase',
             'surname' => 'trim|escape|lowercase',
             'firstname' => 'trim|escape|lowercase',
             'phone' => 'trim|escape'

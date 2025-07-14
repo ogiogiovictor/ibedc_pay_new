@@ -98,7 +98,7 @@ class PrepaidErrorFix extends Command
                             $user = Auth::user();
                             Mail::to($user->email)->cc($paymentLog->email)->send(new PrePaidPaymentMail($emailData));
      
-                            return $emailData;
+                           // return $emailData;
                           
 
                     }

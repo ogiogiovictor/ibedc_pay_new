@@ -13,6 +13,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Transactions\PaymentTransactions;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\CommissionLog;
 
 class AgencyCollection extends BaseAPIController
 {
@@ -66,8 +67,22 @@ class AgencyCollection extends BaseAPIController
 
         }
 
-       
-        
+    }
+
+
+    public function agencyCollection() {
 
     }
+
+
+    public function commission() {
+
+
+        $getcommission = CommissionLog::all();
+        return $this->sendSuccess($getcommission, "All Commission", Response::HTTP_OK);
+
+    }
+
+
+    
 }

@@ -148,6 +148,21 @@ class User extends Authenticatable
         return $this->authority === RoleEnum::billing()->value;
     }
 
+     public function isMso()
+    {
+        return $this->authority === RoleEnum::mso()->value;
+    }
+
+     public function isauditor()
+    {
+        return $this->authority === RoleEnum::audit()->value;
+    }
+
+     public function isrico()
+    {
+        return $this->authority === RoleEnum::rico()->value;
+    }
+
 
     
 
