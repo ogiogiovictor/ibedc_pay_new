@@ -197,14 +197,18 @@ class PaymentController extends BaseAPIController
             "vendtype" => "Prepaid"
         ];
 
-        
+            
         $response = Http::withoutVerifying()->withHeaders([
-            'Authorization' => 'Bearer LIVEKEY_711E5A0C138903BBCE202DF5671D3C18',
-        ])->post("https://middleware3.ibedc.com/api/v1/verifymeter", $data);
+            'Authorization' => 'Bearer LIVEKEY_5AEB0A6DDCAF91D938E5C56644313129',     //LIVEKEY_711E5A0C138903BBCE202DF5671D3C18
+        ])->post("https://middlewarelookup.ibedc.com/lookup/verify-meter/", $data);   //https://middleware3.ibedc.com/api/v1/verifymeter
 
         $newResponse =  $response->json();
 
+       // dd($newResponse['data']['minimumPurchase']);   
+
        // \Log::info('VERIFICATION REPONSE: ' . json_encode($newResponse['data']));
+
+       // https://middlewarelookup.ibedc.com/lookup/verify-meter/   |  Bearer LIVEKEY_5AEB0A6DDCAF91D938E5C56644313129
 
         $minimumPurchase = isset($newResponse['data']['minimumPurchase']) ? $newResponse['data']['minimumPurchase'] : 0;
 

@@ -22,6 +22,7 @@ class ContinueCustomerRequest extends FormRequest
     public function rules(): array
     {
          return [
+            "nin_number" => 'required|unique:continue_account_creations,nin_number',
             "tracking_id" => 'required',
              "no_of_account_apply_for" =>  "required",
              "landlord_surname" => ['required', 'min:3', 'regex:/^[a-zA-Z ]+$/'],

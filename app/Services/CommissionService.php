@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\Crypt;
 use App\Models\EMS\ZoneBills;
 use Illuminate\Support\Facades\Http;
 use App\Models\EMS\ZonePayments;
+use App\Models\EMS\ZoneCustomers;
 use App\Models\CommissionLog;
 
 class CommissionService  extends BaseAPIController
@@ -111,6 +112,8 @@ class CommissionService  extends BaseAPIController
         $tariffCode = $this->customerType($checkRef);
         $monthsToCheck = strtoupper($tariffCode) === 'MD1' ? 6 : 3;
 
+        $monthsToCheck  = 3;
+
         $latestBill = ZoneBill::where('AccountNo', $checkRef->account_number)
                             ->orderByDesc('BillYear')
                             ->orderByDesc('BillMonth')
@@ -144,7 +147,7 @@ class CommissionService  extends BaseAPIController
         $commission = $balance > 0 ? round($balance * 0.05, 2) : 0;
 
         // Log used payments
-        foreach ($pastPayments as $payment) {
+      //  foreach ($pastPayments as $payment) {
             CommissionLog::create([
                 'account_number' => $checkRef->account_number,
                 'pay_month' => $payment->PayMonth,
@@ -158,19 +161,19 @@ class CommissionService  extends BaseAPIController
                 'user_id' => Auth::user()->id,
                 'agency' => Auth::user()->agency,
             ]);
-        }
+       // }
 
          \Log::info('Comission Successfuly Created' . json_encode($checkRef));
 
-    // return response()->json([
-    //     'account_number' => $checkRef->account_number,
-    //     'customer_type' => $tariffCode,
-    //     'months_considered' => $pastPayments->count(),
-    //     'total_paid' => $totalPaid,
-    //     'current_due' => $latestBill->TotalDue,
-    //     'balance' => $balance,
-    //     'commission' => $commission,
-    // ]);
+        // return response()->json([
+        //     'account_number' => $checkRef->account_number,
+        //     'customer_type' => $tariffCode,
+        //     'months_considered' => $pastPayments->count(),
+        //     'total_paid' => $totalPaid,
+        //     'current_due' => $latestBill->TotalDue,
+        //     'balance' => $balance,
+        //     'commission' => $commission,
+        // ]);
 
         
     }
@@ -186,8 +189,8 @@ class CommissionService  extends BaseAPIController
                 try {
 
                     $response = Http::withoutVerifying()->withHeaders([
-                        'Authorization' => 'Bearer LIVEKEY_711E5A0C138903BBCE202DF5671D3C18',
-                    ])->post("https://middleware3.ibedc.com/api/v1/verifymeter", $data);
+                        'Authorization' => 'Bearer LIVEKEY_5AEB0A6DDCAF91D938E5C56644313129',
+                    ])->post("https://middlewarelookup.ibedc.com/lookup/verify-meter/", $data);   //https://middleware3.ibedc.com/api/v1/verifymeter  |  LIVEKEY_711E5A0C138903BBCE202DF5671D3C18
             
                 
                     $finalResponse = $response->json();

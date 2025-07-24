@@ -28,6 +28,8 @@ use App\Models\ECMI\NewTarrif;
 use Illuminate\Support\Facades\Auth;
 use App\Jobs\AccountNotificationJob;
 use App\Services\NinService;
+use Illuminate\Support\Facades\Http;
+
 
 
 class AccountController extends BaseAPIController
@@ -76,7 +78,7 @@ class AccountController extends BaseAPIController
             'Authorization' => "Bearer $token",
             'Accept'       => 'application/json',
             ])->post("{$this->baseUrl}/verifyNIN", [
-                'nin' => $nin,
+                'nin' => $request->nin,
                 'datasets' => [
                     "firstname", "middlename", "surname", "gender", "birth_date",
                     "birth_country", "birth_state", "birth_lga", "marital_status",

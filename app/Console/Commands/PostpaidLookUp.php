@@ -46,7 +46,7 @@ class PostpaidLookUp extends Command
 
                 foreach ($paymentLogs as $paymentLog) {
 
-                    $baseUrl = env('MIDDLEWARE_URL');
+                    $baseUrl = env('MIDDLEWARE_URL');  //MIDDLEWARE_URL
                     $addCustomerUrl = $baseUrl . 'vendelect';
             
                     $data = [
@@ -63,7 +63,7 @@ class PostpaidLookUp extends Command
                     ];
             
                     $response = Http::withoutVerifying()->withHeaders([
-                        'Authorization' => env('MIDDLEWARE_TOKEN'),
+                        'Authorization' => env('MIDDLEWARE_TOKEN'),   //MIDDLEWARE_TOKEN
                     ])->post($addCustomerUrl, $data);
             
                     $newResponse =  $response->json();
@@ -72,7 +72,7 @@ class PostpaidLookUp extends Command
                     \Log::info('Postpaid Data Log: ' . json_encode($newResponse));
 
 
-                    if($newResponse['status'] == "true"){ 
+                    if($newResponse['status'] == "true") { 
                         //Update the status of payment and send the job and send SMS
                         $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                             'response_status' => 1,
