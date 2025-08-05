@@ -40,7 +40,8 @@ class FCMBFlutterVerifyTransactions extends Command
             //$checkTransaction = PaymentTransactions::whereIn('status', ['started', 'processing'])
             $checkTransaction = PaymentTransactions::whereDate('created_at',  $today)  //'2024-09-20'   $today
             ->where("provider", "FCMB")
-            ->whereIn('status', ['started', 'processing'])
+            ->where('response_status', '!=', '3')
+            ->whereIn('status', ['started'])
             ->chunk(5, function ($paymentLogs) use (&$paymentData) {
 
                 
@@ -65,7 +66,8 @@ class FCMBFlutterVerifyTransactions extends Command
                         if ($paymentLog->status == "processing") {
                             $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                                 'providerRef' => $flutterResponse['data']['flwref'],
-                                'provider' => 'FCMB'
+                                'provider' => 'FCMB',
+                                'response_status' => 3
                             ]);
                             $this->info('***** FLUTTERWAVE Verification Was was update with provider and reference *************');
 
@@ -73,14 +75,16 @@ class FCMBFlutterVerifyTransactions extends Command
                             $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                                 'providerRef' => $flutterResponse['data']['flwref'],
                                 'provider' => 'FCMB',
-                                'status' => 'processing'
+                                'status' => 'processing',
+                                'response_status' => 3
                             ]);
                             $this->info('***** FLUTTERWAVE Transaction is set to processing *************');
                         } else if ($paymentLog->status == "cancelled") {
                             $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                                 'providerRef' => $flutterResponse['data']['flwref'],
                                 'provider' => 'FCMB',
-                                'status' => 'processing'
+                                 'response_status' => 3
+                               // 'status' => 'processing'
                             ]);
                             $this->info('***** FLUTTERWAVE Transaction is set to processing *************');
                         } else {

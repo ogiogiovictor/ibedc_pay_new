@@ -50,13 +50,12 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
         Route::post('verify-pin', 'verifyPin')->name('verify-pin');
         Route::post('retry-verification-code', 'retyCode')->name('retry-verification-code');
         Route::post('add-meter', 'addMeter')->name('add-meter');
-
         Route::post('start_registration', 'storeRegister')->name('startRegistration');
     });
 
     Route::post('authenticate', [LoginController::class, 'store']);
-    Route::post('meter_authenticate', [LoginController::class, 'authLoginTest']);
-   // Route::post('meter_authenticate_test', [LoginController::class, 'authLogin']);  //authLogin
+    Route::post('meter_authenticate', [LoginController::class, 'authLoginTestCustomer']);  // authLoginTest
+    Route::post('meter_authenticate_test', [LoginController::class, 'authLoginTestCustomer']);  //authLogin
 
     /////////////////////////// FORGOT PASSWORD IMPLEMENTATION ///////////////////////////////////
     // Route::post('forgot-password', [ForgotController::class, 'forgotPass']);

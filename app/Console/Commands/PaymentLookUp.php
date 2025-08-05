@@ -9,6 +9,8 @@ use App\Models\Transactions\PaymentTransactions;
 use Symfony\Component\HttpFoundation\Response;
 use App\Services\PolarisLogService;
 
+use Illuminate\Support\Facades\DB;
+
 class PaymentLookUp extends Command
 {
     /**
@@ -51,7 +53,7 @@ class PaymentLookUp extends Command
                    $providerKey = match ($paymentLog->provider) {
                         'FCMB' => env('FLUTTER_FCMB_KEY'),
                         'Polaris' => env('FLUTTER_POLARIS_KEY'),
-                        default => env('FLUTTER_POLARIS_KEY'), // Use a default key if provider is not specified
+                        default => env('FLUTTER_FCMB_KEY'), // Use a default key if provider is not specified
                       };
         
                     $flutterData = [
@@ -80,7 +82,7 @@ class PaymentLookUp extends Command
                             $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                                 'providerRef' => $flutterResponse['data']['flwref'],
                                 'status' => 'processing',
-                                 'response_status' => 3
+                                'response_status' => 3
                             ]);
                             $this->info('***** FLUTTERWAVE Transaction is set to processing *************');
                         } else {
@@ -127,10 +129,11 @@ class PaymentLookUp extends Command
     
                    
                     \Log::error("Payment Response" . json_encode($flutterResponse));
-
-
                    
                 }
+
+                 // ✅ Close connection after processing each chunk
+                DB::disconnect('sqlsrv');
 
             });
     
@@ -141,6 +144,9 @@ class PaymentLookUp extends Command
             $this->info('***** ERROR PROCESSING PAYMENT :: Error Processing and updating payments *************');
             Log::error('Error in Payment LookUp: ' . $e->getMessage());
             //Log::error('Error Response: ' . json_encode($flutterResponse));
-        }
+        }finally {
+                // ✅ Ensure disconnection even if an exception occurs
+                DB::disconnect('sqlsrv');
+            }
     }
 }

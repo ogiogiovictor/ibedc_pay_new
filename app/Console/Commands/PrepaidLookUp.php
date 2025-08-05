@@ -165,6 +165,9 @@ class PrepaidLookUp extends Command
         }catch(\Exception $e){
             \Log::info('ERROR MESSAGE - PREPAID LOG: ' . json_encode($e));
             $this->info('***** TOKENLOOKUP API PAYMENT COMPLETED:: All payments processed successfully *************');
+        }finally {
+            // ✅ Explicitly close the DB connection
+            DB::disconnect();
         }
     }
 }

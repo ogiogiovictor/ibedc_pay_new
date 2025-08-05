@@ -8,6 +8,7 @@ use App\Models\Wallet\WalletHistory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use App\Models\User;
+use App\Models\CustomerAccount;
 
 class WalletUser extends Model
 {
@@ -23,6 +24,12 @@ class WalletUser extends Model
     public function users(): BelongsTo {
         return $this->belongsTo(User::class, "id");
     }
+
+     public function customer(): BelongsTo {
+        return $this->belongsTo(CustomerAccount::class, "id");
+    }
+
+    
 
     public function myhistory(): HasMany {
         return $this->hasMany(WalletHistory::class, "user_id", "user_id");

@@ -46,7 +46,7 @@ class TerminatingMiddleware
             
         ];
 
-        AppLog::create($data);
+       // AppLog::create($data);
         //Log::info(__METHOD__ . ' - ' . $request->toArray());
     }
 }

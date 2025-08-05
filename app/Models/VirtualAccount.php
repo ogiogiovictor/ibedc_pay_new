@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
+use App\Models\CustomerAccount;
 
 class VirtualAccount extends Model
 {
@@ -20,5 +21,9 @@ class VirtualAccount extends Model
 
     public function user(): BelongsTo {
         return $this->belongsTo(User::class, "id");
+    }
+
+     public function customer(): BelongsTo {
+        return $this->belongsTo(CustomerAccount::class, "id");
     }
 }

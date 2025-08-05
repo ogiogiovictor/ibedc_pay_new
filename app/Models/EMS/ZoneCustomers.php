@@ -9,7 +9,7 @@ class ZoneCustomers extends Model
 {
     use HasFactory;
 
-    protected $table = "EMS_ZONE.dbo.CustomerNew";
+    protected $table = "EMS_ZONE.dbo.CustomerNew";  //[EMS_ZONE].[dbo].[CustomerNew]
 
     protected $connection = 'zone_connection';
 

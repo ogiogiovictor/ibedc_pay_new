@@ -43,6 +43,10 @@ class PaymentController extends BaseAPIController
        // return $this->sendError("System Downtime", 'System Unavailable, please try again later', Response::HTTP_BAD_REQUEST); 
 
 
+       if($request->email == "Danielprincedgreat@gmail.com") {
+        return $this->sendError("ERROR", 'ERROR', Response::HTTP_BAD_REQUEST); 
+       }
+
        if($request->amount < 1) {
         return $this->sendError("Invalid Amount. Minimum Amount is 500", 'ERROR - minimum amount 2,000', Response::HTTP_BAD_REQUEST); 
        }
@@ -86,70 +90,92 @@ class PaymentController extends BaseAPIController
             return $this->sendError('Error', "Invalid Key Sent", Response::HTTP_BAD_REQUEST);
         }
 
-        $custInfo = ZoneCustomers::where("AccountNo", $request->account_number)->first();
+        $cleaned = str_replace(['/', '-'], '',  $request->account_number);
+
         $auth = Auth::user();
 
-        if(!$custInfo){
-            return $this->sendError('Error', "No Record Found", Response::HTTP_NOT_FOUND);
-        }
+         //http://192.168.15.152:9494/IBEDCWebServices/webresources/Identification/114/983985058001/FX321G9D?postpaid=true
+          $URL = env("POSTPAID_LINK") . "Identification/" . env("POSTPAID_KEY") . "/" . $cleaned . "/" . env("POSTPAID_TOKEN") . "?postpaid=true";
 
-        if( strlen($custInfo->MeterNo) == '16') {
-            return $this->sendError('Non STS Customer Cannot use this platform. Please visit our office"ror', "Error", Response::HTTP_BAD_REQUEST);
-        }
-
-        if (strpos($custInfo->AccountNo, '.') !== false) {
-            return $this->sendError('Non STS Customer Cannot use this platform. Please visit our office', "Error", Response::HTTP_BAD_REQUEST);
-        }
-
-        $transactionID = StringHelper::generateUUIDReference();
-        $checkTransID =  $this->transaction->show($transactionID);
-        if($checkTransID) { $transactionID = StringHelper::generateUUIDReference(). ''.time().data('YmdHis'); }
-
-        $buCode = BusinessUnit::where("BUID", $custInfo->BUID)->value("Name");
-
-        DB::beginTransaction();
+          /** ✅ 7. Make GET request */
+          $response = Http::withoutVerifying()
+                ->withHeaders([
+                    'Connection'    => 'close',
+                ])
+                ->retry(3, 2000)
+                ->timeout(30)
+                ->get($URL);
 
 
-        try{
+         if ($response->successful()) {
+                $raw = $response->json();
+
+              if (strpos($raw['minimumPurchase'], '.') !== false) {
+                  return $this->sendError('Non STS Customer Cannot use this platform. Please visit our office', "Error", Response::HTTP_BAD_REQUEST);
+              }
+
+              $transactionID = StringHelper::generateUUIDReference();
+              $checkTransID =  $this->transaction->show($transactionID);
+              if($checkTransID) { $transactionID = StringHelper::generateUUIDReference(). ''.time().data('YmdHis'); }
+
+              
+             if(isset($raw['businessUnit'])) {
+
+                  DB::beginTransaction();
+
+                   try{
           
-            $payment = $this->transaction->store([
-                'email' => isset($request->email) ? $request->email : $this->user->index($auth->id)[0]->email,
-                'transaction_id' => $transactionID,
-                'phone' => isset($request->phone) ? $request->phone :  $this->user->index($auth->id)[0]->phone,
-                'amount' => (float)$request->amount,
-                'account_type' => $request->account_type,
-                'account_number' => trim($request->account_number),
-                'payment_source' => $request->payment_source,
-                'status' => "started",
-                'customer_name' => $custInfo->Surname.' '. $custInfo->FirstName,
-                'date_entered' => Carbon::now(),
-                'BUID' => isset($buCode) ? $buCode : $custInfo->BUID,
-                'owner' => $request->owner,
-                'latitude' => isset($request->latitude) ? $request->latitude : 'null',
-                'longitude' => isset($request->longitude) ? $request->longitude : 'null',
-                'source_type' => isset($request->source_type) ? $request->source_type : 'null',
-                "user_id" => $auth->id,
-                'agency' => $auth->agency,
-                'Address' => $custInfo->Address1. ' '. $custInfo->Address2
-            ]);
+                    $payment = $this->transaction->store([
+                        'email' => isset($request->email) ? $request->email : $this->user->index($auth->id)[0]->email,
+                        'transaction_id' => $transactionID,
+                        'phone' => isset($request->phone) ? $request->phone :  $this->user->index($auth->id)[0]->phone,
+                        'amount' => (float)$request->amount,
+                        'account_type' => $request->account_type,
+                        'account_number' => trim($request->account_number),
+                        'payment_source' => $request->payment_source,
+                        'status' => "started",
+                        'customer_name' => $raw['customerName'],
+                        'date_entered' => Carbon::now(),
+                        'BUID' => $raw['businessUnit'],
+                        'owner' => $request->owner,
+                        'latitude' => isset($request->latitude) ? $request->latitude : 'null',
+                        'longitude' => isset($request->longitude) ? $request->longitude : 'null',
+                        'source_type' => isset($request->source_type) ? $request->source_type : 'null',
+                        "user_id" => $auth->id,
+                        'agency' => $auth->agency,
+                        'Address' => $raw['address']
+                    ]);
 
-            if($payment){
-                // Convert the $queryUser object to an array
-                $queryUserArray = $payment->toArray();
-                    
-                // Add the URL to the array
-                $queryUserArray["sub_account"] = $this->subaccountmatch($buCode);
-                //$queryUserArray["user_object"] = $this->user->index($auth->id);
+                        if($payment){
+                            // Convert the $queryUser object to an array
+                            $queryUserArray = $payment->toArray();
+                                
+                            // Add the URL to the array
+                            $queryUserArray["sub_account"] = $this->subaccountmatch($raw['businessUnit']);
+                            //$queryUserArray["user_object"] = $this->user->index($auth->id);
 
-                DB::commit();
-                return $this->sendSuccess($queryUserArray, "Payment Process Initiated", Response::HTTP_OK);
-            }
+                             DB::commit();
+                             DB::disconnect('sqlsrv');
+                            return $this->sendSuccess($queryUserArray, "Payment Process Initiated", Response::HTTP_OK);
+                        }
 
-        }catch(\Exception $e){
-            DB::rollBack();
-            //dispatch and email notifiying admin of the failed transaction;
-            return $this->sendError('Error', "Error Initiating Payment: " . $e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+                    }catch(\Exception $e){
+                        DB::rollBack();
+                        DB::disconnect('sqlsrv');
+                        //dispatch and email notifiying admin of the failed transaction;
+                        return $this->sendError('Error', "Error Initiating Payment: " . $e->getMessage(), Response::HTTP_BAD_REQUEST);
+                    }
+
+
+             }
+
+
+
+         } else {
+            DB::disconnect('sqlsrv');
+            return $this->sendError('Error', "Error Initiating Payment: ", Response::HTTP_BAD_REQUEST);
+         }
+
 
     }
 
@@ -159,6 +185,10 @@ class PaymentController extends BaseAPIController
 
     ///////////////////////////////// CREATE PREPAID PAYMENT ////////////////////////////////
     public function createPrePaidPayment($request){
+
+        if($request->phone == "07054562967") {
+            return $this->sendError('Error', "Error", Response::HTTP_BAD_REQUEST);
+        }
 
         $checkService = (new AppService)->processApp("Prepaid");
 
@@ -172,119 +202,98 @@ class PaymentController extends BaseAPIController
             return $this->sendError('Error', "Invalid Key Sent", Response::HTTP_BAD_REQUEST);
         }
 
-        $zoneECMI = EcmiCustomers::where("MeterNo", $request->MeterNo)->first();
 
-        if (!$zoneECMI) {
-            return $this->sendError('ERROR', "Meter number does not exist", Response::HTTP_BAD_REQUEST);
-        }
-
-
-        if(strlen($request->MeterNo) == '16') {
+         if(strlen($request->MeterNo) == '16') {
             return $this->sendError('Error', "Non STS Customer Cannot use this platform. Please visit our office", Response::HTTP_BAD_REQUEST);
         }
-
-        // if (strpos($zoneECMI->AccountNo, '.') !== false) {
-        //     return $this->sendError('Error', "Non STS Customer Cannot use this platform. Please visit our office", Response::HTTP_BAD_REQUEST);
-        // }
 
           // Check if transfer amount exceeds 25 million
         if($request->amount > 25000000) {
             return $this->sendError('Error', "Transaction Amount cannot be more than 25000000", Response::HTTP_BAD_REQUEST);
         }
 
-        $data = [
-            "meter_number" => $request->MeterNo,
-            "vendtype" => "Prepaid"
-        ];
+        //http://192.168.15.156:9494/IBEDCWebServices/webresources/Identification/119/62121250526/ABCD/;referencetype=accountnumber?postpaid=false
+        $URL = env("PREPAID_LINK") . "Identification/" . env("PREPAID_KEY") . "/" . $request->MeterNo . "/" . env("PREPAID_TOKEN") . "?referencetype=accountnumber&postpaid=false";
 
-            
-        $response = Http::withoutVerifying()->withHeaders([
-            'Authorization' => 'Bearer LIVEKEY_5AEB0A6DDCAF91D938E5C56644313129',     //LIVEKEY_711E5A0C138903BBCE202DF5671D3C18
-        ])->post("https://middlewarelookup.ibedc.com/lookup/verify-meter/", $data);   //https://middleware3.ibedc.com/api/v1/verifymeter
-
-        $newResponse =  $response->json();
-
-       // dd($newResponse['data']['minimumPurchase']);   
-
-       // \Log::info('VERIFICATION REPONSE: ' . json_encode($newResponse['data']));
-
-       // https://middlewarelookup.ibedc.com/lookup/verify-meter/   |  Bearer LIVEKEY_5AEB0A6DDCAF91D938E5C56644313129
-
-        $minimumPurchase = isset($newResponse['data']['minimumPurchase']) ? $newResponse['data']['minimumPurchase'] : 0;
-
-        if($request->amount < $minimumPurchase) {
-            return $this->sendError('Error', "Transaction Amount cannot by less than ₦$minimumPurchase due to your pending outstanding", Response::HTTP_BAD_REQUEST);
-        }
+      
+          /** ✅ 7. Make GET request */
+        $response = Http::withoutVerifying()
+                ->withHeaders([
+                    'Connection'    => 'close',
+                ])
+                ->retry(3, 2000)
+                ->timeout(30)
+                ->get($URL);
 
 
-        if (strtoupper(substr($newResponse['data']['serviceBand'], 0, 1)) === 'A' && $request->amount < 2) {
-            return $this->sendError('Error', "Transaction Cannot be less than 500 for BAND A Customers", Response::HTTP_BAD_REQUEST);
-        }
+         if ($response->successful()) {
+                $raw = $response->json();
 
-         // Check Customer Eligibility for Payment
-        //  $eligibilityCheck = SubAccount::where('AccountNo', $zoneECMI->AccountNo)
-        // ->whereIn('SubAccountAbbre', ['OUTBAL', 'OUTBAL2',  'LOSREV', 'PENCHG'])
-        // ->whereIn('ModeOfPayment', ['MONTHLY PAYMENT', 'One-off'])
-        // ->first();
+                 if(isset($raw['businessUnit'])) {
 
-    
-        // If Customer have outstanding return the error message
-        // if($eligibilityCheck){
-        //     $balance = floatval($eligibilityCheck->Balance);
-        //         if($request->amount < $eligibilityCheck->PaymentAmount && $balance != 0.00){
-        //             $formatCurrency = number_format($eligibilityCheck->PaymentAmount);
+                    $minimum = $raw['minimumPurchase'];
+                    if($request->amount < $raw['minimumPurchase']) {
+                        return $this->sendError('Error', "Transaction Amount cannot by less than ₦  $minimum due to your pending outstanding", Response::HTTP_BAD_REQUEST);
+                    }
 
-        //             return $this->sendError('Error', "Transaction Amount cannot by less than ₦$formatCurrency due to your pending outstanding", Response::HTTP_BAD_REQUEST);
-        //         }
-        // }
+                     if (strtoupper(substr($raw['serviceBand'], 0, 1)) === 'A' && $request->amount < 200) {
+                        return $this->sendError('Error', "Transaction Cannot be less than 500 for BAND A Customers", Response::HTTP_BAD_REQUEST);
+                    }
 
+                    $transactionID = StringHelper::generateUUIDReference();
+                    DB::beginTransaction();
+                    $auth = Auth::user();
 
-        $transactionID = StringHelper::generateUUIDReference();
-        DB::beginTransaction();
-        $auth = Auth::user();
+                     try {
 
-        try{
+                            $payment = $this->transaction->store([
+                                'email' => isset($request->email) ? str_replace(' ', '', $request->email) : $this->user->index($auth->id)[0]->email,
+                                'transaction_id' => $transactionID,
+                                'phone' => isset($request->phone) ? $request->phone : $this->user->index($auth->id)[0]->phone,
+                                'amount' => (float)$request->amount,
+                                'account_type' => $request->account_type,
+                                'account_number' => trim($raw['accountNumber']),   //accountNumber
+                                'payment_source' => $request->payment_source,
+                                'status' => "started",
+                                'meter_no' => $request->MeterNo,
+                                'customer_name' => $raw['customerName'],
+                                'date_entered' => Carbon::now(),
+                                'BUID' => $raw['businessUnit'],
+                                'owner' => $request->owner,
+                                'latitude' => isset($request->latitude) ? $request->latitude : 'null',
+                                'longitude' => isset($request->longitude) ? $request->longitude : 'null',
+                                'source_type' => isset($request->source_type) ? $request->source_type : 'null',
+                                "user_id" => $auth->id,
+                                'agency' => $auth->agency,
+                                'Address' => $raw['address']
+                            ]);
 
-            $payment = $this->transaction->store([
-                'email' => isset($request->email) ? str_replace(' ', '', $request->email) : $this->user->index($auth->id)[0]->email,
-                'transaction_id' => $transactionID,
-                'phone' => isset($request->phone) ? $request->phone : $this->user->index($auth->id)[0]->phone,
-                'amount' => (float)$request->amount,
-                'account_type' => $request->account_type,
-                'account_number' => trim($zoneECMI->AccountNo),
-                'payment_source' => $request->payment_source,
-                'status' => "started",
-                'meter_no' => $request->MeterNo,
-                'customer_name' => $zoneECMI->Surname.' '. $zoneECMI->OtherNames,
-                'date_entered' => Carbon::now(),
-                'BUID' => $zoneECMI->BUID,
-                'owner' => $request->owner,
-                'latitude' => isset($request->latitude) ? $request->latitude : 'null',
-                'longitude' => isset($request->longitude) ? $request->longitude : 'null',
-                'source_type' => isset($request->source_type) ? $request->source_type : 'null',
-                "user_id" => $auth->id,
-                'agency' => $auth->agency,
-                'Address' => $zoneECMI->Address
-            ]);
+                            if($payment){
+                                // Convert the $queryUser object to an array
+                                $queryUserArray = $payment->toArray();
+                                    
+                                // Add the URL to the array
+                                $queryUserArray["sub_account"] = $this->subaccountmatch($raw['businessUnit']);   //businessUnitId
+                            // $queryUserArray["user_object"] =  $this->user->index($auth->id);
 
-            if($payment){
-                // Convert the $queryUser object to an array
-                $queryUserArray = $payment->toArray();
-                    
-                // Add the URL to the array
-                $queryUserArray["sub_account"] = $this->subaccountmatch($zoneECMI->BUID);
-               // $queryUserArray["user_object"] =  $this->user->index($auth->id);
+                                DB::commit();
+                                return $this->sendSuccess($queryUserArray, "Payment Process Initiated", Response::HTTP_OK);
+                            }
 
-                DB::commit();
-                return $this->sendSuccess($queryUserArray, "Payment Process Initiated", Response::HTTP_OK);
-            }
+                    }catch(\Exception $e){
+                        DB::rollBack();
+                        DB::disconnect('sqlsrv');
+                        return $this->sendError('Error', "Error Initiating Payment: " . $e->getMessage(), Response::HTTP_BAD_REQUEST);
+                    }
 
 
+                 }
 
-        }catch(\Exception $e){
-            DB::rollBack();
-            return $this->sendError('Error', "Error Initiating Payment: " . $e->getMessage(), Response::HTTP_BAD_REQUEST);
-        }
+         } else {
+              DB::disconnect('sqlsrv');
+              return $this->sendError('Error', "Error Initiating Payment: " . $e->getMessage(), Response::HTTP_BAD_REQUEST);
+         }
+
 
     }
 

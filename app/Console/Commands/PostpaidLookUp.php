@@ -69,7 +69,8 @@ class PostpaidLookUp extends Command
                     $newResponse =  $response->json();
 
                     $this->info('***** POSTPAID API :: Processing Postpaid Payment*************');
-                    \Log::info('Postpaid Data Log: ' . json_encode($newResponse));
+                     \Log::info('Postpaid Data Log response: ' . json_encode($newResponse));
+                      \Log::info('Postpaid Response Status: ' . $newResponse['status'] );
 
 
                     if($newResponse['status'] == "true") { 
@@ -77,7 +78,7 @@ class PostpaidLookUp extends Command
                         $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                             'response_status' => 1,
                             'status' =>  'success',
-                            'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] :  '', //Carbon::now()->format('YmdHis'),
+                            'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] :  $newResponse['data']['recieptNumber'], //Carbon::now()->format('YmdHis'),
 
                             'Descript' =>  isset($newResponse['message']) ? $newResponse['message'] :  '',
                             'units' => isset($newResponse['Units']) ? $newResponse['Units'] : '0', 
@@ -90,7 +91,27 @@ class PostpaidLookUp extends Command
 
                         ]);
                         dispatch(new PostPaidJob($paymentLog));
-                        \Log::info('Postpaid Payment Successfuly: ' . json_encode($newResponse));
+                        \Log::info('Postpaid Payment Successfuly: ' . json_encode($newResponse));  //transactionStatus
+                    } else if($newResponse['status'] == "false" && $newResponse['transactionStatus']  == "Success" ){
+
+                        $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                            'response_status' => 1,
+                            'status' =>  'success',
+                          //  'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] :  $newResponse['data']['recieptNumber'], //Carbon::now()->format('YmdHis'),
+
+                            // 'Descript' =>  isset($newResponse['message']) ? $newResponse['message'] :  '',
+                            // 'units' => isset($newResponse['Units']) ? $newResponse['Units'] : '0', 
+
+                            // 'minimumPurchase' => isset($newResponse['customer']['minimumPurchase']) ? $newResponse['customer']['minimumPurchase'] : '',
+                            // 'tariffcode'  => isset($newResponse['customer']['tariffcode']) ? $newResponse['customer']['tariffcode'] : '',
+                            // 'customerArrears' => isset($newResponse['customer']['customerArrears']) ? $newResponse['customer']['customerArrears'] : '',
+                        
+                            // 'udertaking' => isset($newResponse['customer']['businessUnitId']) ? $newResponse['customer']['businessUnitId'] : '',
+
+                        ]);
+                        dispatch(new PostPaidJob($paymentLog));
+                        \Log::info('Transaction Data: ' .  $newResponse['transactionStatus']);
+                        \Log::info('Postpaid Payment Successfuly: ' . json_encode($newResponse)); 
                     }
 
                 }

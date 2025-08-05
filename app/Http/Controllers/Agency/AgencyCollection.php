@@ -14,6 +14,10 @@ use App\Models\Transactions\PaymentTransactions;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Models\CommissionLog;
+use App\Models\EMS\ZoneBills;
+use Illuminate\Support\Facades\Http;
+use App\Models\EMS\ZonePayments;
+use App\Models\EMS\ZoneCustomers;
 
 class AgencyCollection extends BaseAPIController
 {
@@ -81,6 +85,112 @@ class AgencyCollection extends BaseAPIController
         $getcommission = CommissionLog::all();
         return $this->sendSuccess($getcommission, "All Commission", Response::HTTP_OK);
 
+    }
+
+
+    public function commissioncalculation(Request $request){
+
+        $tariffCode = $this->customerType($request);
+        $monthsToCheck = strtoupper($tariffCode) === 'MD1' ? 6 : 3;
+
+         // Get the last 3 bills
+        $recentBills = ZoneBills::where('AccountNo', $request->account_number)
+            ->orderByDesc('BillYear')
+            ->orderByDesc('BillMonth')
+            ->take($monthsToCheck)
+            ->get();
+
+      
+        if ($recentBills->isEmpty()) {
+            \Log::info('No bill found ' . json_encode($checkRef));
+            return;
+        }
+
+         $totalBillAmount = $recentBills->sum('TotalDue');
+
+         // Get last 3 months payments that haven’t been used for commission
+        $recentPayments = ZonePayments::where('AccountNo', $request->account_number)
+            ->orderByDesc('PayYear')
+            ->orderByDesc('PayMonth')
+            ->get()
+            ->filter(function ($payment) use ($request) {
+                return !CommissionLog::where('account_number', $request->account_number)
+                    ->where('pay_month', $payment->PayMonth)
+                    ->where('pay_year', $payment->PayYear)
+                    ->exists();
+            })
+            ->take($monthsToCheck);
+
+       
+
+        if ($recentPayments->isEmpty()) {
+            \Log::info('No new payments found for commission ' . json_encode($request));
+            return;
+        }
+
+        $totalPaid = $recentPayments->sum('Payments');
+        $balance = $totalPaid - $totalBillAmount + $request->amount;
+
+       
+
+        // Only calculate commission if balance is positive
+        $commission = $balance > 0 ? round($balance * 0.05, 2) : 0;
+
+        foreach ($recentPayments as $payment) {
+            CommissionLog::create([
+                'account_number' => $request->account_number,
+                'pay_month' => $payment->PayMonth,
+                'pay_year' => $payment->PayYear,
+                'total_amount' => $totalPaid,
+                'total_due' => $totalBillAmount,
+                'amount' => $balance,
+                'commission' => $commission,
+                'agency' => Auth::user()->agency,
+                'user_id' => Auth::user()->id,
+                'payment_id' => $payment->PaymentID, // <- Make sure this is present
+            ]);
+        }
+
+        \Log::info('Commission Successfully Created for: ' . $request->account_number);
+
+          return response()->json([
+            'account_number' => $request->account_number,
+            'customer_type' => $tariffCode,
+            'total_due' => $totalBillAmount,
+            'total_paid' => $totalPaid,
+            'balance' => $balance,
+            'commission' => $commission,
+        ]);
+
+
+    }
+
+
+     private function customerType($request){
+
+            $data = [
+                "meter_number" => $request->account_number,
+                "vendtype" => "Postpaid"
+            ];
+
+                try {
+
+                    $response = Http::withoutVerifying()->withHeaders([
+                        'Authorization' => 'Bearer LIVEKEY_5AEB0A6DDCAF91D938E5C56644313129',
+                    ])->post("https://middlewarelookup.ibedc.com/lookup/verify-meter/", $data);   //https://middleware3.ibedc.com/api/v1/verifymeter  |  LIVEKEY_711E5A0C138903BBCE202DF5671D3C18
+            
+                
+                    $finalResponse = $response->json();
+            
+                
+                    return $finalResponse['data']['tariffcode'];
+                    
+
+                }catch(\Exception $e) {
+
+                    return $e->getMessage();
+                }
+        
     }
 
 

@@ -55,11 +55,14 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_agency_sync', 'middleware' => 'myAuth'
          Route::get('getpaymentbyBH', [AgentProfile::class, 'getpaymentbyBH']); 
 
         Route::prefix('collection')->controller(AgencyCollection::class)->group(function () {
+
             Route::get('agentcollection', 'agentCollection')->name('agentcollection');
             
             Route::get('agencycollection', 'agencyCollection')->name('agencycollection');
            
             Route::get('commission', 'commission')->name('commission');
+
+             Route::post('calculatecommission', 'commissioncalculation')->name('calculatecommission');
         });
 
 

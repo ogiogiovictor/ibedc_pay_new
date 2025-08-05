@@ -105,7 +105,7 @@ class PrepaidJob implements ShouldQueue
                      ];
                      
                      // $iresponse = Http::asForm()->post($baseUrl, $smsdata);
-                     Log::info('NULL RESPONSE: - ', ['SMS Response' =>    $smsdata ]);
+                    // Log::info('NULL RESPONSE: - ', ['SMS Response' =>    $smsdata ]);
 
                      $emailData = [
                         'token' => $token,
@@ -116,7 +116,7 @@ class PrepaidJob implements ShouldQueue
                         "payreference" => $this->payment['transaction_id'],    
                     ];
 
-                    Log::info('TOKEN SENT: : - ', ['Generated Successfully' =>     $smsdata ]);
+                  //  Log::info('TOKEN SENT: : - ', ['Generated Successfully' =>     $smsdata ]);
 
                     $user = Auth::user();
                    // Mail::to($this->payment['email'])->send(new PrePaidPaymentMail($emailData));
@@ -134,7 +134,7 @@ class PrepaidJob implements ShouldQueue
                     }
                    
 
-                    Log::info('EMAIL SENT TO USER: - ', ['EMAIL SENT TO USER WITH COPY' =>  $data, 'USER eMAIL ' =>  $user->email ]);
+                   // Log::info('EMAIL SENT TO USER: - ', ['EMAIL SENT TO USER WITH COPY' =>  $data, 'USER eMAIL ' =>  $user->email ]);
 
                    
                     //Send a Successfully Mail to user

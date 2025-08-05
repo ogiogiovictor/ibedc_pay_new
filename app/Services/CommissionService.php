@@ -112,7 +112,7 @@ class CommissionService  extends BaseAPIController
         $tariffCode = $this->customerType($checkRef);
         $monthsToCheck = strtoupper($tariffCode) === 'MD1' ? 6 : 3;
 
-        $monthsToCheck  = 3;
+       // $monthsToCheck  = 3;
 
         $latestBill = ZoneBill::where('AccountNo', $checkRef->account_number)
                             ->orderByDesc('BillYear')

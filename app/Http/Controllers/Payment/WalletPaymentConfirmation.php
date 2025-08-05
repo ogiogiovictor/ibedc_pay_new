@@ -25,9 +25,19 @@ class WalletPaymentConfirmation extends BaseAPIController
 {
     public function CompletePayment(Request $request) {
 
-        $authUser = Auth::user();
+      $authUser = Auth::user();
 
-        $checkTrans  = PaymentTransactions::where("transaction_id", $request->transacion_id)->first();
+      $checkTrans  = PaymentTransactions::where("transaction_id", $request->transacion_id)->first();
+
+      if($request->provider != "Wallet") {
+          return $this->sendError('Error', "Error", Response::HTTP_BAD_REQUEST);
+       }
+
+
+    //    if(!$checkTrans->latitude) {
+    //       return $this->sendError('Error', "Error", Response::HTTP_BAD_REQUEST);
+    //    }
+
 
       // Ensure the user has a wallet
       if(!$authUser->wallet) {
