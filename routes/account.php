@@ -32,11 +32,12 @@ Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync', 'middleware' => 'myA
         
         Route::post('final-application', 'final')->name('final-application');
         Route::post('upload-lecan-form-application', 'lecanapplication')->name('upload-lecan-form-application');
-        Route::post('process_account', 'dtmprocess')->name('process_account');
+        Route::post('process_account_dte', 'dtmprocess')->name('process_account');
 
         Route::post('change_account_location', 'changedtmprocess')->name('change_account_location');
 
         Route::middleware('auth:sanctum')->group(function() {
+            Route::post('process_account', 'dtmprocess')->name('process_account');
             Route::get('get_pending_account', 'getpendingaccounts')->name('process_account');
             Route::post('rejectform', 'reject')->name('rejectfrom');
             Route::post('approve_request', 'approveDTERequest')->name('approve_request');
@@ -72,7 +73,16 @@ Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync'], function () {
 
         Route::post('get_pending_account_upload', 'pendingUpload')->name('get_pending_account_upload');
 
+         Route::get('get_prepaid_customers', 'getprepaidcustomers')->name('get_prepaid_customers');
+
+         Route::get('get_postpaid_customers', 'getpostpaidcustomers')->name('get_postpaid_customers');
+
     });
 });
 
 
+ Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync'], function () { 
+    Route::prefix('process')->controller(AccountController::class)->group(function () {
+      Route::post('nin-validation', 'providedata')->name('nin-validation');
+    });
+ });

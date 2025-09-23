@@ -25,7 +25,13 @@
                       <div class="card">
                         <div class="card-body">
                           <div class="d-flex flex-wrap justify-content-between">
-                            <h4 class="card-title">All Users</h4>
+                            <h4 class="card-title">All Users <a href="add_users"><hr/> (Add Users) </a> </h4>
+                             @if (session()->has('success'))
+                            <div class="alert alert-danger">
+                                {{ session('success') }}
+                            </div>
+                        @endif
+                            
 
                             <form class="form-inline justify-content-end" wire:submit.prevent="searchUser">
                              
@@ -56,12 +62,12 @@
                               <thead>
                                 <tr>
                                   <th>Date</th>
-                                  <th>User ID</th>
+                                  <!-- <th>User ID</th> -->
                                   <th>User Name</th>
                                   <th>Email </th>
                                   <th>Phone</th>
-                                  <th>Account Type</th>
-                                  <th>User Code</th>
+                                  <!-- <th>Account Type</th> -->
+                                  <!-- <th>User Code</th> -->
                                   <th>Primary Meters</th>
                                   <th>Authority</th>
                                   <th>Status</th>
@@ -75,12 +81,12 @@
                               @foreach($users['data'] as $user)
                                 <tr>
                                   <td>{{ \Carbon\Carbon::parse($user['created_at'])->format('Y-m-d H:i:s')}} </td>
-                                  <td>{{ $user['id'] }} </td>
+                                  <!-- <td>{{ $user['id'] }} </td> -->
                                   <td><div class="text-dark font-weight-medium"> {{ $user['name'] }} </div></td>
                                   <td>{{ $user['email'] }}</td>
                                   <td> {{ $user['phone'] }} </td>
-                                  <td>{{ $user['account_type'] }}</td>
-                                  <td>{{ $user['user_code'] }}</td>
+                                  <!-- <td>{{ $user['account_type'] }}</td> -->
+                                  <!-- <td>{{ $user['user_code'] }}</td> -->
                                   <td>{{ $user['meter_no_primary'] }}</td>
                                   <td>{{ $user['authority'] }}</td>
                                   <td>
@@ -94,7 +100,8 @@
                                   
                                   </td>
                                   <td>
-                                    <a href="/view_user/{{ $user['id'] }}" class="mr-1 p-2 btn btn-xs btn-primary">View</a>
+                                    <!-- <a href="/view_user/{{ $user['id'] }}" class="mr-1 p-2 btn btn-xs btn-danger" placeholder="Reset Password">Reset</a> -->
+                                    <button class="btn btn-xs btn-danger" wire:click="resetUser( {{ $user['id'] }} )" class="btn btn-xs btn-danger">Reset</button>
                                   </td>
                                 </tr>
 

@@ -20,7 +20,7 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('app:postpaid-look-up')
                 ->withoutOverlapping()
-                ->everyTwoMinutes();
+                ->everyFifteenMinutes();
 
         $schedule->command('app:payment-look-up')
                 ->withoutOverlapping()
@@ -30,11 +30,15 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('monitor:sql-connections')
                 ->withoutOverlapping()
-                ->everyTenMinutes();
+                ->everyFifteenMinutes();
 
         $schedule->command('app:fcmbflutter-verify-transactions')
                 ->withoutOverlapping()
                 ->everyFiveMinutes();
+
+         $schedule->command('app:prepaid-error-fix')
+             ->withoutOverlapping()
+             ->everyFiveMinutes();
 
         #$schedule->command('app:prepaid-look-up')->everyMinute();
         #$schedule->command('app:postpaid-look-up')->everyTwoMinutes();

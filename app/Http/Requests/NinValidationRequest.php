@@ -22,7 +22,7 @@ class NinValidationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            "nin" =>  ['required', 'digits:11'],
+            "nin" =>  ['required'], // 'digits:11'
         ];
     }
 }

@@ -6,6 +6,10 @@ use Livewire\Component;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use App\Enums\RoleEnum;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\UserAccountCreated;
+use Illuminate\Support\Facades\Hash;
 
 class Users extends Component
 {
@@ -58,6 +62,26 @@ class Users extends Component
         //     $this->users = collect();
         // }
 
+
+    }
+
+
+    public function resetUser($id) {
+        // Find user
+        $user = User::findOrFail($id);
+
+        // Generate a new random password
+        $plainPassword = Str::random(10); // e.g. 10 characters long
+
+        // Update user password (hashed)
+        $user->update([
+            'password' => Hash::make($plainPassword),
+        ]);
+
+        // Resend the mail with updated credentials
+        Mail::to($user->email)->send(new UserAccountCreated($user, $plainPassword));
+
+        session()->flash('success', 'User password has been reset and sent to their email.');
 
     }
 

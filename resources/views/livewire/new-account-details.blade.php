@@ -14,14 +14,45 @@
                             <li><strong>Tracking ID:</strong> {{ $details->tracking_id }}</li>
                             <li><strong>Lat/Long:</strong> {{ $details->latitude }} | {{ $details->longitude }}</li>
                             <li><strong>Address:</strong> {{ $details->house_no }}  {{ $details->full_address }} </li>
+                            
                             <li><strong>Region:</strong> {{ $details->region }} </li>
                             <li><strong>Business Hub:</strong> {{ $details->business_hub }} </li>
                             <li><strong>Service Center:</strong> {{ $details->service_center }} </li>
+
+                            <li><strong>Nearest Bustop:</strong>  {{ $details->nearest_bustop }} </li>
+                            <li><strong>LGA:</strong>  {{ $details->lga }} </li>
+                            <li><strong>Landmark:</strong>  {{ $details->landmark }} </li>
+
+                            <li><strong>Type of Premise:</strong>  {{ $details->type_of_premise }} </li>
+                            <li><strong>Use Of Premise:</strong>  {{ $details->use_of_premise }} </li>
+
                             <li><strong>DSS:</strong> {{ $details->dss }} </li>
                             <li><strong>Lecan Completed Form:</strong> <a href="/storage/{{ $details->lecan_link }}"> VIEW PDF - (LECAN) </a> </li>
                             <li><strong>Generated Account:</strong> {{ $details->account_no }} </li>
-                            <li><strong>Validated By:</strong> {{ \App\Models\User::where('id', $details->validated_by)->value('name') ?? '' }} </li>
-                            <li><strong>Status:</strong> {{ $details->status == 0 ? 'Pending' : 'Completed' }} </li>
+                            <li><strong>Validated By:</strong> {{ $details->validated_by }}  </li>
+                            <li><strong>Status:</strong> 
+                                      @if($details->status == "0")
+                                      <label class="badge badge-info">Started</label>
+                                      @elseif($details->status == "1")
+                                      <label class="badge badge-warning">with DTM</label>
+                                      @elseif($details->status == "2")
+                                      <label class="badge badge-warning">with Billing</label>
+                                       @elseif($details->status == "3")
+                                      <label class="badge badge-warning">with Compliance</label>
+                                      @elseif($details->status == "4")
+                                      <label class="badge badge-success">Completed</label>
+                                       @elseif($details->status == "5")
+                                      <label class="badge badge-danger">Rejected</label>
+                                      @else
+                                      <label class="badge badge-danger">N/A</label>
+                                      @endif
+                                  
+                            </li>
+
+
+                         <li><strong>DTM Comment:</strong>  {{ $details->comment }} </li>
+                        <li><strong>Billing Comment:</strong>  {{ $details->billing_comment }} </li>
+
                         </ul>     
                     @endif
 
@@ -37,12 +68,80 @@
                         @endif
 
 
+
+                        <hr/>
+                
+                  
+                 @if($logs)
+                   <h3> Audit Logs </h3>
+                    <table class="table table-bordered">
+                        <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>User</th>
+                                <th>Module ID</th>
+                                <th>Comment</th>
+                                 <th>Type</th>
+                                <th>Created</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                         @foreach ($logs as $alogs)
+                            <tr>
+                                <td>{{ $alogs->id }}</td>
+                                <td>{{ $alogs->user_email }}</td>
+                                <td>{{ $alogs->module_id }}</td>
+                                <td>{{ $alogs->comment }}</td>
+                                <td>{{ $alogs->type }}</td>
+                                <td>{{ $alogs->created_at }}</td>
+                            </tr>
+
+                        @endforeach
+
+                        </tbody>
+
+                    </table>
+
+                @endif
                          
-                                                                     
-                      
+                                
+                        
+                    @canany(['super_admin', 'rico'])
+                    @if($details->status == "3")
+                      <hr/>  FOR REGIONAL/HQ COMPLAINCE ONLY <br/>
+                     <form wire:submit.prevent="rejectdtmrequest">
+                       <div class="form-group">
+                        <label>Add Comment for Reject ({{ $id}} )</label>
+                        <textarea class="form-control" wire:model="rcomment"></textarea>
+                      </div>
 
-                    @canany(['super_admin', 'dtm'])
 
+                    <div class="row">
+                      <div class="col-md-12">
+                        <div class="form-group row">
+                        
+                          <button class="btn btn-block btn-danger" type="submit">Reject</button> 
+                         
+
+                        </div>
+                      </div>
+                     
+                    </div>
+                   
+
+
+                     </form>
+                     @endif
+
+                    @endcanany
+
+
+                    
+
+                    @canany(['super_admin'])
+
+                      <hr/>  ADMINISTRATOR ONLY <br/>
                      <form wire:submit.prevent="submit">
 
                       

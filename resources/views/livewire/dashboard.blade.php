@@ -253,13 +253,17 @@
                                   <th>Account No</th>
                                   <th>Meter No</th>
                                   <th>Customer Name</th>
-                                  <th>Email</th>
+                                  <!-- <th>Email</th> -->
                                   <th>Amount</th>
+                                  <th>Token</th>
                                   <th>Account</th>
                                   <th>Provider</th>
                                   <!-- <th>Business Hub</th> -->
                                   <th>Status</th>
                                   <th>Actions</th>
+                                    @canany(['super_admin', 'payment_channel'])
+                                  <th>Retry</th>
+                                   @endcanany
                                 </tr>
                               </thead>
                               <tbody>
@@ -273,8 +277,9 @@
                                   <td>{{ $transaction->account_number }}</td>
                                   <td>{{ $transaction->meter_no }}</td>
                                   <td> <div class="text-dark font-weight-medium">{{ $transaction->customer_name }}</div> </td>
-                                  <td>{{ $transaction->email }}</td>
+                                  <!-- <td>{{ $transaction->email }}</td> -->
                                   <td>₦{{ number_format($transaction->amount, 2) }}</td>
+                                   <td>{{ $transaction->receiptno }}</td>
                                   <td>{{ $transaction->account_type }}</td>
                                   <!-- <td>{{ $transaction->BUID }}</td> -->
                                   <td>{{ $transaction->provider }}</td>
@@ -296,6 +301,18 @@
                                     <!-- <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a> -->
                                     <a href="transaction_details/{{ $transaction->transaction_id }}" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
                                   </td>
+                                    @canany(['super_admin', 'payment_channel'])
+                                   <td>
+                                     @if (!$transaction->receiptno && $transaction->account_type == 'Prepaid' && $transaction->status == 'processing' && $transaction->provider != "Wallet" )
+                                          <button wire:click="processTransaction({{ $transaction->id }})" class="btn-xs btn-warning">Sync</button>
+                                       @endif
+
+                                     @if (!$transaction->receiptno && $transaction->account_type == 'Prepaid' && $transaction->status == 'processing' && $transaction->provider == "Wallet" )
+                                                  <button wire:click="processWalletTransaction({{ $transaction->id }})" class="btn-xs btn-secondary">Sync</button>
+                                      @endif
+                                    
+                                   </td>
+                                    @endcanany
                                 </tr>
 
                                 @endforeach

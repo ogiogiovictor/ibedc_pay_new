@@ -17,6 +17,7 @@ use App\Enums\RoleEnum;
 use App\Models\Transactions\PaymentTransactions;
 use App\Http\Requests\RegisterRequest;
 use Illuminate\Support\Facades\Hash;
+use App\Models\Agency\Agencies as DAgency;
 
 
 
@@ -45,7 +46,8 @@ class CreateAgents extends BaseAPIController
                 'authority' => $request->authority,
                 'agency' => $request->agency,
                 'status' => 1,
-                'pin' => 0
+                'pin' => 0,
+                'user_code' => DAgency::where("id", $request->agency)->value("agent_code"). rand(4)
             ]);
 
             // Assign role if authority exists

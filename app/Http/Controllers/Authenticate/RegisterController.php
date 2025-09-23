@@ -240,9 +240,9 @@ class RegisterController extends BaseAPIController
             ], 'User Meter Successfully Updated', Response::HTTP_OK);
         } else {
 
-            return $this->sendSuccess([
+            return $this->sendError([
                 'user' => "Continue",
-            ], 'User Meter Already Exist. Use your meter/account number to login if you have not created a profile', Response::HTTP_OK);
+            ], 'User Meter Already Exist. Use your meter/account number to login if you have not created a profile', Response::HTTP_BAD_REQUEST);
         }
 
 

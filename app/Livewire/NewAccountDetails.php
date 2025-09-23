@@ -9,7 +9,10 @@ use App\Models\NAC\UploadHouses;
 use Illuminate\Support\Facades\Session;
 use App\Models\ECMI\NewTarrif;
 use App\Models\ECMI\ServiceClass;
-
+use App\Services\IbedcPayLogService;
+use App\Models\NAC\AccoutCreaction;
+use Illuminate\Support\Facades\Mail;
+use App\Models\IBEDCPayLogs;
 
 class NewAccountDetails extends Component
 {
@@ -31,6 +34,7 @@ class NewAccountDetails extends Component
     public $newTarriff; 
     public $oldTarriff;
     public $band;
+    public $rcomment;
 
     
 
@@ -138,11 +142,72 @@ class NewAccountDetails extends Component
    
 
 
+   public function rejectdtmrequest() {
+
+     $uploadHouses = UploadHouses::where("id", $this->id)->first();
+
+    if (!$uploadHouses) {
+        Session::flash('error', 'Account not found.');
+        return;
+    }
+
+    $uploadHouses->update([
+        'status' => 5,
+        // 'billing_comment' => 'Application Request Rejected By Billing',
+        'lecan_link' => NULL
+    ]);
+
+        $account = AccoutCreaction::where("tracking_id", $uploadHouses->tracking_id)->first();
+        
+        if ($account) {
+            // Update status of the account
+            $account->update([
+                'status' => 'started',
+                'status_name' => 'rejected',
+                'comment' => $this->rcomment
+            ]);
+
+            IbedcPayLogService::create([
+                'module'     => 'New Account',
+                'comment'    => $this->rcomment,
+                'type'       => 'Rejected',
+                'module_id'  => $this->id,
+                'status'     => 'started',
+            ]);
+
+            $email = $uploadHouses->validated_by;
+
+            if (!empty($email)) {
+                // Send email with token
+                Mail::raw(
+                    "Your request with tracking ID was rejected. Tracking ID is: {$uploadHouses->tracking_id} Comments: {$this->rcomment}",
+                    function ($message) use ($email) {
+                        $message->to($email)
+                                ->subject('New Account Request Rejected');
+                    }
+                );
+            }
+
+            // // Send email with token
+            // Mail::raw("Your request with tracking ID was rejected. Tracking ID is: {$uploadHouses->tracking_id} Comments: { $this->rcomment }", function ($message) use ($email) {
+            //     $message->to($email)
+            //             ->subject('New Account Request Rejected');
+            // });
+
+            Session::flash('success', 'New Account Successfully Rejected By .');
+        } 
+        
+   // dd($this->rcomment);
+   }
+
     public function render()
     {
+        $logs = IBEDCPayLogs::where("module_id", $this->id)->get();
+
         return view('livewire.new-account-details', [
              'tarriff' => NewTarrif::get(),
              'iband' => ServiceClass::get(),
+             'logs' => $logs
         ]);
     }
 }

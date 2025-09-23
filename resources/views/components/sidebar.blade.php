@@ -62,7 +62,7 @@
             </div>
           </li>
 
-        @if($user->authority == 'dtm' || $user->authority == 'billing' || $user->authority == 'bhm' || $user->authority == 'mso')
+        @if($user->authority == 'dtm' || $user->authority == 'billing' || $user->authority == 'bhm' || $user->authority == 'mso'  || $user->authority == 'rico')
             <li class="nav-item"> </li>
         @else
             <li class="nav-item">

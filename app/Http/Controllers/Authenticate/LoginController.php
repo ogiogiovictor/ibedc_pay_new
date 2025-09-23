@@ -20,6 +20,8 @@ use App\Services\AppService;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+use Illuminate\Support\Str;
 
 
 class LoginController extends BaseAPIController
@@ -464,8 +466,10 @@ class LoginController extends BaseAPIController
             if($request->account_type == 'Prepaid'  || $request->account_type == 'prepaid') {  //email
 
                 $transactionID = StringHelper::generateUUIDReference().rand(0, 10);
+
+                $newPhone = isset($getResponse["phoneNumber"]) ? $getResponse["phoneNumber"] : $this->generatePhone();
                 //Create an account for the user
-                $checkPhone = CustomerAccount::where("phone", $getResponse["phoneNumber"])->first();
+                $checkPhone = CustomerAccount::where("phone", $newPhone)->first();
                 
                 if (!$checkPhone) {
                     $newPhone = $this->generatePhone(); // Implement your own logic for generating a unique phone number
@@ -512,12 +516,13 @@ class LoginController extends BaseAPIController
 
                   // Check if the phone number exists and handle it accordingly
                 if(isset($getResponse["phoneNumber"])) {
-                     $checkPhone = CustomerAccount::where("phone", $getResponse["phoneNumber"])->first();
+                     $newPhone = $getResponse["phoneNumber"]; // CustomerAccount::where("phone", $getResponse["phoneNumber"])->first();
                 } else {
                      $newPhone = $this->generatePhone();
                 }
-               
 
+                
+             
                 //The account is a postpaid account
                 $addCustomer  = CustomerAccount::create([
                     'name' => $getResponse["customerName"],

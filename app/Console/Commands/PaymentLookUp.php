@@ -119,9 +119,9 @@ class PaymentLookUp extends Command
                         
 
                         $this->info('***** FLUTTERWAVE TRANSACTION NOT APPLICABLE *************');
-                        $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
-                            'response_status' => 3
-                        ]);
+                        // $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
+                        //     'response_status' => 3
+                        // ]);
                         // $this->info('***** FLUTTERWAVE TRANSACTION CANCELLED :- CANCELLED STATUS *************');
 
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);

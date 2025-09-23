@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\DB;
 use App\Jobs\PostPaidJob;
 use Carbon\Carbon;
 //use App\Services\PolarisLogService;
+use Illuminate\Support\Facades\Mail;
 
 class PostpaidLookUp extends Command
 {
@@ -112,6 +113,34 @@ class PostpaidLookUp extends Command
                         dispatch(new PostPaidJob($paymentLog));
                         \Log::info('Transaction Data: ' .  $newResponse['transactionStatus']);
                         \Log::info('Postpaid Payment Successfuly: ' . json_encode($newResponse)); 
+                    } else  {
+
+                         $errorMessage = isset($newResponse) ? $newResponse : 'Unknown error from MOMAS API';
+
+                          // Convert the API response to a string
+                        $errorMessage = isset($newResponse) ? json_encode($newResponse, JSON_PRETTY_PRINT) : 'Unknown error from MOMAS API';
+
+                        // Build the email body as a string
+                        $emailBody = "Postpaid Payment Error:\n\n";
+                        $emailBody .= "Transaction ID: {$paymentLog->transaction_id}\n";
+                        $emailBody .= "Customer: {$paymentLog->customer_name}\n";
+                        $emailBody .= "Account: {$paymentLog->account_number}\n";
+                        $emailBody .= "Error Details:\n{$errorMessage}\n";
+
+                          // Send the email
+                        Mail::raw($emailBody, function ($message) {
+                            $message->to([
+                                'victor.ogiogio@ibedc.com',
+                                'babatunde.bodunde@ibedc.com',
+                                'olajide.salami@ibedc.com',
+                                'kayode.arinfe@ibedc.com'
+                            ])->subject('Postpaid Payment Error');
+                        });
+                      
+                      
+
+                        
+
                     }
 
                 }

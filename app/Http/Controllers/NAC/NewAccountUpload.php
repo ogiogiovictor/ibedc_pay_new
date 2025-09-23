@@ -22,9 +22,12 @@ use App\Jobs\NotificationJob;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\File;
 use App\Models\EMS\ZoneCustomers;
+use App\Models\ECMI\EcmiCustomers;
 use App\Models\EMS\BusinessUnit;
 use App\Models\ECMI\NewTarrif;
 use Illuminate\Support\Facades\Auth;
+use App\Models\OustsourceEmail;
+use Illuminate\Support\Facades\Mail;
 
 
 class NewAccountUpload extends BaseAPIController
@@ -35,13 +38,13 @@ class NewAccountUpload extends BaseAPIController
             'email' => 'required|string|email', 
         ]);
 
-        //Check if email exists in our database, if not return error
-         // You can use App\Models\User or any custom NAC user model
-        // $user = \App\Models\DTE::where('email', $email)->first();
+        //Check if email exists in our database, if not return error  ibedcoutsource.com
+         $email = strtolower(trim($request->email));
 
-        // if (!$user) {
-            // return $this->sendError('No DTE with such information', 'ERROR', Response::HTTP_NOT_FOUND);
-        // }
+         // Check domain manually
+        if (!preg_match('/^[A-Za-z0-9._%+-]+@(ibedc\.com|ibedcoutsource\.com)$/i', $email)) {
+            return $this->sendError('Only ibedc.com or ibedcoutsource.com.com emails are allowed', 'ERROR', Response::HTTP_FORBIDDEN);
+        }
 
 
         //if exists return back the email and token code that u have updated in along side the email
@@ -51,6 +54,19 @@ class NewAccountUpload extends BaseAPIController
             'email' => $request->email,
             'token' => $token
          ];
+
+         //update or insert token
+         $record = OustsourceEmail::updateOrCreate(
+            ['EMAIL_ADDRESS' => $email],   // condition to check
+            ['CODE' => $token],    // field(s) to update or insert
+           // ['EMAIL_ADDRESS' => $email]
+        );
+
+         // Send email with token
+        Mail::raw("Your verification code is: {$token}", function ($message) use ($email) {
+            $message->to($email)
+                    ->subject('Your Verification Code');
+        });
 
          //Then save the token against the user email
          return $this->sendSuccess([
@@ -69,10 +85,34 @@ class NewAccountUpload extends BaseAPIController
         ]);
 
         //validate code against the email 
+        $check = OustsourceEmail::where([
+            'EMAIL_ADDRESS' => $request->email,
+            'CODE' => $request->code,
+        ])->first();
+
+        if (!$check) {
+            return $this->sendError('Invalid Code Provided, Please check your email', 'ERROR', Response::HTTP_FORBIDDEN);
+        }
+
 
 
         $data = UploadHouses::where("tracking_id", $request->tracking_id)->whereIn("status", ["0", "1"])->with('account')->paginate(10);
 
         return $this->sendSuccess([ 'accounts' => $data], 'CUSTOMER APPLICATION SUCCESSFUL SUBMITTED', Response::HTTP_OK);
+    }
+
+
+
+    public function getprepaidcustomers() {
+
+        $customers = EcmiCustomers::paginate(30);
+        return $this->sendSuccess($customers, 'ECMI CUSTOMER APPLICATION SUCCESSFUL SUBMITTED', Response::HTTP_OK);
+    }
+
+    public function getpostpaidcustomers() {
+
+        $customers = ZoneCustomers::paginate(30);
+        return $this->sendSuccess($customers, 'EMS CUSTOMER APPLICATION SUCCESSFUL SUBMITTED', Response::HTTP_OK);
+        
     }
 }

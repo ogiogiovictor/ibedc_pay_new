@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Http;
 use App\Services\AppService;
+use App\Services\CommissionService;
 
 class PaymentController extends BaseAPIController
 {
@@ -165,6 +166,17 @@ class PaymentController extends BaseAPIController
                         //dispatch and email notifiying admin of the failed transaction;
                         return $this->sendError('Error', "Error Initiating Payment: " . $e->getMessage(), Response::HTTP_BAD_REQUEST);
                     }
+
+
+
+                    ////// CHECK FOR AGENCY
+                    //  $user_authority = Auth::user();
+
+                    // if (in_array($raw['businessUnit'], ["MD", "NMD", "MD1"]) &&  $user_authority->authority == 'agent' ) {
+                    //     // Your commission calculation logic here
+                    //     (new CommissionService)->addCommission($request, $payment);
+                    // } 
+        
 
 
              }

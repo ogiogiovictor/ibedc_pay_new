@@ -11,6 +11,7 @@ use App\Models\NAC\UploadHouses;
 use Mail;
 use App\Mail\AccountNotificationMail;
 use App\Models\NAC\ServiceAreaCode;
+use App\Models\User;
 
 class AccountNotificationJob implements ShouldQueue
 {
@@ -44,6 +45,12 @@ class AccountNotificationJob implements ShouldQueue
                     ->send(new AccountNotificationMail($data));
             }
         }
+
+         $user = User::where("business_hub", strtoupper($records->business_hub))->value("email");
+         if($user) {
+             Mail::to($user)->bcc("customercare@ibedc.com")->send(new AccountNotificationMail($data));
+         }
+
     }
 
 

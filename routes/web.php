@@ -36,6 +36,12 @@ use App\Livewire\NewAccountDetails;
 use App\Livewire\Evaluation;
 
 use App\Livewire\CustomerPendingAccount;
+use App\Livewire\ServiceCenterAreaCode;
+
+use App\Livewire\AddAreaCode;
+use App\Livewire\AddUser;
+use App\Livewire\ChangePassword;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -94,6 +100,9 @@ Route::middleware(['auth', 'check_access'])->group(function () {
 
       Route::get('/new_account', NewAccount::class)->name('new_account');
       Route::get('/account_details/{tracking_id}', AccountDetails::class)->name('account_details');
+      Route::get('/service_area_code', ServiceCenterAreaCode::class)->name('service_area_code');
+      Route::get('/add_users', AddUser::class)->name('add_users');
+
     });
 
 
@@ -105,11 +114,15 @@ Route::middleware(['auth', 'check_access'])->group(function () {
       Route::get('/customers_pending_accounts', CustomerPendingAccount::class)->name('customers_pending_accounts');
       Route::get('/evaluation/{tracking_id}', Evaluation::class)->name('evaluation');
       Route::get('/auditlogs', AuditLogs::class)->name('auditlog');
+      Route::get('/service_area_code', ServiceCenterAreaCode::class)->name('service_area_code');
+      Route::get('/area_code', AddAreaCode::class)->name('area_code');
      // Route::get('/tracking_details', NewAccountDetails::class)->name('tracking_details');
+
     });
 
    
 
+     Route::get('/change_password', ChangePassword::class)->name('change_password');
     
 
  // });

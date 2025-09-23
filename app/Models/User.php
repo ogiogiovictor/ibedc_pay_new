@@ -38,7 +38,8 @@ class User extends Authenticatable
         'account_type',
         'region',
         'business_hub',
-        'sc'
+        'sc',
+        'default_password'
     ];
 
     /**

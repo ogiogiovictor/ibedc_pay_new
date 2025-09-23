@@ -33,11 +33,11 @@ class RegisterRequest extends FormRequest
            // "pin" => "required|numeric",
              'password' => [
                  'required',
-                  Password::min(5) // Minimum length of 8 characters
+                  Password::min(6) // Minimum length of 8 characters
                       ->letters() // Must contain at least one letter
                       ->mixedCase() // Must contain both uppercase and lowercase letters
                        ->numbers() // Must contain at least one number
-            //     //     ->symbols() // Must contain at least one special character
+                     // ->symbols() // Must contain at least one special character
                     //  ->uncompromised() // Check if the password has not been compromised in data breaches
              ],
         ];

@@ -14,4 +14,8 @@ class BusinessUnit extends Model
     protected $connection = 'zone_connection';
 
     public $timestamps = false;
+
+    protected $primaryKey = 'BUID';   // use the actual PK column
+    public $incrementing = false;     // disable auto-increment
+    protected $keyType = 'string';    // or 'int' if BUID is numeric
 }

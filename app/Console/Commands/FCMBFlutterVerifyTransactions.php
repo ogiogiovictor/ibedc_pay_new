@@ -39,7 +39,7 @@ class FCMBFlutterVerifyTransactions extends Command
 
             //$checkTransaction = PaymentTransactions::whereIn('status', ['started', 'processing'])
             $checkTransaction = PaymentTransactions::whereDate('created_at',  $today)  //'2024-09-20'   $today
-            ->where("provider", "FCMB")
+            //->where("provider", "FCMB")
             ->where('response_status', '!=', '3')
             ->whereIn('status', ['started'])
             ->chunk(5, function ($paymentLogs) use (&$paymentData) {
@@ -102,7 +102,8 @@ class FCMBFlutterVerifyTransactions extends Command
                         $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                             'providerRef' => $flutterResponse['data']['flwref'],
                             'status' => 'failed',
-                            'provider' => 'FCMB'
+                            'provider' => 'FCMB',
+                             'response_status' => 3
                         ]);
                         // Send Failed Response to Customer
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);
@@ -114,7 +115,8 @@ class FCMBFlutterVerifyTransactions extends Command
                         $update = PaymentTransactions::where("transaction_id", $paymentLog->transaction_id)->update([
                             'providerRef' => $flutterResponse['data']['flwref'],
                             'status' => 'cancelled',
-                            'provider' => 'FCMB'
+                            'provider' => 'FCMB',
+                            'response_status' => 3
                         ]);
                         // Send Failed Response to Customer
                         (new PolarisLogService)->processLogs($paymentLog->transaction_id, $paymentLog->meter_no,  $paymentLog->account_number, $flutterResponse);

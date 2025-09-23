@@ -206,4 +206,27 @@ class CommissionService  extends BaseAPIController
         
     }
 
+
+
+
+     public function addCommission($request, $payment) {
+
+        $check =  CommissionLog::create([
+                'account_number' => $request->account_number,
+                'pay_month' => $request->month,
+                'pay_year' => $request->year,
+                'total_amount' => $request->months_payment_sum,
+                'total_due' =>  $request->current_outstanding,
+                'amount' =>  $request->amount,
+                'commission' => $request->commission,
+                'payment_id' => $payment['transaction_id'], // optional
+                'agency' => Auth::user()->agency,
+                'user_id' => Auth::user()->id,
+                'agency' => Auth::user()->agency,
+        ]);
+
+         \Log::info('Comission Logs' . json_encode($check));
+
+     }
+
 }

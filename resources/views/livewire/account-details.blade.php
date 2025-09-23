@@ -61,12 +61,12 @@
                     @endif
 
 
-                    <div class="col-sm-4 mb-3"><strong>House No:</strong> {{ $details->house_no }}</div>
+                    <!-- <div class="col-sm-4 mb-3"><strong>House No:</strong> {{ $details->house_no }}</div>
                     <div class="col-sm-4 mb-3"><strong>Nearest Bustop:</strong> {{ $details->nearest_bustop }}</div>
-                    <div class="col-sm-4 mb-3"><strong>LGA:</strong> {{ $details->lga }}</div>
-                    <div class="col-sm-4 mb-3"><strong>Full Address:</strong> {{ $details->address }}</div>
-                    <div class="col-sm-4 mb-3"><strong>Type Of Premise:</strong> {{ $details->type_of_premise }}</div>
-                    <div class="col-sm-4 mb-3"><strong>Use Of Premise:</strong> {{ $details->use_of_premise }}</div>
+                    <div class="col-sm-4 mb-3"><strong>LGA:</strong> {{ $details->lga }}</div> -->
+                    <!-- <div class="col-sm-4 mb-3"><strong>Full Address:</strong> {{ $details->address }}</div> -->
+                    <!-- <div class="col-sm-4 mb-3"><strong>Type Of Premise:</strong> {{ $details->type_of_premise }}</div> -->
+                    <!-- <div class="col-sm-4 mb-3"><strong>Use Of Premise:</strong> {{ $details->use_of_premise }}</div> -->
                     <!-- <div class="col-sm-4 mb-3"><strong>Region:</strong> {{ $details->region }}</div>
                     <div class="col-sm-4 mb-3"><strong>Business Hub:</strong> {{ $details->business_hub }}</div>
                     <div class="col-sm-4 mb-3"><strong>Service Center:</strong> {{ $details->service_center }}</div>
@@ -74,7 +74,7 @@
                     <!-- <div class="col-sm-4 mb-3"><strong>Meter Book:</strong> {{ $details->meter_book }}</div> -->
                     <div class="col-sm-4 mb-3"><strong>Numbe of Accounts(s) Applied For:</strong> {{ $details->no_of_account_apply_for }}</div>
 
-                    <div class="col-sm-4 mb-3"><strong>Means of Identification:</strong> {{ $details->uploadinformation?->means_of_identification  }}</div>
+                    <div class="col-sm-4 mb-3"><strong>Tracking ID:</strong> {{ $details->tracking_id  }}</div>
 
                     
                 </div>
@@ -97,10 +97,10 @@
 
                     <div class="col-sm-4 mb-3"><strong>Preferred Method of Reciveing Bills:</strong> {{ $details->continuation?->prefered_method_recieving_bill }}</div>
                     
-                    <div class="col-sm-4 mb-3">
+                    <!-- <div class="col-sm-4 mb-3">
                         <strong>Status:</strong>
                         <span class="badge bg-info text-dark">{{ $details->status }}</span>
-                    </div>
+                    </div> -->
 
                     <div class="col-sm-4 mb-3">
                         <strong>Progress:</strong>
@@ -167,14 +167,54 @@
                                     <td>{{ $account->latitude }}</td>
                                     <td>{{ $account->longitude }}</td>
                                     <td>{{ $account->account_no }}</td>
-                                    <td>{{ $account->status == 4 ? 'Completed' : 'in-progress' }}</td>
+                                    <!-- <td>{{ $account->status == 4 ? 'Completed' : 'in-progress' }}</td> -->
+                                     <td>
+                                      @if($account->status == "0")
+                                      <label class="badge badge-info">Started</label>
+                                      @elseif($account->status == "1")
+                                      <label class="badge badge-warning">with DTM</label>
+                                       @elseif($account->status == "3")
+                                      <label class="badge badge-warning">with Compliance</label>
+                                      @elseif($account->status == "2")
+                                      <label class="badge badge-warning">with Billing</label>
+                                      @elseif($account->status == "4")
+                                      <label class="badge badge-success">Completed</label>
+                                       @elseif($account->status  == "5")
+                                      <label class="badge badge-danger">Rejected</label>
+                                      @else
+                                      <label class="badge badge-danger">N/A</label>
+                                      @endif
+                                  
+                                  </td>
+
                                     <td> <a target="_blank" href="/tracking_details/{{$account->id }}/{{$account->tracking_id}}" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a></td>
+                                   
+                                     @canany(['rico', 'super_admin'])
+
+                                       @if ($account->status == 3 )
+                                            <td>
+                                                <button class="btn btn-xs btn-primary" wire:click="ricoApprove( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-success">Approve</button>&nbsp;&nbsp;
+                                            </td>
+                                        @endif
+
+                                      @endcanany
+
+
                                     @canany(['billing', 'super_admin'])
                                         @if ($details->status == 'with-billing' && $account->status == 2 )
-                                         <th>
-                                        <button class="btn btn-xs btn-success" wire:click="generate( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Generate</button>&nbsp;&nbsp;
+                                         <td>
+
+                                         @if($account->account_no && $account->status == 2)
+                                            <button class="btn btn-xs btn-primary" wire:click="generate( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Approve</button>&nbsp;&nbsp;
+                                         @endif
+
+                                          @if(!$account->account_no && $account->status == 2)
+                                            <button class="btn btn-xs btn-success" wire:click="generate( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Generate</button>&nbsp;&nbsp;
+                                         @endif
+
+                                       
                                         <button class="btn btn-xs btn-danger" wire:click="billingreject( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Reject</button>
-                                        </th>
+                                        </td>
                                         @endif
                                      @endcanany
                                 </tr>
@@ -203,7 +243,7 @@
                                 <div class="d-flex gap-2">
                                      @canany(['super_admin', 'dtm'])
                                         @if ($details->status == 'with-dtm')
-                                        <button wire:click="processforbhm({{ $details->id }})" class="btn btn-md btn-primary">Account(s) Validated</button>
+                                        <!-- <button wire:click="processforbhm({{ $details->id }})" class="btn btn-md btn-primary">Account(s) Validated</button> -->
                                         @endif
                                      @endcanany
 
@@ -231,7 +271,7 @@
                             <div class="card-header bg-light">
                                 <h6 class="mb-0">Image Information</h6>
                             </div>
-                            <div class="card-body text-center">  
+                            <!-- <div class="card-body text-center">  
                                  <p><strong>Customer Photo</p>
                                 <img src="https://ipay.ibedc.com:7642/storage/{{ $details->uploadinformation?->photo }}" class="img-fluid rounded mb-3 w-50" alt="Customer Image">
                             </div>
@@ -239,7 +279,7 @@
                              <div class="card-body text-center">  
                                  <p><strong>Customer Means of Identification</p>
                                 <img src="https://ipay.ibedc.com:7642/storage/{{ $details->uploadinformation?->identification }}" class="img-fluid rounded mb-3 w-50" alt="Customer Image">
-                            </div>
+                            </div> -->
 
                             <div class="card-body text-center">  
                                  <p><strong>Landlord Photo</p>

@@ -18,7 +18,7 @@ class AgentProfile extends BaseAPIController
 
         $user = auth()->user();
 
-         $currentMonth = Carbon::now()->month;
+        $currentMonth = Carbon::now()->month;
         $currentYear = Carbon::now()->year;
 
         $monthlyCollection = PaymentTransactions::whereMonth('created_at', $currentMonth)
@@ -38,7 +38,7 @@ class AgentProfile extends BaseAPIController
             'account' => $user->virtualAccount,
             'monthly_collection' => $monthlyCollection,
             'total_yearly_collection' => $yearlyCollection,
-             'commission' => 0,
+            'commission' => 0,
         ];
 
          return $this->sendSuccess($data, 'PROFILE LOADED', Response::HTTP_OK);

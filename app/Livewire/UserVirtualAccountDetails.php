@@ -6,6 +6,7 @@ use Livewire\Component;
 use App\Models\Wallet\WalletHistory;
 use App\Models\Wallet\WalletUser;
 use App\Models\User;
+use App\Models\CustomerAccount;
 use App\Models\VirtualAccount;
 use App\Models\VirtualAccountTrasactions;
 use App\Models\Transactions\PaymentTransactions;
@@ -24,7 +25,9 @@ class UserVirtualAccountDetails extends Component
         
         $virtual_account = VirtualAccount::where(["id" => $this->id, "user_id" => $this->user_id, "customer_email" => $this->email])->first();
 
-        $user = User::find($this->user_id);
+       // $user = User::find($this->user_id);
+        $user = User::find($this->user_id) ?? CustomerAccount::find($this->user_id);
+
 
         // Initialize data array
         $this->data = [

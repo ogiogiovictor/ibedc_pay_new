@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\User;
+use App\Models\CustomerAccount;
 use App\Models\EMS\ZoneCustomers;
 use App\Models\ECMI\EcmiCustomers;
 
@@ -31,7 +32,7 @@ class UpdateCustomerInformation extends Command
         $this->info('***** Begin Process to Update Customer Names *************');
 
        // Retrieve users whose email starts with 'default'
-    $users = User::where('email', 'like', 'default%')->get();
+    $users = CustomerAccount::where('email', 'like', 'default%')->get();
 
     foreach ($users as $user) {
         // Perform your update logic or any other action here

@@ -36,7 +36,7 @@ class ManageAgencies extends BaseAPIController
 
         // Create agency
         $createAgency = DAgency::create([
-            'agent_code' => Str::random(5), // e.g., "A1B2C"
+            'agent_code' => stroupper(Str::random(6)), // e.g., "A1B2C"
             'agent_name' => $validated['agent_name'],
             'agent_email' => $validated['agent_email'],
             'agent_official_phone' => $validated['agent_official_phone'],
