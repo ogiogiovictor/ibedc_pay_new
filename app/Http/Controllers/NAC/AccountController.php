@@ -396,6 +396,24 @@ class AccountController extends BaseAPIController
             $data['landloard_picture'] = $picturePath;
         }
 
+
+        // Handle NIN Slip
+        // if ($request->hasFile('nin_slip')) {
+        //     //$folder = 'customers/pictures';
+
+        //     $folder = "/customers/pictures";
+
+        //     // Check and create the folder if it doesn't exist
+        //     if (!Storage::disk('public')->exists($folder)) {
+        //         Storage::disk('public')->makeDirectory($folder, 0755, true); // recursive = true
+        //     }
+
+        //     $picturePath = $request->file('landloard_picture')->store($folder, 'public');
+        //     $data['nin_slip'] = $picturePath;
+        // }
+
+
+
            // Create the continue customer record
         $createdCustomer = ContinueAccountCreation::create($data); 
 
