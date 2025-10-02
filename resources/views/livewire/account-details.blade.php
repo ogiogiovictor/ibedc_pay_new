@@ -193,7 +193,7 @@
 
                                        @if ($account->status == 3 )
                                             <td>
-                                                <button class="btn btn-xs btn-primary" wire:click="ricoApprove( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-success">Approve</button>&nbsp;&nbsp;
+                                                <button  wire:click="ricoApprove( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-success">Approve</button>&nbsp;&nbsp;
                                             </td>
                                         @endif
 
@@ -201,7 +201,7 @@
 
 
                                     @canany(['billing', 'super_admin'])
-                                        @if ($details->status == 'with-billing' && $account->status == 2 )
+                                       
                                          <td>
 
                                          @if($account->account_no && $account->status == 2)
@@ -210,12 +210,13 @@
 
                                           @if(!$account->account_no && $account->status == 2)
                                             <button class="btn btn-xs btn-success" wire:click="generate( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Generate</button>&nbsp;&nbsp;
+                                             <button class="btn btn-xs btn-danger" wire:click="billingreject( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Reject</button>
                                          @endif
 
                                        
-                                        <button class="btn btn-xs btn-danger" wire:click="billingreject( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Reject</button>
+                                       
                                         </td>
-                                        @endif
+                                      
                                      @endcanany
                                 </tr>
                             @endforeach
@@ -283,7 +284,15 @@
 
                             <div class="card-body text-center">  
                                  <p><strong>Landlord Photo</p>
-                                <img src="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->landloard_picture }}" class="img-fluid rounded mb-3 w-50 " alt="Customer Image">
+                                <img src="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->landloard_picture }}" class="img-fluid rounded mb-3 w-50 " alt="Landlord Photo">
+                                <!-- <img src="{{ asset('lun_pictures/' . basename($details->continuation?->landloard_picture)) }}" class="img-fluid rounded mb-3 w-50 " alt="Customer Image"> -->
+                               
+                            </div>
+
+
+                             <div class="card-body text-center">  
+                                 <p><strong>NIN Slip</p>
+                                <img src="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->nin_slip }}" class="img-fluid rounded mb-3 w-50 " alt="NIN Slip">
                                 <!-- <img src="{{ asset('lun_pictures/' . basename($details->continuation?->landloard_picture)) }}" class="img-fluid rounded mb-3 w-50 " alt="Customer Image"> -->
                                
                             </div>

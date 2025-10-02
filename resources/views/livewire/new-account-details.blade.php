@@ -29,6 +29,16 @@
                             <li><strong>DSS:</strong> {{ $details->dss }} </li>
                             <li><strong>Lecan Completed Form:</strong> <a href="/storage/{{ $details->lecan_link }}"> VIEW PDF - (LECAN) </a> </li>
                             <li><strong>Generated Account:</strong> {{ $details->account_no }} </li>
+
+                            <li>
+                                <strong>Assigned To : </strong> 
+                                {{ \App\Models\User::where([
+                                    'business_hub' => $details->business_hub,
+                                    'sc' => $details->service_center
+                                ])->value('email') }}
+                            </li>
+
+                           
                             <li><strong>Validated By:</strong> {{ $details->validated_by }}  </li>
                             <li><strong>Status:</strong> 
                                       @if($details->status == "0")

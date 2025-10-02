@@ -41,6 +41,7 @@ use App\Livewire\ServiceCenterAreaCode;
 use App\Livewire\AddAreaCode;
 use App\Livewire\AddUser;
 use App\Livewire\ChangePassword;
+use App\Livewire\ViewWalletTopUp;
 
 /*
 |--------------------------------------------------------------------------
@@ -102,6 +103,7 @@ Route::middleware(['auth', 'check_access'])->group(function () {
       Route::get('/account_details/{tracking_id}', AccountDetails::class)->name('account_details');
       Route::get('/service_area_code', ServiceCenterAreaCode::class)->name('service_area_code');
       Route::get('/add_users', AddUser::class)->name('add_users');
+       Route::get('/view_wallet_topup', ViewWalletTopUp::class)->name('view_wallet_topup');
 
     });
 

@@ -182,7 +182,11 @@ class AccountDetails extends Component
 
       //  return $uploadHouses;
 
-        if (!$account || $account->status !== 'with-billing' || $account->account_no) {
+        // if (!$account || $account->status !== 'with-billing' || $account->account_no) {
+        //     return $this->flashError('The request has already been processed: ' . $account->account_no);
+        // }
+
+        if ($account->status == '4' || $account->account_no) {
             return $this->flashError('The request has already been processed: ' . $account->account_no);
         }
 
@@ -193,6 +197,7 @@ class AccountDetails extends Component
 
         $buid = BusinessUnit::where("Name", strtoupper($uploadHouses->business_hub))->first();
         $servicecode = $this->getAvailableServiceCode($uploadHouses);
+
         if (!$servicecode) {
             return $this->flashError('All book numbers in the service center are exhausted or No Service Center With That Name. SERVICE CENTER: ' . $uploadHouses->service_center);
         }
@@ -209,14 +214,11 @@ class AccountDetails extends Component
             return $this->flashError('Missing DSS or Undertaking. Please contact IT.');
         }
 
-        //dd($buid, $udertaking, $servicecode);
-        
-
          // $servicecode->AREA_CODE ?? ltrim($udertaking->UTID
 
          $unsedAccount = $this->getUnusedAccount($servicecode, $udertaking);
 
-        // dd($unsedAccount);
+      //   dd($unsedAccount);
         //  dd( $servicecode->AREA_CODE, $buid->BUID);
           
 
@@ -225,7 +227,7 @@ class AccountDetails extends Component
           if (isset($unsedAccount['error'])) {
             $generateAccount = $this->createNewAccount($servicecode, $uploadHouses->dss, $feeder);
 
-          //  dd($generateAccount);
+           // dd($generateAccount);
              //dd($generateAccount['message']);
 
            // if (!$generateAccount || $generateAccount['error'] == true) {
@@ -253,10 +255,15 @@ class AccountDetails extends Component
 
     private function getAvailableServiceCode($uploadHouses)
     {
-        return ServiceAreaCode::where('Service_Centre', $uploadHouses->service_center)
-            ->where('BHUB', $uploadHouses->business_hub)
-            ->where('number_of_customers', '<=', 1000)
-            ->first();
+       
+        return ServiceAreaCode::whereRaw("LOWER(TRIM(Service_Centre)) = ?", [strtolower(trim($uploadHouses->service_center))])
+        ->whereRaw("LOWER(TRIM(BHUB)) = ?", [strtolower(trim($uploadHouses->business_hub))])
+        ->where('number_of_customers', '<=', 1000)
+        ->first();
+        // return ServiceAreaCode::where('Service_Centre', $uploadHouses->service_center)
+        //     ->where('BHUB', $uploadHouses->business_hub)
+        //     ->where('number_of_customers', '<=', 1000)
+        //     ->first();
     }
 
 
@@ -389,25 +396,26 @@ class AccountDetails extends Component
         ]);
 
 
-
-        if ($servicecode) {
-            $servicecode->increment('number_of_customers');
-        }
-
         IbedcPayLogService::create([
-                    'module'     => 'New Account',
-                    'comment'    => '',
+                    'module'     => 'New Account - Billing Approved',
+                    'comment'    => 'Account Successfully Created '. $newAccountNo,
                     'type'       => 'Approved',
                     'module_id'  => $uploadHouses->id,
                     'status'     => 'Completed',
          ]);
 
         dispatch(new CustomerAccountJob($uploadHouses, $account));
+
+        //  if ($servicecode) {
+        //     $servicecode->increment('number_of_customers');
+        // }
+
     }
 
       private function flashError($message)
     {
-        Session::flash('error', $message);
+       Session::flash('error', $message);
+        //Session::put('error', $message);
         return;
     }
 
@@ -417,13 +425,15 @@ class AccountDetails extends Component
         $account = AccoutCreaction::find($id);
         $uploadHouses = UploadHouses::find($aid);
 
+        $name = Auth::user()->name;
+   
          $uploadHouses->update([
             'status' => 2,
         ]);
 
         IbedcPayLogService::create([
                 'module'     => 'New Account',
-                'comment'    => '',
+                'comment'    => "Approved By ". $name,
                 'type'       => 'Approved',
                 'module_id'  => $aid,
                 'status'     => 'with-billing',

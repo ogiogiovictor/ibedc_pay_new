@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NAC\AccountController;
 use App\Http\Controllers\NAC\NewAccountUpload;
+use App\Http\Controllers\BusinessLocation;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,6 +62,15 @@ Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync', 'middleware' => 'myA
 
     //Route::post('start_process', [AccountController::class, 'store']);
 
+    Route::prefix('initiate')->controller(BusinessLocation::class)->group(function () {
+          Route::prefix('new')->group(function () {
+        Route::get('regions', 'getRegion')->name('regions');
+        Route::get('business_hub/{region_name}', 'getBusinessHubs')->name('business_hub');
+        Route::get('service_centers/{business_hub_name}', 'getServiceCenter')->name('service_centers');
+        Route::post('change_location_profile', 'changeProfile')->name('change_location_profile');
+          });
+    });
+
 
 });
 
@@ -76,6 +86,7 @@ Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync'], function () {
          Route::get('get_prepaid_customers', 'getprepaidcustomers')->name('get_prepaid_customers');
 
          Route::get('get_postpaid_customers', 'getpostpaidcustomers')->name('get_postpaid_customers');
+
 
     });
 });

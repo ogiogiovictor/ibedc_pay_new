@@ -9,6 +9,7 @@ use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\CustomerAccountMail;
+use Illuminate\Support\Facades\Auth;
 
 
 class CustomerAccountJob implements ShouldQueue
@@ -33,6 +34,13 @@ class CustomerAccountJob implements ShouldQueue
      */
     public function handle(): void
     {
-          Mail::to($this->account->email)->send(new CustomerAccountMail($this->uploadHouses,  $this->account));
+          //$user = Auth::user()->email;
+          $ccEmails = [
+                Auth::user()->email,
+                'victor.ogiogio@ibedc.com',
+                'customercare@ibedc.com',
+                'Ademola.Adewumi@ibedc.com'
+            ];
+          Mail::to($this->account->email)->cc($ccEmails)->send(new CustomerAccountMail($this->uploadHouses,  $this->account));
     }
 }

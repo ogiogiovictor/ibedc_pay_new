@@ -332,6 +332,8 @@
 
                     <br>Your Tracking ID :  <b>{{ $tracking_id }} </b>  <br/></p>
 
+                    <br>Download Contractor Form after you have finished your application :  <a href="https://ibedc.com/LECAN_FORM_IBEDC.pdf">Download</a>  <br/></p>
+
                     <p>As a valued customer, your satisfaction is our top priority. 
                       Should you have any questions or require assistance, our dedicated support team is here to help.</p>
                   </div>

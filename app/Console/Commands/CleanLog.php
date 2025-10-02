@@ -38,6 +38,9 @@ class CleanLog extends Command
         $logPath10 = storage_path('logs/walletbalance.log');
         $logPath11 = storage_path('logs/walletintegration.log');
         $logPath12 = storage_path('logs/weeklyprepaidfix.log');
+        $logPath13 = storage_path('logs/prepaidfix.log');
+        $logPath14 = storage_path('logs/scheduler-cron.log');
+        $logPath15 = storage_path('logs/test-cron.log');
         if (File::exists($logPath)) {
             // Clear the log file by setting its contents to an empty string
             File::put($logPath, '');
@@ -55,6 +58,9 @@ class CleanLog extends Command
                 File::put($logPath10, '');
                 File::put($logPath11, '');
                 File::put($logPath12, '');
+                File::put($logPath13, '');
+                File::put($logPath14, '');
+                File::put($logPath15, '');
              }
         } else {
             $this->info('Log file does not exist.');

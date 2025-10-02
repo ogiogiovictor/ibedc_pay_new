@@ -20,6 +20,7 @@ use App\Http\Controllers\Payment\WalletPaymentConfirmation;
 use App\Http\Controllers\AppVersionController;
 
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -98,6 +99,8 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
             Route::controller(WalletPaymentConfirmation::class)->group(function() {
                 Route::post('wallet-payment', 'CompletePayment')->name('wallet-payment');
             });
+
+          
         });
 
         Route::group(['prefix' => 'virtual'], function () {  

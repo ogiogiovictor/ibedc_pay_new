@@ -182,7 +182,8 @@
                           <select name="authority" class="form-control" wire:model="authority">
                           <option value="">Select Role</option>
                           <option value="customer">Customer</option>
-                          <option value="dtm">DTM</option>
+                          <option value="bhm">Business Hub Manager</option>
+                           <option value="dtm">DTM</option>
                           <option value="rico">Customer Care</option>
                           <option value="billing">Billing</option>
                            <option value="rico">RICO</option>

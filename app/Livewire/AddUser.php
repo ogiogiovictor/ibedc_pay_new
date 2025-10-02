@@ -48,7 +48,7 @@ class AddUser extends Component
             'region'         => $this->region,
             'account_type'   => $this->account_type,
             'business_hub'   => $this->bhub,
-            'service_center' => $this->service_center,
+            'sc' => $this->service_center,
             'authority' => $this->authority,
             'account_type' => $this->account_type,
             'agency' => 0,

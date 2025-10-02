@@ -200,49 +200,36 @@ class AccountController extends BaseAPIController
                 return $this->sendError('A user with the same name already exists. Please use your tracking ID to continue', 'ERROR', Response::HTTP_UNAUTHORIZED);
             }
 
-        $checkEMS = ZoneCustomers::where('Surname', $data['surname'])->where('FirstName', $data['firstname'])->where('OtherNames', $data['other_name'])->first();
-
-       
-
-        if($checkEMS){
-             $buid = BusinessUnit::where("BUID", $checkEMS->BUID)->first();  //Name
-            //check the address if it is the same
-            $locationExists = UploadHouses::where(['full_address' => $checkEMS->Address1, "business_hub" => $buid->Name])->first();
-            
-            if($locationExists) {
-                return $this->sendError($checkEMS, 'ERROR - ACCOUNT NO ALREADY EXIST', Response::HTTP_UNAUTHORIZED);
-            }
-        }
 
 
         //////////////////////////////////////////// --  EMS VALIDATION -- ////////////////////////////////
             // 🔎 Normalize request names (lowercase + trim)
-            $requestNames = collect([
-                strtolower(trim($data['surname'])),
-                strtolower(trim($data['firstname'])),
-            ])->sort()->values()->toArray();
+            // $requestNames = collect([
+            //     strtolower(trim($data['surname'])),
+            //     strtolower(trim($data['firstname'])),
+            // ])->sort()->values()->toArray();
 
-            // 🔎 Fetch possible Zone matches (only surname/firstname columns)
-             $zoneCustomers = ZoneCustomers::whereIn('Surname', $requestNames)
-            ->orWhereIn('FirstName', $requestNames)
-            ->get(['Surname', 'FirstName']);
+            // // 🔎 Fetch possible Zone matches (only surname/firstname columns)
+            //  $zoneCustomers = ZoneCustomers::whereIn('Surname', $requestNames)
+            // ->orWhereIn('FirstName', $requestNames)
+            // ->get(['Surname', 'FirstName']);
 
-              $exists = $zoneCustomers->contains(function ($zone) use ($requestNames) {
-                $zoneNames = collect([
-                    strtolower(trim($zone->Surname)),
-                    strtolower(trim($zone->FirstName)),
-                ])->sort()->values()->toArray();
+            //   $exists = $zoneCustomers->contains(function ($zone) use ($requestNames) {
+            //     $zoneNames = collect([
+            //         strtolower(trim($zone->Surname)),
+            //         strtolower(trim($zone->FirstName)),
+            //     ])->sort()->values()->toArray();
 
-                return $zoneNames === $requestNames; // Match in any order
-            });
+            //     return $zoneNames === $requestNames; // Match in any order
+            // });
 
-            if ($exists) {
-                return $this->sendError(
-                    'A user with the same surname and firstname already exists in our records. Please login with your tracking ID',
-                    'ERROR - ACCOUNT NO ALREADY EXIST',
-                    Response::HTTP_UNAUTHORIZED
-                );
-            }
+            // if ($exists) {
+            //     return $this->sendError(
+            //         'A user with the same surname and firstname already exists in our records. Please login with your tracking ID',
+            //         'ERROR - ACCOUNT NO ALREADY EXIST',
+            //         Response::HTTP_UNAUTHORIZED
+            //     );
+            // }
 
              //////////////////////////////////////////// --  END OF EMS VALIDATION -- ////////////////////////////////
         
@@ -333,7 +320,7 @@ class AccountController extends BaseAPIController
         });
 
         if ($potentialMatches->isNotEmpty()) {
-             return $this->sendError('A user with the same name (in any order) already exists. Please use your tracking ID to continue.', 'ERROR', Response::HTTP_UNAUTHORIZED);
+             return $this->sendError('Landlord Information already exist. Please use your tracking ID to continue.', 'ERROR', Response::HTTP_UNAUTHORIZED);
          }
 
 
@@ -343,14 +330,14 @@ class AccountController extends BaseAPIController
              $buid = BusinessUnit::where("BUID", $checkEMS->BUID)->first();
 
              if($buid) {
-                return $this->sendError($buid, 'ERROR - ACCOUNT EXIST, VISIT OUR OFFICE FOR SUPPORT', Response::HTTP_UNAUTHORIZED);
+               // return $this->sendError($buid, 'ERROR - ACCOUNT EXIST, VISIT OUR BILLING OFFICE FOR SUPPORT', Response::HTTP_UNAUTHORIZED);
             }
 
             //check the address if it is the same
             $locationExists = UploadHouses::where(['full_address' => $checkEMS->Address1, "business_hub" => $buid->Name])->first();
             
             if($locationExists) {
-                return $this->sendError($checkEMS, 'ERROR - ACCOUNT NO ALREADY EXIST', Response::HTTP_UNAUTHORIZED);
+                return $this->sendError($checkEMS, 'ERROR - ACCOUNT NO ALREADY EXIST VISIT OUR BILLING OFFICE FOR SUPPORT', Response::HTTP_UNAUTHORIZED);
             }
         }
 
@@ -398,19 +385,19 @@ class AccountController extends BaseAPIController
 
 
         // Handle NIN Slip
-        // if ($request->hasFile('nin_slip')) {
-        //     //$folder = 'customers/pictures';
+        if ($request->hasFile('nin_slip')) {
+            //$folder = 'customers/pictures';
 
-        //     $folder = "/customers/pictures";
+            $folder = "/customers/pictures";
 
-        //     // Check and create the folder if it doesn't exist
-        //     if (!Storage::disk('public')->exists($folder)) {
-        //         Storage::disk('public')->makeDirectory($folder, 0755, true); // recursive = true
-        //     }
+            // Check and create the folder if it doesn't exist
+            if (!Storage::disk('public')->exists($folder)) {
+                Storage::disk('public')->makeDirectory($folder, 0755, true); // recursive = true
+            }
 
-        //     $picturePath = $request->file('landloard_picture')->store($folder, 'public');
-        //     $data['nin_slip'] = $picturePath;
-        // }
+            $picturePath = $request->file('nin_slip')->store($folder, 'public');
+            $data['nin_slip'] = $picturePath;
+        }
 
 
 
@@ -713,7 +700,8 @@ class AccountController extends BaseAPIController
             'tracking_id' => 'required|string',
             'uploads' => 'required|array',
            // 'uploads.*.lecan_link' => 'required|mimes:pdf'
-            'uploads.*.lecan_link' => 'required|mimetypes:application/pdf',
+            //'uploads.*.lecan_link' => 'required|mimetypes:application/pdf',
+            'uploads.*.lecan_link' => 'required|mimes:jpeg,jpg,pdf|max:10240',
             'uploads.*.id' => 'required|integer',
             //'uploads.*.lecan_link' => 'required|image|max:5120'
         ]);
