@@ -68,5 +68,9 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('isauditor', function(User $user) {
             return $user->authority == RoleEnum::audit()->value;
         });
+
+         Gate::define('isviewonly', function(User $user) {
+            return $user->authority == RoleEnum::view_only()->value;
+        });
     }
 }

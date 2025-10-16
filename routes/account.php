@@ -35,6 +35,14 @@ Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync', 'middleware' => 'myA
         Route::post('upload-lecan-form-application', 'lecanapplication')->name('upload-lecan-form-application');
         Route::post('process_account_dte', 'dtmprocess')->name('process_account');
 
+
+
+        ///////////////////// ALL CUSTOMER EDIT API INFORMATION ///////////////////////////////////
+        Route::post('edit_landlord_information', 'processLandLordInfo')->name('edit_landlord_information');
+        Route::post('update_uploaded_houses', 'edithouses')->name('update_uploaded_houses');
+
+
+
         Route::post('change_account_location', 'changedtmprocess')->name('change_account_location');
 
         Route::middleware('auth:sanctum')->group(function() {
@@ -57,7 +65,6 @@ Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync', 'middleware' => 'myA
         Route::get('get_tarriff', 'getTarriff')->name('get_tarriff');
         Route::get('get_auth', 'NINService')->name('get_auth');
         
-
     });
 
     //Route::post('start_process', [AccountController::class, 'store']);

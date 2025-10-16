@@ -21,10 +21,13 @@ class ForgotController extends BaseAPIController
             // Add other validation rules as needed
         ]);
 
-        $user = User::where("email", $validatedData['email'])->first();
 
+       // $user = User::where("email", trim($request->email))->first();
+        $user = User::whereRaw('LOWER(email) = ?', [strtolower(trim($request->email))])->first();
+
+
+       // dd(trim($validatedData['email']));
         //$user = User::where("email", $request->email)->first();
-
 
         if(!$user){
             return $this->sendError('User does not exist', 'ERROR', Response::HTTP_UNAUTHORIZED);

@@ -412,7 +412,7 @@ class TransactionDetails extends Component
         $user = Auth::user();
 
 
-        if($user->authority != "super_admin" ){
+        if($user->authority != "super_admin"  && $user->authority != "payment_channel" ){
             Session::flash('error', 'You do not have access to this function');
             return;
         }

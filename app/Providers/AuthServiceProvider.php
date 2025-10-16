@@ -78,6 +78,10 @@ class AuthServiceProvider extends ServiceProvider
             return  $user->authority === RoleEnum::rico()->value;
         });
 
+        Gate::define(RoleEnum::view_only()->value, function(User $user) : bool{
+            return  $user->authority === RoleEnum::view_only()->value;
+        });
+
         
 
         

@@ -43,7 +43,7 @@ class IncreaseCustomerAccountJob implements ShouldQueue
             "authority" => "dtm"
         ])->first();
 
-        $ccEmails = ["customercare@ibedc.com", "basirat.opoola@ibedc.com", $this->mainAccount->email];
+        $ccEmails = ["basirat.opoola@ibedc.com", $this->mainAccount->email];
 
         if ($bhm && $dtm) {
             // send to bhm, cc dtm + customercare

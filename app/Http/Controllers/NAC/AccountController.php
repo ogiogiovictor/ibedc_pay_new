@@ -25,6 +25,7 @@ use Illuminate\Support\Facades\File;
 use App\Models\EMS\ZoneCustomers;
 use App\Models\EMS\BusinessUnit;
 use App\Models\ECMI\NewTarrif;
+//use App\Models\EMS\NewTarrif;
 use Illuminate\Support\Facades\Auth;
 use App\Jobs\AccountNotificationJob;
 use App\Services\NinService;
@@ -176,7 +177,7 @@ class AccountController extends BaseAPIController
         });
 
         if ($potentialMatches->isNotEmpty()) {
-             return $this->sendError('A user with the same name (in any order) already exists. Please use your tracking ID to continue.', 'ERROR', Response::HTTP_UNAUTHORIZED);
+           //  return $this->sendError('A user with the same name (in any order) already exists. Please use your tracking ID to continue.', 'ERROR', Response::HTTP_UNAUTHORIZED);
          }
 
 
@@ -197,7 +198,7 @@ class AccountController extends BaseAPIController
             $existingUser = $existingUserQuery->first();
 
             if ($existingUser) {
-                return $this->sendError('A user with the same name already exists. Please use your tracking ID to continue', 'ERROR', Response::HTTP_UNAUTHORIZED);
+               // return $this->sendError('A user with the same name already exists. Please use your tracking ID to continue', 'ERROR', Response::HTTP_UNAUTHORIZED);
             }
 
 
@@ -320,7 +321,7 @@ class AccountController extends BaseAPIController
         });
 
         if ($potentialMatches->isNotEmpty()) {
-             return $this->sendError('Landlord Information already exist. Please use your tracking ID to continue.', 'ERROR', Response::HTTP_UNAUTHORIZED);
+          //   return $this->sendError('Landlord Information already exist. Please use your tracking ID to continue.', 'ERROR', Response::HTTP_UNAUTHORIZED);
          }
 
 
@@ -330,6 +331,8 @@ class AccountController extends BaseAPIController
              $buid = BusinessUnit::where("BUID", $checkEMS->BUID)->first();
 
              if($buid) {
+                $data['duplicate'] = 1; // ✅ mark as suspected
+                $data['suspected_account'] =  $checkEMS->AccountNo ?? null;  // $buid->Name ?? null;
                // return $this->sendError($buid, 'ERROR - ACCOUNT EXIST, VISIT OUR BILLING OFFICE FOR SUPPORT', Response::HTTP_UNAUTHORIZED);
             }
 
@@ -337,12 +340,11 @@ class AccountController extends BaseAPIController
             $locationExists = UploadHouses::where(['full_address' => $checkEMS->Address1, "business_hub" => $buid->Name])->first();
             
             if($locationExists) {
-                return $this->sendError($checkEMS, 'ERROR - ACCOUNT NO ALREADY EXIST VISIT OUR BILLING OFFICE FOR SUPPORT', Response::HTTP_UNAUTHORIZED);
+                 $data['duplicate'] = 1; // keep suspected flag true
+                 $data['suspected_account'] = $checkEMS->AccountNo ?? null;
+               // return $this->sendError($checkEMS, 'ERROR - ACCOUNT NO ALREADY EXIST VISIT OUR BILLING OFFICE FOR SUPPORT', Response::HTTP_UNAUTHORIZED);
             }
         }
-
-
-
 
         //Before you create check if the tracking ID already exist in the continue application model |  // Check if already continued
          $continueCustomer = ContinueAccountCreation::where('tracking_id', $request->tracking_id)->first();
@@ -398,6 +400,22 @@ class AccountController extends BaseAPIController
             $picturePath = $request->file('nin_slip')->store($folder, 'public');
             $data['nin_slip'] = $picturePath;
         }
+
+
+         // Handle CAC Slip
+            if ($request->hasFile('cac_slip')) {
+                //$folder = 'customers/pictures';
+
+                $folder = "/customers/pictures";
+
+                // Check and create the folder if it doesn't exist
+                if (!Storage::disk('public')->exists($folder)) {
+                    Storage::disk('public')->makeDirectory($folder, 0755, true); // recursive = true
+                }
+
+                $picturePath = $request->file('cac_slip')->store($folder, 'public');
+                $data['cac_slip'] = $picturePath;
+            }
 
 
 
@@ -521,6 +539,7 @@ class AccountController extends BaseAPIController
         ->count();
 
         $numberOfaccount = AccoutCreaction::where('tracking_id', $request->tracking_id)->first();
+        $landlordInformation = ContinueAccountCreation::where('tracking_id', $request->tracking_id)->first();
         $allAccounts = UploadHouses::where('tracking_id', $request->tracking_id)->first();
 
         if ($statusCount > $numberOfaccount->default_house_no) {    // default_house_no
@@ -597,7 +616,34 @@ class AccountController extends BaseAPIController
       
         foreach ($request->uploads as $upload) {
 
-           // $path = $upload['picture']->store($folder, 'public');
+          // Default duplicate fields
+            $duplicateFlag = 0;
+            $suspectedAccount = null;
+
+            // 🔍 Check EMS for suspected duplicate based on landlord information
+            $checkEMS = ZoneCustomers::where('Surname', $landlordInformation->landlord_surname)
+                ->where('FirstName', $landlordInformation->landlord_othernames)
+                ->first();
+
+            if ($checkEMS) {
+                $buid = BusinessUnit::where("BUID", $checkEMS->BUID)->first();
+
+                if ($buid) {
+                    $duplicateFlag = 1;
+                    $suspectedAccount = $checkEMS->AccountNo ?? null;
+                }
+
+                // Check if address matches any in UploadHouses (same hub)
+                $locationExists = UploadHouses::where([
+                    'full_address' => $checkEMS->Address1,
+                    'business_hub' => $buid?->Name,
+                ])->first();
+
+                if ($locationExists) {
+                    $duplicateFlag = 1;
+                    $suspectedAccount = $checkEMS->AccountNo ?? null;
+                }
+            }
 
             UploadHouses::create([
                 'customer_id' => $checkID->id,
@@ -615,6 +661,10 @@ class AccountController extends BaseAPIController
                 'type_of_premise' => $upload['type_of_premise'],
                 'use_of_premise' => $upload['use_of_premise'],
                 'state' => $upload['state'],
+
+                 // ✅ Add suspected duplicate info
+                'duplicate' => $duplicateFlag,
+                'suspected_account' => $suspectedAccount,
             ]);
         }
 
@@ -701,7 +751,7 @@ class AccountController extends BaseAPIController
             'uploads' => 'required|array',
            // 'uploads.*.lecan_link' => 'required|mimes:pdf'
             //'uploads.*.lecan_link' => 'required|mimetypes:application/pdf',
-            'uploads.*.lecan_link' => 'required|mimes:jpeg,jpg,pdf|max:10240',
+            'uploads.*.lecan_link' => 'required|mimes:jpeg,jpg,pdf,png,heic|max:10240',
             'uploads.*.id' => 'required|integer',
             //'uploads.*.lecan_link' => 'required|image|max:5120'
         ]);
@@ -818,7 +868,7 @@ class AccountController extends BaseAPIController
         $region =  $region == "IBADAN" ? "OYO" : $region;
 
         $get_dss = DSS::select("Assetid", "assettype", "DSS_11KV_415V_Owner", "DSS_11KV_415V_Name", "DSS_11KV_415V_Address", 
-        "hub_name", "Status", "Feeder_Name", "Feeder_ID", "BAND")->where(["Dss_State" =>$region,   "hub_name" => $hub, "DSS_11KV_415V_Owner" => $servicecenter ])->get();
+        "hub_name", "Status", "Feeder_Name", "Feeder_ID", "BAND")->where(["region" =>$region,   "hub_name" => $hub, "DSS_11KV_415V_Owner" => $servicecenter ])->get();
           
         return $this->sendSuccess([ 'dss' => $get_dss ], 'DSS Loaded', Response::HTTP_OK);
 
@@ -1032,7 +1082,7 @@ class AccountController extends BaseAPIController
             'region' => $request['region'],
             'business_hub' => $request['business_hub'], 
             'service_center' => $request['service_center'], 
-            'validated_by' => isset(Auth::user()->id) ? Auth::user()->email : $request->email  // use the code to validate the email
+           // 'validated_by' => isset(Auth::user()->id) ? Auth::user()->email : $request->email  // use the code to validate the email
         ]);
         
 
@@ -1049,14 +1099,12 @@ class AccountController extends BaseAPIController
         //Auth
         $user = Auth::user();
 
-        //$data = UploadHouses::where("business_hub", $user->business_hub, "service_center" => $user->service_center)->whereIn("status", ["0", "1"])->with('account')->paginate(10);
-
-        $data = UploadHouses::where([
-        'business_hub'   => $user->business_hub,
-        'service_center' => $user->sc,
-        ])
-        ->whereIn('status', ['0', '1', '5'])
+        $data = UploadHouses::with(['landlordinfo'])->whereRaw('LOWER(business_hub) = ?', [strtolower($user->business_hub)])
+        ->whereRaw('LOWER(service_center) = ?', [strtolower($user->sc)])
+        ->whereIn('status', ['1', '5'])
         ->with('account')
+        //->orderByRaw("CASE WHEN status = 1 THEN 0 ELSE 1 END") // status=1 first
+        //->orderByDesc('created_at') // then order by created_at descending
         ->paginate(10);
 
         return $this->sendSuccess([ 'accounts' => $data], 'CUSTOMER APPLICATION SUCCESSFUL SUBMITTED', Response::HTTP_OK);
@@ -1190,6 +1238,253 @@ class AccountController extends BaseAPIController
 
         return $getAuth;
         //return $getAuth['token'];
+    }
+
+
+    public function processLandLordInfo(Request $request) {
+
+        if (!$request->tracking_id) {
+            return $this->sendError('Please provide your tracking number to continue', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        }
+
+        // ✅ Check if tracking ID exists
+        $existingUser = AccoutCreaction::where('tracking_id', $request->tracking_id)->first();
+        if (!$existingUser) {
+            return $this->sendError('Invalid Tracking ID', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        }
+
+        if ($existingUser->editable == 3) {
+            return $this->sendError('Edit Count Completed. Not Accessible', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        }
+
+        $data = $request->all(); // ✅ Get all input data
+
+
+         if (!empty($data['landlord_surname']) && !empty($data['landlord_othernames'])) {
+
+            $names = collect([
+                strtolower(trim($data['landlord_surname'])),
+                strtolower(trim($data['landlord_othernames'])),
+            ]);
+
+            $sortedInputNames = $names->sort()->values()->toArray(); // e.g. ['john', 'michael', 'smith']
+
+            // Search existing accounts where the sorted combination of names match
+            $potentialMatches = ContinueAccountCreation::all()->filter(function ($user) use ($sortedInputNames) {
+                $existingNames = collect([
+                    strtolower(trim($user->landlord_surname)),
+                    strtolower(trim($user->landlord_othernames)),
+                ]);
+
+                return $existingNames->sort()->values()->toArray() === $sortedInputNames;
+            });
+
+            if ($potentialMatches->isNotEmpty()) {
+                //Add a flag for suspected account
+               // return $this->sendError('Landlord Information already exist. Please use your tracking ID to continue.', 'ERROR', Response::HTTP_UNAUTHORIZED);
+            }
+         }
+
+
+
+         // ✅ Check EMS data
+        if (!empty($data['landlord_surname']) && !empty($data['landlord_othernames'])) {
+            $checkEMS = ZoneCustomers::where('Surname', $data['landlord_surname'])
+                ->where('FirstName', $data['landlord_othernames'])
+                ->first();
+
+            if ($checkEMS) {
+                $buid = BusinessUnit::where("BUID", $checkEMS->BUID)->first();
+
+                if ($buid) {
+                    $data['duplicate'] = 1;
+                    $data['suspected_account'] = $checkEMS->AccountNo ?? null;
+                }
+
+                $locationExists = UploadHouses::where([
+                    'full_address' => $checkEMS->Address1,
+                    'business_hub' => $buid->Name ?? null
+                ])->first();
+
+                if ($locationExists) {
+                    $data['duplicate'] = 1;
+                    $data['suspected_account'] = $checkEMS->AccountNo ?? null;
+                }
+            }
+        }
+
+
+         // ✅ Check if record already exists
+        $continueCustomer = ContinueAccountCreation::where('tracking_id', $request->tracking_id)->first();
+
+        // ✅ Prepare data to be updated/created
+        $updateData = collect($request->except(['landloard_picture', 'nin_slip', 'cac_slip']))
+            ->filter(fn($value) => !is_null($value) && $value !== '') // only include fields that are sent
+            ->toArray();
+
+         $updateData['customer_id'] = $existingUser->id;
+        $updateData['editable'] = $existingUser->editable + 1;
+
+        // ✅ Handle file uploads
+        foreach (['landloard_picture', 'nin_slip', 'cac_slip'] as $fileField) {
+            if ($request->hasFile($fileField)) {
+                $folder = 'customers/pictures';
+                if (!Storage::disk('public')->exists($folder)) {
+                    Storage::disk('public')->makeDirectory($folder, 0755, true);
+                }
+                $updateData[$fileField] = $request->file($fileField)->store($folder, 'public');
+            }
+        }
+
+        if ($continueCustomer) {
+        // ✅ Update only sent fields
+        $continueCustomer->update($updateData);
+        $message = 'CUSTOMER RECORD SUCCESSFULLY UPDATED';
+
+         return $this->sendSuccess([
+            'customer' => $continueCustomer,
+        ], $message, Response::HTTP_OK);
+
+        } else {
+            // ✅ Create new record
+           // $continueCustomer = ContinueAccountCreation::create($updateData);
+            $message = 'CUSTOMER RECORD SUCCESSFULLY CREATED';
+            return $this->sendError('There was an error creating your account .', 'ERROR', Response::HTTP_UNAUTHORIZED);
+        }
+
+    }
+
+
+
+
+
+  
+
+
+
+  
+
+    public function edithouses(Request $request)
+    {
+        // ✅ Check if payload exists
+        if (!$request->has('tracking_id') || !$request->has('uploads')) {
+            return $this->sendError('Invalid request. Missing tracking_id or uploads data.', 'ERROR', Response::HTTP_BAD_REQUEST);
+        }
+
+        // 🧾 Validate base input
+        $request->validate([
+            'tracking_id' => 'required|string',
+            'uploads' => 'required|array|min:1',
+            'uploads.*.house_no' => 'required|string',
+            'uploads.*.full_address' => 'required|string|min:10|max:255|regex:/^[a-zA-Z0-9\s,.\-\/]+$/',
+            'uploads.*.business_hub' => 'required|string',
+            'uploads.*.service_center' => 'required|string',
+            'uploads.*.landmark' => 'required|string',
+            'uploads.*.lga' => 'required|string',
+            'uploads.*.state' => 'required|string',
+            'uploads.*.picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // ✅ Image validation
+        ]);
+
+        $trackingId = $request->tracking_id;
+        $uploads = $request->uploads;
+
+        // ✅ Get customer record
+        $checkID = AccoutCreaction::where('tracking_id', $trackingId)->first();
+        if (!$checkID) {
+            return $this->sendError('Invalid tracking ID. Customer not found.', 'ERROR', Response::HTTP_NOT_FOUND);
+        }
+
+        // ✅ Limit checks
+        $startedCount = UploadHouses::where('tracking_id', $trackingId)->where('status', 0)->count();
+        if ($startedCount > 10) {
+            return $this->sendError(
+                'The number of accounts for this tracking ID exceeds the allowed limit (15). Please update other accounts you have pending.',
+                'LIMIT EXCEEDED',
+                Response::HTTP_FORBIDDEN
+            );
+        }
+
+        // ✅ Account limit check
+        $statusCount = UploadHouses::where('tracking_id', $trackingId)->where('status', 4)->count();
+        $numberOfAccount = AccoutCreaction::where('tracking_id', $trackingId)->first();
+        if ($numberOfAccount && $statusCount > $numberOfAccount->default_house_no) {
+            $allAccounts = UploadHouses::where('tracking_id', $trackingId)->first();
+            dispatch(new IncreaseCustomerAccountJob($numberOfAccount, $allAccounts));
+
+            return $this->sendError(
+                'The number of accounts for this tracking ID exceeds the allowed limit. Please visit our offices for more information.',
+                'ERROR',
+                Response::HTTP_FORBIDDEN
+            );
+        }
+
+        // ✅ Prepare picture folder
+        $folder = 'customers/pictures';
+        if (!Storage::disk('public')->exists($folder)) {
+            Storage::disk('public')->makeDirectory($folder, 0755, true);
+        }
+
+        // ✅ Check for duplicates before updating or inserting
+        foreach ($uploads as $uploadData) {
+            $duplicate = UploadHouses::where('house_no', $uploadData['house_no'])
+                ->where('full_address', $uploadData['full_address'])
+                ->where('business_hub', $uploadData['business_hub'])
+                ->where('tracking_id', $trackingId)
+                ->where('id', '!=', $uploadData['id'] ?? null)
+                ->exists();
+
+            if ($duplicate) {
+                return $this->sendError(
+                    "Duplicate record detected for House No: {$uploadData['house_no']}, Address: {$uploadData['full_address']}",
+                    'ERROR',
+                    Response::HTTP_CONFLICT
+                );
+            }
+        }
+
+        // ✅ Process each upload entry (update or create)
+        foreach ($uploads as $index => $uploadData) {
+            // Handle picture if present
+            $picturePath = null;
+            if (isset($uploadData['picture']) && $uploadData['picture'] instanceof \Illuminate\Http\UploadedFile) {
+                $filename = uniqid('house_') . '.' . $uploadData['picture']->getClientOriginalExtension();
+                $picturePath = $uploadData['picture']->storeAs($folder, $filename, 'public');
+            }
+
+            UploadHouses::updateOrCreate(
+                ['id' => $uploadData['id'] ?? null],
+                [
+                    'customer_id' => $checkID->id,
+                    'tracking_id' => $trackingId,
+                    'business_hub' => $uploadData['business_hub'],
+                    'service_center' => $uploadData['service_center'],
+                    'house_no' => $uploadData['house_no'],
+                    'full_address' => $uploadData['full_address'],
+                    'nearest_bustop' => $uploadData['nearest_bustop'] ?? null,
+                    'lga' => $uploadData['lga'],
+                    'picture' => $picturePath ? $picturePath : 0,
+                    'latitude' => 0,
+                    'longitude' => 0,
+                    'status' => 0,
+                    'landmark' => $uploadData['landmark'],
+                    'type_of_premise' => $uploadData['type_of_premise'] ?? null,
+                    'use_of_premise' => $uploadData['use_of_premise'] ?? null,
+                    'state' => $uploadData['state'],
+                ]
+            );
+        }
+
+        // ✅ Update tracking record status
+        $checkID->update([
+            'status' => 'processing',
+            'status_name' => 'Pending Form Upload',
+        ]);
+
+        return $this->sendSuccess([
+            'customer' => $checkID,
+            'message' => 'You are required to complete the form below with a registered electrician/licensed engineer. Please click on the link below to download the form and return to the app to upload same with your tracking ID.',
+            'form_link' => 'https://ibedc.com/LECAN_FORM_IBEDC.pdf'
+        ], 'CUSTOMER APPLICATION SUCCESSFULLY SUBMITTED', Response::HTTP_OK);
     }
 
     

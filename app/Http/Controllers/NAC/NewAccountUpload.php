@@ -96,7 +96,7 @@ class NewAccountUpload extends BaseAPIController
 
 
 
-        $data = UploadHouses::where("tracking_id", $request->tracking_id)->whereIn("status", ["0", "1"])->with('account')->paginate(10);
+        $data = UploadHouses::with(['landlordinfo', 'account'])->where("tracking_id", $request->tracking_id)->whereIn("status", ["0", "1"])->with('account')->paginate(10);
 
         return $this->sendSuccess([ 'accounts' => $data], 'CUSTOMER APPLICATION SUCCESSFUL SUBMITTED', Response::HTTP_OK);
     }

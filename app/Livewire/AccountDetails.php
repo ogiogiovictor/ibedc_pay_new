@@ -19,12 +19,18 @@ use App\Jobs\CustomerAccountJob;
 use App\Models\NAC\ContinueAccountCreation;
 use Illuminate\Support\Facades\Mail;
 use App\Services\IbedcPayLogService;
+use App\Models\NAC\PendingAccountCreation;
 
 
 class AccountDetails extends Component
 {
 
     public $details;
+
+    public $showRejectModal = false;
+    public $rejectComment;
+    public $selectedDetailsId;
+    public $selectedAccountId;
 
     public function mount($tracking_id)
     {
@@ -130,46 +136,58 @@ class AccountDetails extends Component
 
     }
 
-    public function billingreject($aid, $uid){
+    // public function billingreject($aid, $uid){
 
 
-         $account = AccoutCreaction::find($aid);
+    //      $account = AccoutCreaction::find($aid);
 
-        // dd($account);
+    //     if (!$account) {
+    //         Session::flash('error', 'Account not found.');
+    //         return;
+    //     }
 
-        if (!$account) {
-            Session::flash('error', 'Account not found.');
-            return;
-        }
+    //      $uploadHouses = UploadHouses::where("id", $uid)->first();
 
-        if ($account->status == 'with-billing') {
-            // Update status of the account
-            $account->update([
-                'status' => 'started',
-                'status_name' => 'rejected',
-                'comment' => 'Your account was rejected'
-            ]);
+    //     if ($uploadHouses->status == '2') {
+    //         // Update status of the account
+    //         $account->update([
+    //             'status' => 'started',
+    //             'status_name' => 'rejected',
+    //             'comment' => 'Your account was rejected'
+    //         ]);
 
-        $uploadHouses = UploadHouses::where("id", $uid)->first();
-        $uploadHouses->update([
-                'status' => 1,
-                'billing_comment' => 'Application Request Rejected By Billing',
-               // 'lecan_link' => NULL
-            ]);
+           
+    //         $uploadHouses->update([
+    //                 'status' => 1,
+    //                 'billing_comment' => 'Application Request Rejected By Billing',
+    //                 'lecan_link' => NULL
+    //             ]);
 
-          $email = $uploadHouses->validated_by;
+    //          $email = $uploadHouses->validated_by;
 
-           if (!empty($email)) {
-            // Send email with token
-                Mail::raw("Your request with tracking ID was rejected. Tracking ID is: {$uploadHouses->tracking_id} Comments: Your account was rejected ", function ($message) use ($email) {
-                    $message->to($uploadHouses->validated_by)
-                            ->subject('New Account Request Rejected');
-                });
-            }
+    //         $name = Auth::user()->name;
 
-            Session::flash('success', 'New Account Successfully Rejected By .');
-        } 
-    }
+    //           IbedcPayLogService::create([
+    //                 'module'     => 'New Account - Billing Reject',
+    //                 'comment'    => 'Request Reject By Billing ', $name,
+    //                 'type'       => 'Rejected',
+    //                 'module_id'  => $uploadHouses->id,
+    //                 'status'     => 'Rejected',
+    //             ]);
+
+    //        if (!empty($email)) {
+    //         // Send email with token
+    //             Mail::raw("Your request with tracking ID was rejected. Tracking ID is: {$uploadHouses->tracking_id} Comments: Your account was rejected ", function ($message) use ($email) {
+    //                 $message->to($uploadHouses->validated_by)
+    //                         ->subject('New Account Request Rejected');
+    //             });
+    //         }
+
+    //         Session::flash('success', 'New Account Successfully Rejected By .');
+    //     } 
+
+    //      Session::flash('error', 'Error Rejecting Request.');
+    // }
 
 
 
@@ -180,13 +198,14 @@ class AccountDetails extends Component
         $account = AccoutCreaction::find($id);
         $uploadHouses = UploadHouses::find($aid);
 
+    
       //  return $uploadHouses;
 
         // if (!$account || $account->status !== 'with-billing' || $account->account_no) {
         //     return $this->flashError('The request has already been processed: ' . $account->account_no);
         // }
 
-        if ($account->status == '4' || $account->account_no) {
+        if ($uploadHouses->status == '4' || $uploadHouses->account_no) {
             return $this->flashError('The request has already been processed: ' . $account->account_no);
         }
 
@@ -362,7 +381,7 @@ class AccountDetails extends Component
             "serviceAddressState" => $uploadHouses->region,
             "tariffID" => $uploadHouses->tarrif,
             "arrears" => '',
-            "mobile" => $account->phone,
+            "mobile" =>  $landlordInfo->landlord_telephone  ?? $account->phone,
             "gisCoordinate" => $uploadHouses->latitude . ',' . $uploadHouses->longitude,
             "buid" => $servicecode->BUID, //"35A"
             "distributionID" => $dss,
@@ -404,7 +423,10 @@ class AccountDetails extends Component
                     'status'     => 'Completed',
          ]);
 
-        dispatch(new CustomerAccountJob($uploadHouses, $account));
+         
+        $user = Auth::user()->email;
+
+        dispatch(new CustomerAccountJob($uploadHouses, $account, $user));
 
         //  if ($servicecode) {
         //     $servicecode->increment('number_of_customers');
@@ -412,10 +434,10 @@ class AccountDetails extends Component
 
     }
 
-      private function flashError($message)
+    private function flashError($message)
     {
-       Session::flash('error', $message);
-        //Session::put('error', $message);
+       // Session::flash('error', $message);
+        Session::put('error', $message);
         return;
     }
 
@@ -444,253 +466,161 @@ class AccountDetails extends Component
     }
 
 
+    public function confirmBillingReject($detailsId, $accountId)
+        {
+            $this->selectedDetailsId = $detailsId;
+            $this->selectedAccountId = $accountId;
+            $this->rejectComment = '';
+            $this->showRejectModal = true;
+        }
 
+    public function submitBillingReject()
+    {
+        $this->validate([
+            'rejectComment' => 'required|string|max:500',
+        ]);
 
+        $this->billingreject($this->selectedDetailsId, $this->selectedAccountId, $this->rejectComment);
+        $this->showRejectModal = false;
+        $this->reset(['rejectComment', 'selectedDetailsId', 'selectedAccountId']);
+    }
 
 
+    public function billingreject($aid, $uid, $comment = null)
+    {
+        $account = AccoutCreaction::find($aid);
 
+        if (!$account) {
+            session()->flash('error', 'Account not found.');
+            return;
+        }
 
+        $uploadHouses = UploadHouses::where("id", $uid)->first();
 
+        if ($uploadHouses->status == '2') {
+            $account->update([
+                'status' => 'started',
+                'status_name' => 'rejected',
+                'comment' => $comment ?? 'Your account was rejected'
+            ]);
 
+            $uploadHouses->update([
+                'status' => 1,
+                'billing_comment' => $comment ?? 'Application Request Rejected By Billing',
+                'lecan_link' => null
+            ]);
 
+            $email = $uploadHouses->validated_by;
+            $name = Auth::user()->name;
 
+            IbedcPayLogService::create([
+                'module' => 'New Account - Billing Reject',
+                'comment' => $comment .  " - Request Rejected By Billing ({$name})",
+                'type' => 'Rejected',
+                'module_id' => $uploadHouses->id,
+                'status' => 'Rejected',
+            ]);
 
-    // public function generateAccount($id, $aid){
+            if (!empty($email)) {
+                Mail::raw("Your request with tracking ID {$uploadHouses->tracking_id} was rejected.\nComments: {$comment}", function ($message) use ($email) {
+                    $message->to($email)->subject('New Account Request Rejected');
+                });
+            }
 
-    //    //dd($id, $aid);
+            session()->flash('success', 'New Account successfully rejected.');
+            return;
+        }
 
-    //    // get the region and the business hubs
-    //         $account = AccoutCreaction::find($id);
+        session()->flash('error', 'Error rejecting request.');
+    }
 
-    //         //dd($account);
 
-    //         if( $account->status != "with-billing" || $account->account_no != '') {
-    //                 Session::flash('error', "The request has already been processed". $account->account_no);
-    //                 return;
-    //             }
-        
-    //         // Get all single account
-    //         $uploadHouses = UploadHouses::where("id", $aid)->first();
 
-    //         // get the buid
-    //         $buid = BusinessUnit::where("Name", strtoupper($uploadHouses->business_hub))->first();
 
-    //         $servicecode = ServiceAreaCode::where('Service_Centre', $uploadHouses->service_center)
-    //             ->where('BHUB', $uploadHouses->business_hub)
-    //             ->where('number_of_customers', '<=', 1000)
-    //             ->first();
 
-    //             if(!$servicecode) {
-    //                 Session::flash('error', 'All the book numbers in the service center is exhausted. SERVICE CENTER:-'. $uploadHouses->service_center);
-    //                 return;
-    //             }
+    public function stageRequest($id, $aid) {
 
-            
-    //         // get the undertaken
-    //         $udertaking = Undertaking::where("buid", $buid->BUID)->first();
+        $account = AccoutCreaction::find($id);
+        $uploadHouses = UploadHouses::find($aid);
 
-    //         // get the dss
-    //         $dss = $uploadHouses->dss;
+         if ($uploadHouses->status == '4' || $uploadHouses->account_no) {
+            return $this->flashError('The request has already been processed: ' . $account->account_no);
+        }
 
-        
-    //         $feeder = DSS::where("Assetid",  $dss)->first();
+        if(!$uploadHouses) {
+             return $this->flashError('No Account Result for this customer: ' . $uploadHouses->dss);
+        }
 
-    //         if (!$account) {
-    //                 Session::flash('error', 'Account not found.');
-    //                 return;
-    //             }
 
-            
-    //             if(!$feeder){
-    //                 Session::flash('error', 'Account cannot be generated, No feeder tied to their DSS, Please Contact IT');
-    //                 return;
-    //         }
+        $buid = BusinessUnit::where("Name", strtoupper($uploadHouses->business_hub))->first();
+        $servicecode = $this->getAvailableServiceCode($uploadHouses);
 
-    //         if(!$udertaking && !$dss){
-    //                 Session::flash('error', 'No DSS or Undertaken for this Customer, please contact IT');
-    //                 return;
-    //         }
+        if (!$servicecode) {
+            return $this->flashError('All book numbers in the service center are exhausted or No Service Center With That Name. SERVICE CENTER: ' . $uploadHouses->service_center);
+        }
 
-    //             $unsedLinkURL = "http://192.168.15.17:8080/AccountGenerator/webresources/account/unused/114/FX321G9D";
+         $udertaking = Undertaking::where("buid", $buid->BUID)->first();
+        $feeder = DSS::where("Assetid", $uploadHouses->dss)->first();
 
-    //             $flutterData = [
-    //                 'utid' => $servicecode->AREA_CODE ?? ltrim($udertaking->UTID, '/'),
-    //                 "buid" => $servicecode->BUID ?? $buid->BUID
-    //             ];
+        if (!$feeder || !$udertaking) {
+            return $this->flashError('Missing DSS or Undertaking. Please contact IT.');
+        }
 
-    //             // Check for unsed account
-    //             $iresponse = Http::post($unsedLinkURL, $flutterData);
-    //             $unsedAccount = $iresponse->json(); 
 
-                
-    //             $createAccountLinkURL = "http://emsecmitest:8080/AccountGenerator/webresources/account/generate/114/FX321G9D";
+         $generateAccount = $this->createNewAccount($servicecode, $uploadHouses->dss, $feeder);
+ 
+         if (!isset($generateAccount['error']) && isset($generateAccount['accountNumber'])) {
+             
+              $newAccountNo = $generateAccount['accountNumber'];
 
-
-
-    //         /////////////////////////////////////////////// GENERATE ACCOUNT FOR UNSED ACCOUNT //////////////////////////////////////////
-    //             if($unsedAccount['error']) {
-                
-    //                 $createAccountData = [
-    //                     'utid' => $servicecode->AREA_CODE, // ltrim($udertaking->UTID, '/'),
-    //                     "buid" =>  $servicecode->BUID,
-    //                     "dssid" => $dss,
-    //                     "assetId" => $feeder->Feeder_ID
-    //                 ];
-
-    //                 if(strlen(ltrim($udertaking->UTID, '/')) !== 5) {
-    //                     Session::flash('error', "Invalid UTID, Please contact billing / IT UTID". $udertaking->UTID);
-    //                     return;
-    //                 }
-
-    //                 // Check for unsed account
-    //                 $iresponse = Http::post($createAccountLinkURL, $createAccountData);
-    //                 $generateAccount = $iresponse->json();
-                    
-    //                 if($generateAccount['error']) {
-    //                     Session::flash('error', $unsedAccount['error']);
-    //                     return;
-    //                 }
-
-    //                 // Check if the request was successful
-    //                 if (!$iresponse->successful()) {
-    //                     Session::flash('error', 'Failed to create account. Server returned an error.');
-    //                     return;
-    //                 }
-
-
-    //                 if ($account->status == 'with-billing') {
-
-
-    //                 // before we update the account do something now create the account in EMS database.
-                    
-    //                 $createonEMSLink = "http://emsecmitest:8080/AccountGenerator/webresources/account/save/customer/114/FX321G9D";
-    //                 //http://emsecmitest:8080/AccountGenerator/webresources/account/save/customer/{MerchantID}/{AccessToken}
-
-    //                 $accountDatatoCreate = [
-    //                     "accountNo" =>  $generateAccount['accountNumber'],
-    //                     "meterNo" => "",
-    //                     "surname" =>  $account->surname,
-    //                     "firstName" => $account->firstname,
-    //                     "otherNames" => $account->other_name,
-    //                     "email" => $account->email,
-    //                     "serviceAddress1" => $uploadHouses->house_no. ' '.  $uploadHouses->full_address,
-    //                     "serviceAddress2"=> $uploadHouses->business_hub,
-    //                     "serviceAddressCity" => $uploadHouses->service_center,
-    //                     "serviceAddressState" => $uploadHouses->business_hub,
-    //                     "tariffID" =>   $uploadHouses->tarrif_id,
-    //                     "arrears" => '',
-    //                     "mobile" =>  $account->phone,
-    //                     "gisCoordinate" => $uploadHouses->latitude. ','. $uploadHouses->longitude,
-    //                     "buid" => $servicecode->BUID,
-    //                     "distributionID" => $dss,
-    //                     "accessGroup" => "Administrator"
-    //                 ];
-
-
-    //                 $newresponse = Http::post($createonEMSLink, $accountDatatoCreate);
-    //                 $generateAccount = $iresponse->json();
-
-
-    //                 // Update status of the account
-    //                 $newAccountNo = $generateAccount['accountNumber']; // or whatever the new value is
-    //                 $existingAccountNos = $account->account_no;
-
-    //                 // Append with comma if not empty
-    //                 $updatedAccountNo = $existingAccountNos  ? $existingAccountNos . ',' . $newAccountNo  : $newAccountNo;
-
-                    
-    //                 $account->update([
-    //                     'status' => 'completed',
-    //                     'account_no' =>  $updatedAccountNo 
-    //                 ]);
-
-    //                 $uploadHouses->update([
-    //                     'account_no' => $generateAccount['accountNumber'],
-    //                     'status' => 2
-    //                 ]);
-
-    //                 if ($servicecode) {
-    //                     $servicecode->increment('number_of_customers');
-    //                 }
-
-    //                 // Send the customer an email informating the customer 
-    //                 dispatch(new CustomerAccountJob($uploadHouses, $account));
-
-
-    //                 Session::flash('success', 'Customer Successfully Generated.');
-                    
-    //             } else {
-    //                         Session::flash('error', 'Some accounts/records is still pending for this account');
-                        
-    //                     }
-
-    //             } else {
-
-    //                 // Pick the first account no
-    //             $accountNo =  $unsedAccount['accountNumbers'][0];
-
-    //                 $createonEMSLink = "http://emsecmitest:8080/AccountGenerator/webresources/account/save/customer/114/FX321G9D";
-    //                 //http://emsecmitest:8080/AccountGenerator/webresources/account/save/customer/{MerchantID}/{AccessToken}
-
-    //                 $accountDatatoCreate = [
-    //                     "accountNo" =>  $generateAccount['accountNumber'],
-    //                     "meterNo" => "",
-    //                     "surname" =>  $account->surname,
-    //                     "firstName" => $account->firstname,
-    //                     "otherNames" => $account->other_name,
-    //                     "email" => $account->email,
-    //                     "serviceAddress1" => $uploadHouses->house_no. ' '.  $uploadHouses->full_address,
-    //                     "serviceAddress2"=> $uploadHouses->business_hub,
-    //                     "serviceAddressCity" => $uploadHouses->service_center,
-    //                     "serviceAddressState" => $uploadHouses->business_hub,
-    //                     "tariffID" =>   $uploadHouses->tarrif_id,
-    //                     "arrears" => '',
-    //                     "mobile" =>  $account->phone,
-    //                     "gisCoordinate" => $uploadHouses->latitude. ','. $uploadHouses->longitude,
-    //                     "buid" => $servicecode->BUID,
-    //                     "distributionID" => $dss,
-    //                     "accessGroup" => "Administrator"
-    //                 ];
-
-
-    //                 $newresponse = Http::post($createonEMSLink, $accountDatatoCreate);
-    //                 $generateAccount = $iresponse->json();
-
-    //                 // Update status of the account
-    //                 $newAccountNo = $generateAccount['accountNumber']; // or whatever the new value is
-    //                 $existingAccountNos = $account->account_no;
-
-    //                 // Append with comma if not empty
-    //                 $updatedAccountNo = $existingAccountNos  ? $existingAccountNos . ',' . $newAccountNo  : $newAccountNo;
-
-                    
-    //                 $account->update([
-    //                     'status' => 'completed',
-    //                     'account_no' =>  $updatedAccountNo 
-    //                 ]);
-
-    //                 $uploadHouses->update([
-    //                     'account_no' => $generateAccount['accountNumber'],
-    //                     'status' => 2
-    //                 ]);
-
-    //                 if ($servicecode) {
-    //                     $servicecode->increment('number_of_customers');
-    //                 }
-
-    //                 // Send the customer an email informating the customer 
-    //                 dispatch(new CustomerAccountJob($uploadHouses, $account));
-
-
-    //                 Session::flash('success', 'Customer Successfully Generated.');
-                    
-    //             // Session::flash('error', 'There are some account that is pending that you need to use.');
-    //             // return;
-    //             }
-            
+              $this->creatingStaging($newAccountNo, $account, $uploadHouses, $servicecode, $uploadHouses->dss);
        
-    // }
+             Session::flash('success', 'Customer Successfully Generated. But Pending On EMS');
+         }
 
+            Session::flash('error', 'Error staging customer information');
+
+    }
+
+
+
+    private function creatingStaging($accountnumber, $account, $uploadhouses, $servicecode, $dss) {
+
+         $user = Auth::user();
+
+        $create = PendingAccountCreation::create([
+            'account_no' => $accountnumber,
+            'account' => json_encode($account),
+            'upload_houses' => json_encode($uploadhouses),
+            'upload_houses_id' => $uploadhouses->id,
+            'service_code' => $servicecode,
+            'dss' => $dss,
+            'user_id' => $user->id,
+            'user_email' => $user->email,
+            'user' => json_encode([
+                'id' => $user->id,
+                'name' => $user->name,
+                'email' => $user->email,
+            ]),
+            'tracking_id' =>  $uploadhouses->tracking_id
+        ]);
+
+        if($create) {
+
+            $uploadhouses->update([
+                'status' => 6   // This stage is for job waiting for account to be created.
+            ]);
+
+             Session::flash('success', 'Customer Successfully Successfully Stagged for account creation. Assigned Account number is {{accountnumber}}');
+        } else {
+             Session::flash('error', 'Error staging customer information');
+        }
+
+    }
+
+
+
+ 
 
     public function render()
     {

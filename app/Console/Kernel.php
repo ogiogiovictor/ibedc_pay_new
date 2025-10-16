@@ -24,6 +24,10 @@ class Kernel extends ConsoleKernel
 
         $schedule->command('app:payment-look-up')
                 ->withoutOverlapping()
+                ->everyFiveMinutes();  //everyTwoMinutes
+
+        $schedule->command('app:no-payment-provider')
+                ->withoutOverlapping()
                 ->everyTwoMinutes();
 
         $schedule->command('app:clean-log')->dailyAt('02:00');
@@ -39,6 +43,19 @@ class Kernel extends ConsoleKernel
          $schedule->command('app:prepaid-error-fix')
              ->withoutOverlapping()
              ->everyFiveMinutes();
+
+         $schedule->command('app:prepaid-look-up-improve')
+             ->withoutOverlapping()
+             ->everyTwoMinutes();
+
+        $schedule->command('app:polaris-verify-payment')
+        ->withoutOverlapping()
+        ->cron('*/3 * * * *');
+        //->appendOutputTo(storage_path('logs/polaris_verify.log'));
+
+        // $schedule->command('app:polaris-verify-payment')
+        //         ->withoutOverlapping()
+        //         ->everyFiveMinutes();
 
         #$schedule->command('app:prepaid-look-up')->everyMinute();
         #$schedule->command('app:postpaid-look-up')->everyTwoMinutes();

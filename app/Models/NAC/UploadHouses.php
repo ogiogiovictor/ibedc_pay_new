@@ -22,4 +22,9 @@ class UploadHouses extends Model
     {
         return $this->hasOne(AccoutCreaction::class, 'tracking_id', 'tracking_id');
     }
+
+     public function landlordinfo()
+    {
+        return $this->hasOne(ContinueAccountCreation::class, 'tracking_id', 'tracking_id');
+    }
 }

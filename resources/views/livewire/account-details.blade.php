@@ -181,6 +181,8 @@
                                       <label class="badge badge-success">Completed</label>
                                        @elseif($account->status  == "5")
                                       <label class="badge badge-danger">Rejected</label>
+                                       @elseif($account->status  == "6")
+                                      <label class="badge badge-primary">staged</label>
                                       @else
                                       <label class="badge badge-danger">N/A</label>
                                       @endif
@@ -209,8 +211,73 @@
                                          @endif
 
                                           @if(!$account->account_no && $account->status == 2)
-                                            <button class="btn btn-xs btn-success" wire:click="generate( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Generate</button>&nbsp;&nbsp;
-                                             <button class="btn btn-xs btn-danger" wire:click="billingreject( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Reject</button>
+                                            <!-- <button class="btn btn-xs btn-success" wire:click="generate( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Generate</button> -->
+                                            <button class="btn btn-xs btn-success" 
+                                                    wire:click="generate({{ $details->id }}, {{ $account->id }})"
+                                                    wire:loading.attr="disabled">
+                                                <span wire:loading.remove wire:target="generate({{ $details->id }}, {{ $account->id }})">
+                                                    Generate
+                                                </span>
+                                                <span wire:loading wire:target="generate({{ $details->id }}, {{ $account->id }})">
+                                                    Processing...
+                                                </span>
+                                            </button>
+                                            
+                                            &nbsp;&nbsp;
+
+                                            <!-- <button 
+                                            type="button" 
+                                            class="btn btn-danger" 
+                                            wire:click="submitBillingReject" 
+                                            wire:loading.attr="disabled" 
+                                            wire:target="submitBillingReject"
+                                            >
+                                            <span wire:loading.remove wire:target="submitBillingReject">Reject</span>
+                                            <span wire:loading wire:target="submitBillingReject">Processing...</span>
+                                            </button> -->
+
+                                            <button 
+                                                    class="btn btn-xs btn-danger"
+                                                    wire:click="confirmBillingReject({{ $details->id }}, {{ $account->id }})"
+                                                >
+                                                    Reject
+                                                </button>
+
+                                                &nbsp;&nbsp;&nbsp;
+                                                 <button 
+                                                    class="btn btn-xs btn-secondary"
+                                                    wire:click="stageRequest({{ $details->id }}, {{ $account->id }})"
+                                                    wire:loading.attr="disabled"
+                                                >
+                                                    <span wire:loading.remove wire:target="stageRequest({{ $details->id }}, {{ $account->id }})">
+                                                        Stage
+                                                    </span>
+                                                    <span wire:loading wire:target="stageRequest({{ $details->id }}, {{ $account->id }})">
+                                                        Processing...
+                                                    </span>
+                                                </button>
+
+
+                                                 &nbsp;&nbsp;&nbsp;
+
+                                                <!-- <button 
+                                                    class="btn btn-xs btn-default"
+                                                    wire:click="approveRequest({{ $details->id }}, {{ $account->id }})"
+                                                >
+                                                    Approve
+                                                </button> -->
+
+                                             <!-- <button class="btn btn-xs btn-danger" 
+                                                    wire:click="billingreject({{ $details->id }}, {{ $account->id }})"
+                                                    wire:loading.attr="disabled">
+                                                <span wire:loading.remove wire:target="billingreject({{ $details->id }}, {{ $account->id }})">
+                                                    Reject
+                                                </span>
+                                                <span wire:loading wire:target="billingreject({{ $details->id }}, {{ $account->id }})">
+                                                    Rejecting Request...
+                                                </span>
+                                            </button> -->
+                                             <!-- <button class="btn btn-xs btn-danger" wire:click="billingreject( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Reject</button> -->
                                          @endif
 
                                        
@@ -284,23 +351,65 @@
 
                             <div class="card-body text-center">  
                                  <p><strong>Landlord Photo</p>
+                                   <a href="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->landloard_picture }}" target="_blank">
                                 <img src="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->landloard_picture }}" class="img-fluid rounded mb-3 w-50 " alt="Landlord Photo">
+                                    </a>
                                 <!-- <img src="{{ asset('lun_pictures/' . basename($details->continuation?->landloard_picture)) }}" class="img-fluid rounded mb-3 w-50 " alt="Customer Image"> -->
                                
                             </div>
 
 
-                             <div class="card-body text-center">  
+                             <!-- <div class="card-body text-center">  
                                  <p><strong>NIN Slip</p>
                                 <img src="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->nin_slip }}" class="img-fluid rounded mb-3 w-50 " alt="NIN Slip">
-                                <!-- <img src="{{ asset('lun_pictures/' . basename($details->continuation?->landloard_picture)) }}" class="img-fluid rounded mb-3 w-50 " alt="Customer Image"> -->
                                
+                            </div> -->
+
+                            <div class="card-body text-center">  
+                                <p><strong>NIN Slip</strong></p>
+                                <a href="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->nin_slip }}" target="_blank">
+                                    <img src="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->nin_slip }}" 
+                                        class="img-fluid rounded mb-3 w-50" 
+                                        alt="NIN Slip">
+                                </a>
+                                <!-- <img src="{{ asset('lun_pictures/' . basename($details->continuation?->landloard_picture)) }}" class="img-fluid rounded mb-3 w-50 " alt="Customer Image"> -->
                             </div>
+
 
                         </div>
                     </div>
                 </div>
             </div>
+
+
+
+            @if($showRejectModal)
+            <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reject Account</h5>
+                    <button type="button" class="close" wire:click="$set('showRejectModal', false)">
+                    <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="rejectComment">Comment</label>
+                    <textarea id="rejectComment" wire:model.defer="rejectComment" class="form-control" rows="3" placeholder="Enter reason for rejection..."></textarea>
+                    @error('rejectComment') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" wire:click="$set('showRejectModal', false)">Cancel</button>
+                    <button type="button" class="btn btn-danger" wire:click="submitBillingReject" wire:loading.attr="disabled">
+                    <span wire:loading.remove>Submit Rejection</span>
+                    <span wire:loading>Processing...</span>
+                    </button>
+                </div>
+                </div>
+            </div>
+            </div>
+            @endif
+
 
             <x-footer />
         </div>

@@ -21,6 +21,7 @@ use \Spatie\Enum\Enum;
  * @method static self mso()
  * @method static self audit()
  * @method static self rico()
+ * @method static self view_only()
  */
 
 class RoleEnum extends Enum
@@ -49,6 +50,7 @@ class RoleEnum extends Enum
             'mso' => 'mso',
             'audit' => 'audit',
             'rico' => 'rico',
+            'view_only' => 'view_only',
         ];
     }
 
@@ -76,6 +78,7 @@ class RoleEnum extends Enum
             'mso' => 'mso',
             'audit' => 'audit',
             'rico' => 'rico',
+            'view_only' => 'view_only',
         ];
     }
 }

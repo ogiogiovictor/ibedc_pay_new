@@ -291,21 +291,26 @@
 
                                                                          @if (!$all_transactions->providerRef && $all_transactions->status == 'started')
                                                                                 <button wire:click="checkFCMBPayment({{ $all_transactions->id }})" class="btn btn-xs btn-danger">Check FCMB</button>
+                                                                                 <button wire:click="changeprovider('{{ $all_transactions->id }}', '{{ $all_transactions->provider }}')" class="btn btn-xs btn-danger">Change Provider</button>
                                                                         @endif
 
                                                                        
 
                                                                         @if ($all_transactions->providerRef && $all_transactions->status == 'failed')
                                                                                 <button wire:click="checkPaymentStatus({{ $all_transactions->id }})" class="btn btn-xs btn-primary">Validate Payment</button>
+                                                                                 <button wire:click="changeprovider('{{ $all_transactions->id }}', '{{ $all_transactions->provider }}')" class="btn btn-xs btn-danger">Change Provider</button>
                                                                         @endif
 
                                                                         @if ($all_transactions->providerRef && $all_transactions->status == 'started')
                                                                                 <button wire:click="checkFCMBPayment({{ $all_transactions->id }})" class="btn btn-xs btn-primary">Check FCMB Payment</button>
+                                                                                 <button wire:click="changeprovider('{{ $all_transactions->id }}', '{{ $all_transactions->provider }}')" class="btn btn-xs btn-danger">Change Provider</button>
                                                                         @endif
 
                                                                          @if (!$all_transactions->providerRef && $all_transactions->status == 'processing')
                                                                                 <button wire:click="addProviderReference({{ $all_transactions->id }})" class="btn btn-xs btn-primary">Update Reference</button>
                                                                         @endif
+
+                                                                       
 
                                                                     @endcanany
 

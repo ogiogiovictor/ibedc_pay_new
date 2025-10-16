@@ -43,6 +43,8 @@ use App\Livewire\AddUser;
 use App\Livewire\ChangePassword;
 use App\Livewire\ViewWalletTopUp;
 
+use App\Livewire\RecordsTable;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -89,6 +91,8 @@ Route::middleware(['auth', 'check_access'])->group(function () {
         Route::get('/agency_dashboard', AgencyDashboard::class)->name('agency_dashboard');
     });
 
+
+    Route::get('/records/{status}', RecordsTable::class)->name('records.status');
 
     //// super_admin_access
     Route::middleware(['auth', 'super_admin_access'])->group(function () { 

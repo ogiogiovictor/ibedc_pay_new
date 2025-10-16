@@ -93,7 +93,8 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
             Route::controller(CompletePayment::class)->group(function() {
                 Route::post('complete-payment', 'CompletePayment')->name('complete-payment');
                 Route::get('get-token-notification', 'TokenNotifications')->name('get-token-notification');
-                Route::post('retry-payment', 'retryPayment')->name('retry-payment');
+                Route::post('retry-payment', 'retryPayment2')->name('retry-payment');
+                //Route::post('retry-payments', 'retryPayment2')->name('retry-payments');
             });
 
             Route::controller(WalletPaymentConfirmation::class)->group(function() {

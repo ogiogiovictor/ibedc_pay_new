@@ -78,6 +78,34 @@ class NewAccount extends Component
 
                     }
 
+            } elseif ($user->authority == RoleEnum::view_only()->value) {
+                // Filter by region only
+                // If region is missing, return empty
+                 // If either region or business_hub is missing, return empty
+                  if ($user->region == "HQ") {
+                    //$this->customers = collect(); // empty collection
+                    $this->customers = $this->customers->orderBy('created_at', 'desc')->paginate(30)->toArray();
+                    $this->totalCustomers = AccoutCreaction::count();
+                    
+                    }else if (empty($user->region) || empty($user->business_hub)) {
+                       // $this->customers = collect(); // empty collection
+                          $this->customers = $this->customers->orderBy('created_at', 'desc')->paginate(30)->toArray();
+                         $this->totalCustomers = AccoutCreaction::count();
+
+                    } else {
+                        $this->customers = $this->customers->orderBy('created_at', 'desc')->where('region', $user->region)->whereIn('status', ['processing', 'with-dtm'])->paginate(30)
+                      ->toArray();;
+
+                        $this->submittedThisMonth = UploadHouses::whereMonth('created_at', Carbon::now()->month)
+                        ->whereYear('created_at', Carbon::now()->year)->where('status', 0)->where('region', $user->region)
+                        ->count();
+
+                        $this->totalCustomers = AccoutCreaction::count();
+
+                        //$this->submittedToday = AccoutCreaction::whereMonth('created_at', Carbon::now()->month)->where('region', $user->region)->whereYear('created_at', Carbon::now()->year)->whereIn('status', ['started', 'processing', 'with-dtm', 'with-bhm', 'with-billing'])->count();
+
+                    }
+
             } elseif ($user->authority == RoleEnum::bhm()->value || $user->authority == RoleEnum::mso()->value) {
                 // Filter by region and business hub
                // If either region or business_hub is missing, return empty

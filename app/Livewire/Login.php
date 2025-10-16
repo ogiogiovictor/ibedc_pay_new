@@ -50,7 +50,7 @@ class Login extends Component
 
                 return redirect()->route('agency_dashboard');
                 
-            }else if($user->isdtm() || $user->isbhm() || $user->isregion() || $user->isbilling() || $user->isMso() || $user->isrico()) {
+            }else if($user->isdtm() || $user->isbhm() || $user->isregion() || $user->isbilling() || $user->isMso() || $user->isrico() || $user->isviewonly()) {
 
                 session()->flash('success', 'You are successfully loggedIn');
 

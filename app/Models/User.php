@@ -164,6 +164,11 @@ class User extends Authenticatable
         return $this->authority === RoleEnum::rico()->value;
     }
 
+      public function isviewonly()
+    {
+        return $this->authority === RoleEnum::view_only()->value;
+    }
+
 
     
 

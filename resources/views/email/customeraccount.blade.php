@@ -319,7 +319,7 @@
 
 
             <!-- START CENTERED WHITE CONTAINER -->
-            <span class="preheader">Your IBECPay Prepaid Token Confirmation</span>
+            <span class="preheader">IBECPay Account Creation</span>
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
 
               <!-- START MAIN CONTENT AREA -->
@@ -348,9 +348,9 @@
                                 <td>  <h3>Service Center  {{ $service_center }}</h3>  </td>
                               </tr>
 
-                               <tr>
+                               <!-- <tr>
                                 <td>  <h3>DSS  {{ $dss }}</h3>  </td>
-                              </tr>
+                              </tr> -->
 
                                <tr>
                                 <td>  <h3>Account No  {{ $account_no }}</h3>  </td>
@@ -367,11 +367,11 @@
                               </tr>
 
                               <tr>
-                                <td> <p>Should you have any questions or need assistance regarding the token or your prepaid account, feel free to reach out to our dedicated support team.<br/></p> </td>
+                                <td> <p>Should you have any questions or need assistance regarding the account, feel free to reach out customer care team.<br/></p> </td>
                               </tr>
 
                               <tr>
-                                <td> <p>Thank you for choosing IBECPay for your energy needs. We're committed to providing you with a seamless and reliable service.<br/></p> 
+                                <td> 
                               
                                 <p><b>You can vend or pay bills using https://pay.ibedc.com</b></p>
                               </td>

@@ -36,7 +36,7 @@ class PrepaidLookUpImprove extends Command
             $this->info('>>> ALL PAYMENTS PROCESSED SUCCESSFULLY');
         } catch (\Throwable $e) {
             Log::error('PREPAID LOOKUP ERROR: '.$e->getMessage(), ['trace' => $e->getTraceAsString()]);
-            $this->error('>>> ERROR OCCURRED. Check logs.');
+            $this->error('>>> ERROR OCCURRED. Check logs.'.$e->getMessage());
         } finally {
             // ✅ Explicitly close the DB connection
             DB::disconnect();
@@ -50,15 +50,21 @@ class PrepaidLookUpImprove extends Command
             return;
         }
 
+        $this->info('>>> SENDING TRANSACTIONS FOR VENDING');
         $response = $this->sendVendRequest($transaction);
-        if (!$response || ($response['status'] ?? '') !== 'true') {
-            Log::error("Vend failed for {$transaction->transaction_id}", ['response' => $response]);
+
+        if($response['status'] == "true") {
+              $this->updateTransaction($transaction, $response);
+              $this->sendSms($transaction, $response);
+            $this->sendEmail($transaction, $response);
+        }
+
+        if (!$response) {
+            Log::error("Transaction Failed {$transaction->transaction_id}", ['response' => $response]);
             return;
         }
 
-        $this->updateTransaction($transaction, $response);
-        $this->sendSms($transaction, $response);
-        $this->sendEmail($transaction, $response);
+      
     }
 
     private function sendVendRequest($transaction)
@@ -76,13 +82,18 @@ class PrepaidLookUpImprove extends Command
             'payreference'=> $transaction->transaction_id,
             'colagentid'  => 'IB001',
         ];
+         $this->info('>>> PUSHING TRANSACTIONS TO MIDDLEWARE');
 
         $response = Http::withoutVerifying()
             ->withHeaders(['Authorization' => env('MIDDLEWARE_TOKEN')])
             ->post($url, $payload);
+        
+        $this->info('>>> AWAITING RESPONSE FROM MIDDLEWARE: ' . json_encode($response->json(), JSON_PRETTY_PRINT));
+
+      //  $this->info('>>> AWAITING RESPONSE FROM MIDDLEWARE'. $response->json());
 
         $json = $response->json();
-        Log::info("MOMAS API RESPONSE", $json);
+        Log::info("MOMAS API RESPONSE FOR prepaidlookupimproved", $json);
 
         return $json;
     }
@@ -110,6 +121,8 @@ class PrepaidLookUpImprove extends Command
             'costOfUnits'     => EcmiPayments::where('transref', $ref)->value('CostOfUnits'),
         ]);
 
+         $this->info('>>> TRANSACTION SUCCESSFUL UPDATED '. $transaction->transaction_id);
+
         Log::info("Transaction updated successfully: {$transaction->transaction_id}");
     }
 
@@ -119,7 +132,7 @@ class PrepaidLookUpImprove extends Command
         $url = env('SMS_MESSAGE');
 
         $smsPayload = [
-            'token'   => env('SMS_TOKEN'),
+            'token'   => env('SMS_TOKEN2'),
             'sender'  => 'IBEDC',
             'to'      => $transaction->phone,
             'message' => "Meter Token: $token. Your IBEDC Prepaid payment of {$transaction->amount} for Meter No {$transaction->meter_no} was successful. REF: {$transaction->transaction_id}. For Support: 07001239999",

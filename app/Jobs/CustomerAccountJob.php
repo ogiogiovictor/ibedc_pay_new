@@ -18,15 +18,17 @@ class CustomerAccountJob implements ShouldQueue
 
     private $uploadHouses;
     private $account;
+    private $user;
 
 
     /**
      * Create a new job instance.
      */
-    public function __construct($uploadHouses, $account)
+    public function __construct($uploadHouses, $account, $user)
     {
          $this->uploadHouses = $uploadHouses;
          $this->account = $account;
+         $this->user = $user;
     }
 
     /**
@@ -34,13 +36,22 @@ class CustomerAccountJob implements ShouldQueue
      */
     public function handle(): void
     {
-          //$user = Auth::user()->email;
+          //$user = Auth::user()->email;   //[validated_by]
           $ccEmails = [
-                Auth::user()->email,
-                'victor.ogiogio@ibedc.com',
-                'customercare@ibedc.com',
-                'Ademola.Adewumi@ibedc.com'
-            ];
-          Mail::to($this->account->email)->cc($ccEmails)->send(new CustomerAccountMail($this->uploadHouses,  $this->account));
+                 $this->user,
+                 $this->uploadHouses->validated_by,
+                //'customercare@ibedc.com'
+             ];
+
+         $bcc = [
+            'Ademola.Adewumi@ibedc.com',
+            'victor.ogiogio@ibedc.com',
+            'Basirat.Opoola@ibedc.com',
+            'Eyinade.Wintope@ibedc.com',
+            'babatunde.bodunde@ibedc.com',
+          //  'nurudeen.oyelowo@ibedc.com',
+          //  'olubunmi.patrick@ibedc.com'
+         ];
+          Mail::to($this->account->email)->cc($ccEmails)->bcc($bcc)->send(new CustomerAccountMail($this->uploadHouses,  $this->account));
     }
 }

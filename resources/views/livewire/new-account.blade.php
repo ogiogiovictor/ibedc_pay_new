@@ -112,6 +112,8 @@
                                   <th>Firstname</th>
                                   <th>Other Names</th>
                                   <th>Region</th>
+                                  <th>Phone</th>
+                                  <th>Email</th>
                                   <!-- <th>Number of Accounts</th> -->
                                   <!-- <th>Status</th> -->
                                   <th>Actions</th>
@@ -133,7 +135,8 @@
                                   <td>{{ $transaction['firstname'] }} </td>
                                   <td>{{ $transaction['other_name'] }} </td>
                                   <td>{{ $transaction['region'] }}</td>
-                                 
+                                  <td>{{ $transaction['phone'] }}</td>
+                                  <td>{{ $transaction['email'] }}</td>
                                  
                                 
                                   

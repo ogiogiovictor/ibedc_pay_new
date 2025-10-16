@@ -188,6 +188,7 @@
                           <option value="billing">Billing</option>
                            <option value="rico">RICO</option>
                             <option value="agent">Agent</option>
+                             <option value="view_only">Read Only</option>
                         </select>
                         @error('authority') <small class="text-danger">{{ $message }}</small>@enderror
 

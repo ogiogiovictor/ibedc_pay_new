@@ -13,7 +13,7 @@ class MonitorSqlConnections extends Command
     protected $description = 'Monitor and kill idle SQL Server user sessions exceeding a threshold';
 
     protected $threshold = 200; // session limit
-    protected $alertEmails = ['admin@company.com', 'dba@company.com']; // ✅ multiple recipients
+    protected $alertEmails = ['victor.ogiogio@ibedc.com', 'adebayo.oyebamiji@ibedc.com']; // ✅ multiple recipients
 
     public function handle()
     {

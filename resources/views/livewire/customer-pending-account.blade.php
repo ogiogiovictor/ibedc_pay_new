@@ -24,8 +24,11 @@
 
 
 
+                     
                         <div class="col-12 col-sm-6 col-md-6 col-xl-3 grid-margin stretch-card">
+                         
                           <div class="card">
+                            <a href="{{ route('records.status', 'started') }}">
                             <div class="card-body">
                               <div class="d-flex flex-wrap justify-content-between">
                                 <h4 class="card-title">Started</h4>
@@ -58,13 +61,16 @@
                               
                               </div>
                             </div>
+                          </a>
                           </div>
                         </div>
+                        
 
 
                         
                       <div class="col-12 col-sm-6 col-md-6 col-xl-3 grid-margin stretch-card">
                           <div class="card">
+                             <a href="{{ route('records.status', 'with-dtm') }}">
                             <div class="card-body">
                               <div class="d-flex flex-wrap justify-content-between">
                                 <h4 class="card-title">With DTM</h4>
@@ -97,12 +103,14 @@
                               
                               </div>
                             </div>
+                          </a>
                           </div>
                         </div>
 
 
                          <div class="col-12 col-sm-6 col-md-6 col-xl-3 grid-margin stretch-card">
                           <div class="card">
+                             <a href="{{ route('records.status', 'with-compliance') }}">
                             <div class="card-body">
                               <div class="d-flex flex-wrap justify-content-between">
                                 <h4 class="card-title">Compliance</h4>
@@ -135,12 +143,14 @@
                               
                               </div>
                             </div>
+                            </a>
                           </div>
                         </div>
 
 
                          <div class="col-12 col-sm-6 col-md-6 col-xl-3 grid-margin stretch-card">
                           <div class="card">
+                             <a href="{{ route('records.status', 'with-billing') }}">
                             <div class="card-body">
                               <div class="d-flex flex-wrap justify-content-between">
                                 <h4 class="card-title">With Billing</h4>
@@ -173,6 +183,7 @@
                               
                               </div>
                             </div>
+                        </a>
                           </div>
                         </div>
 
@@ -181,6 +192,7 @@
 
                           <div class="col-12 col-sm-6 col-md-6 col-xl-3 grid-margin stretch-card">
                           <div class="card">
+                             <a href="{{ route('records.status', 'completed') }}">
                             <div class="card-body">
                               <div class="d-flex flex-wrap justify-content-between">
                                 <h4 class="card-title">Completed</h4>
@@ -213,6 +225,7 @@
                               
                               </div>
                             </div>
+                          </a>
                           </div>
                         </div>
 
@@ -220,6 +233,7 @@
                         
                           <div class="col-12 col-sm-6 col-md-6 col-xl-3 grid-margin stretch-card">
                           <div class="card">
+                             <a href="{{ route('records.status', 'rejected') }}">
                             <div class="card-body">
                               <div class="d-flex flex-wrap justify-content-between">
                                 <h4 class="card-title">Rejected</h4>
@@ -252,6 +266,7 @@
                               
                               </div>
                             </div>
+                        </a>
                           </div>
                         </div>
 
@@ -300,6 +315,7 @@
                                   <option value="tracking_id">Tracking ID</option>
                                   <option value="surname">Surname</option>
                                   <option value="status">Status</option>
+                                  <option value="email">Email</option>
                                 </select>
                               </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                               <div class="form-group mr-2">
@@ -377,14 +393,14 @@
                                   
                                   <td>
                                     <!-- <a href="#" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a> -->
-                                     @canany(['super_admin', 'dtm', 'billing', 'bhm', 'rico', 'audit'])
-                                    <a href="account_details/{{ $transaction['tracking_id'] }}" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
+                                     @canany(['super_admin', 'dtm', 'billing', 'bhm', 'rico', 'audit', 'isviewonly'])
+                                      <a href="account_details/{{ $transaction['tracking_id'] }}" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a>
                                      @endcanany
 
                                     @canany(['super_admin', 'mso'])
-                                    <a href="{{ url('evaluation/' . $transaction['tracking_id']) }}" class="btn btn-primary btn-sm mr-1">
+                                    <!-- <a href="{{ url('evaluation/' . $transaction['tracking_id']) }}" class="btn btn-primary btn-sm mr-1">
                                         TE
-                                    </a>
+                                    </a> -->
                                 @endcanany
 
                                   </td>

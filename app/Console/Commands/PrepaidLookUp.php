@@ -76,7 +76,7 @@ class PrepaidLookUp extends Command
                 
                         $newResponse =  $response->json();
     
-                        \Log::info('RESPONSE FROM MOMAS API - PREPAID LOG: ' . json_encode($newResponse));
+                        \Log::info('RESPONSE FROM MOMAS API - PREPAID LOG:  - prepaidLookUp ' . json_encode($newResponse));
                         $totalRecords = count($prepaidpayments);
 
                        
@@ -115,7 +115,7 @@ class PrepaidLookUp extends Command
                             ];
                              
                              $idata = [
-                                 'token' => env('SMS_TOKEN'),
+                                 'token' => env('SMS_TOKEN2'),
                                  'sender' => "IBEDC",
                                  'to' => $paymentLog->phone,
                                  "message" => "Meter Token: $token  Your IBEDC Prepaid payment of $paymentLog->amount for Meter No $paymentLog->meter_no  was successful. REF: $paymentLog->transaction_id. For Support: 07001239999",

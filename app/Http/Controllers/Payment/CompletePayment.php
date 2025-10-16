@@ -240,6 +240,162 @@ class CompletePayment extends BaseAPIController
 
 
 
+
+    public function retryPayment2(Request $request){
+
+         $checkTransaction = PaymentTransactions::where(['transaction_id' => $request->transaction_id])->first();
+
+        if (!$checkTransaction) {
+                return $this->sendError('Invalid transaction.', 'Error!', Response::HTTP_BAD_REQUEST);
+        }
+
+
+
+        if($checkTransaction->status == "processing") {
+
+            $prepaidTransaction = PaymentTransactions::whereNull('receiptno')
+                ->where('account_type', 'Prepaid')
+                ->where('status', 'processing')
+                ->whereNotNull('providerRef')
+                ->where('transaction_id', $request->transaction_id)
+                ->first();
+
+            if (!$prepaidTransaction) {
+                return $this->sendError('Transaction not found or not valid for retry.', 'Error!', Response::HTTP_NOT_FOUND);
+            }
+
+            if (!is_null($prepaidTransaction->receiptno)) {
+                PaymentTransactions::where("transaction_id", $prepaidTransaction->transaction_id)->update([
+                    'status' => 'success',
+                ]);
+
+                $emailData = [
+                    'token' => $prepaidTransaction->receiptno,
+                    'meterno' => $prepaidTransaction->meter_no,
+                    'amount' => $prepaidTransaction->amount,
+                    "custname" => $prepaidTransaction->customer_name,
+                    "custphoneno" => $prepaidTransaction->phone,
+                    "payreference" => $prepaidTransaction->transaction_id,
+                ];
+
+                Mail::to($prepaidTransaction->email)->send(new PrePaidPaymentMail($emailData));
+
+                return $this->sendSuccess($prepaidTransaction, "Token Successful", Response::HTTP_OK);
+            } else {
+                $baseUrl = env('MIDDLEWARE_URL');
+                $addCustomerUrl = $baseUrl . 'vendelect';
+
+                $data = [
+                    'meterno' => $prepaidTransaction->meter_no,
+                    'vendtype' => $prepaidTransaction->account_type,
+                    'amount' => $prepaidTransaction->amount,
+                    'provider' => "IBEDC",
+                    "custname" => $prepaidTransaction->customer_name,
+                    "businesshub" => $prepaidTransaction->BUID,
+                    "custphoneno" => $prepaidTransaction->phone,
+                    "payreference" => $prepaidTransaction->transaction_id,
+                    "colagentid" => "IB001",
+                ];
+
+                $response = Http::withoutVerifying()->withHeaders([
+                    'Authorization' => env('MIDDLEWARE_TOKEN'),
+                ])->post($addCustomerUrl, $data);
+
+                $newResponse = $response->json();
+
+              //   return $newResponse;
+
+                if (isset($newResponse['status']) && $newResponse['status'] == "true") {
+                    PaymentTransactions::where("transaction_id", $prepaidTransaction->transaction_id)->update([
+                        'status' => 'success',
+                        //'receiptno' => isset($newResponse['recieptNumber']) ?? $newResponse['recieptNumber'] : $newResponse['data']['recieptNumber'],
+                        'receiptno' => $newResponse['recieptNumber'] ?? ($newResponse['data']['recieptNumber'] ?? ''),
+
+                        'Descript' => "Token Successfuly Sent",
+                        'units' => $newResponse['Units'] ?? $newResponse['data']['Units'] ?? '',
+                        
+                        'minimumPurchase' => $newResponse['customer']['minimumPurchase'] ?? '',
+                        'tariffcode' => $newResponse['customer']['tariffcode'] ?? '',
+                        'customerArrears' => $newResponse['customer']['customerArrears'] ?? '',
+                        'tariff' => $newResponse['customer']['tariff'] ?? '',
+                        'serviceBand' => $newResponse['customer']['serviceBand'] ?? '',
+                        'feederName' => $newResponse['customer']['feederName'] ?? '',
+                        'dssName' => $newResponse['customer']['dssName'] ?? '',
+                        'udertaking' => $newResponse['customer']['undertaking'] ?? '',
+                        'VAT' => EcmiPayments::where("transref", $newResponse['data']['transactionReference'])->value('VAT'),
+                        'costOfUnits' => EcmiPayments::where("transref", $newResponse['data']['transactionReference'])->value('CostOfUnits'),
+                    ]);
+
+                    $token = $newResponse['recieptNumber'] ?? $newResponse['data']['recieptNumber'] ?? '';
+
+                    $emailData = [
+                        'token' => $token,
+                        'meterno' => $prepaidTransaction->meter_no,
+                        'amount' => $prepaidTransaction->amount,
+                        "custname" => $prepaidTransaction->customer_name,
+                        "custphoneno" => $prepaidTransaction->phone,
+                        "payreference" => $prepaidTransaction->transaction_id,
+                    ];
+
+                    $user = Auth::user();
+
+                    Mail::to($user->email)->cc($prepaidTransaction->email)->send(new PrePaidPaymentMail($emailData));
+
+                    return $this->sendSuccess($emailData, "Token Successful", Response::HTTP_OK);
+                } else {
+                    // Handle middleware vending failure
+                    return $this->sendError(
+                        $newResponse['message'] ?? 'Unable to vend token at the moment.'. $newResponse,
+                        'Vending Failed',
+                        Response::HTTP_BAD_GATEWAY
+                    );
+                }
+            }
+
+
+
+
+
+        // This is the begining of else to check if the transaction is started
+        } else if($checkTransaction->status == "started") {
+
+             $providers = [
+                'FCMB' => env('FLUTTER_FCMB_KEY'),
+                'Polaris' => env('FLUTTER_POLARIS_KEY')
+            ];
+
+             $transactionProcessed = false;
+             foreach ($providers as $providerName => $providerKey) {
+
+                $flutterData = ['SECKEY' => $providerKey, "txref" => $request->transaction_id];
+
+                $flutterUrl = env("FLUTTER_WAVE_URL");
+                $iresponse = Http::post($flutterUrl, $flutterData);
+                $flutterResponse = $iresponse->json();
+
+                if (isset($flutterResponse['status']) && $flutterResponse['status'] == "success") {
+                    $dataStatus = $flutterResponse['data']['status'] ?? null;
+
+                      if ($dataStatus == 'successful') {
+                            PaymentTransactions::where("transaction_id", $request->transaction_id)->update([
+                            'providerRef' => $flutterResponse['data']['flwref'],
+                            'status' => 'processing',
+                            ]);
+                           $transactionProcessed = true;
+                      }
+
+                      return $this->sendSuccess($dataStatus, "Payment Successful", Response::HTTP_OK);
+                } else {
+                     return $this->sendError('Transaction not found or not valid for retry.', 'Error!', Response::HTTP_NOT_FOUND);
+                }
+
+             }
+
+        }
+
+
+
+    }
     
 
 

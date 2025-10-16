@@ -17,4 +17,9 @@ class ContinueAccountCreation extends Model
     {
         return $this->belongsTo(AccoutCreaction::class, 'tracking_id', 'tracking_id');
     }
+
+    public function landlordinfo()
+    {
+        return $this->hasMany(UploadHouses::class, 'tracking_id', 'tracking_id');
+    }
 }
