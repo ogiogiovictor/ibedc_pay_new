@@ -22,6 +22,7 @@ class NewAccountDetails extends Component
     public $details;
    // public $region;
     public $comment;
+    public $action;
 
     
     public $businesshub;
@@ -139,6 +140,111 @@ class NewAccountDetails extends Component
             
         }
 
+
+
+    public function compliancereject() {
+
+        $uploadHouses = UploadHouses::where("id", $this->id)->first();
+
+        if (!$uploadHouses) {
+            Session::flash('error', 'Account not found.');
+            return;
+        }
+
+        if(!$this->action) {
+            Session::flash('error', 'Please select who to action');
+            return;
+        }
+
+        $account = AccoutCreaction::where("tracking_id", $uploadHouses->tracking_id)->first();
+
+        if($this->action == "customer") {
+
+             $uploadHouses->update([
+                'status' => 5,
+                'lecan_link' => NULL
+                ]);
+            
+             if ($account) {
+                    // Update status of the account
+                    $account->update([
+                        'status' => 'started',
+                        'status_name' => 'rejected',
+                        'comment' => $this->rcomment
+                    ]);
+
+                    IbedcPayLogService::create([
+                        'module'     => 'Compliance',
+                        'comment'    => $this->rcomment,
+                        'type'       => 'Rejected',
+                        'module_id'  => $this->id,
+                        'status'     => 'started',
+                    ]);
+
+
+                    $email = $account->email;
+                    if (!empty($email)) {
+                        // Send email with token
+                        Mail::raw(
+                            "Your request with tracking ID was rejected. Tracking ID is: {$account->tracking_id} Comments: {$this->rcomment}",
+                            function ($message) use ($email) {
+                                $message->to($email)
+                                        ->subject('New Account Request Rejected');
+                            }
+                        );
+                    }
+
+                    Session::flash('success', 'New Account Successfully Rejected By .');
+            } 
+
+
+        } else  if($this->action == "dtm") {
+
+                $uploadHouses->update([
+                        'status' => 1,
+                ]);
+
+               $account = AccoutCreaction::where("tracking_id", $uploadHouses->tracking_id)->first();
+
+                $account->update([
+                'status' => 'with-dtm',
+                'status_name' => 'rejected',
+                'comment' => $this->rcomment
+                ]);
+
+                IbedcPayLogService::create([
+                    'module'     => 'Compliance',
+                    'comment'    => $this->rcomment,
+                    'type'       => 'Rejected',
+                    'module_id'  => $this->id,
+                    'status'     => 'started',
+                ]);
+
+                $email = $uploadHouses->validated_by;
+
+                if (!empty($email)) {
+                // Send email with token
+                    Mail::raw(
+                        "The Customer Request with tracking ID is Rejected. Tracking ID is: {$uploadHouses->tracking_id} Comments: {$this->rcomment}",
+                        function ($message) use ($email) {
+                            $message->to($email)
+                                    ->subject('New Account Request Rejected');
+                        }
+                    );
+                }
+        
+                 Session::flash('success', 'New Account Successfully Rejected By .');
+
+
+        } else {
+
+            Session::flash('error', 'Sorry something went wrong please contact administrator');
+            return;
+        }
+
+
+    }
+
    
 
 
@@ -202,7 +308,7 @@ class NewAccountDetails extends Component
 
     public function render()
     {
-        $logs = IBEDCPayLogs::where("module_id", $this->id)->get();
+        $logs = IBEDCPayLogs::where("module_id", $this->id)->orderBy('created_at', 'asc')->get();
 
         return view('livewire.new-account-details', [
              'tarriff' => NewTarrif::get(),

@@ -15,7 +15,7 @@ class AppService  extends BaseAPIController
 
         //if($service->status == "off"){
         if ($service && $service->status === 'off') {
-            return $this->sendError("Payment Service Providier Unavailable, please try again later", $type.'System Downtime', Response::HTTP_BAD_REQUEST); 
+            return $this->sendError("Payment Service Providier Unavailable, please try again later", $type.'System Maintenance', Response::HTTP_BAD_REQUEST); 
         }
 
         return $service;

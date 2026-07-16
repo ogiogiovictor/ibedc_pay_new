@@ -23,7 +23,7 @@ class WalletIntegration extends Command
      *
      * @var string
      */
-    protected $signature = 'app:wallet-integration';
+    protected $signature = 'app:wallet-integrationxxxx';
 
     /**
      * The console command description.

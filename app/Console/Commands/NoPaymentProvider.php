@@ -35,7 +35,7 @@ class NoPaymentProvider extends Command
             $today = now()->toDateString();
 
             
-            PaymentTransactions::whereDate('created_at',  '2025-10-10')  //'2025-10-10'
+            PaymentTransactions::whereDate('created_at',  $today)  //'2025-10-10'
                 ->whereIn('status', ['failed', 'cancelled', 'started'])
               //  ->whereNot('provider', 'Wallet')
                // ->where('provider', '!=', 'Wallet')

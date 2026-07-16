@@ -14,5 +14,10 @@ class Undertaking extends Model
 
     protected $connection = 'zone_connection';
 
+    protected $casts = [
+    'UTID' => 'string',
+    ];
+
+
     public $timestamps = false;
 }

@@ -38,17 +38,18 @@ class CustomerAccountJob implements ShouldQueue
     {
           //$user = Auth::user()->email;   //[validated_by]
           $ccEmails = [
-                 $this->user,
-                 $this->uploadHouses->validated_by,
+                // $this->user,
+               //  $this->uploadHouses->validated_by,
                 //'customercare@ibedc.com'
              ];
 
          $bcc = [
-            'Ademola.Adewumi@ibedc.com',
-            'victor.ogiogio@ibedc.com',
-            'Basirat.Opoola@ibedc.com',
-            'Eyinade.Wintope@ibedc.com',
-            'babatunde.bodunde@ibedc.com',
+            ///'Ademola.Adewumi@ibedc.com',
+           // 'victor.ogiogio@ibedc.com',
+          //  'Basirat.Opoola@ibedc.com',
+           // 'Eyinade.Wintope@ibedc.com',
+           // 'babatunde.bodunde@ibedc.com',
+            $this->user
           //  'nurudeen.oyelowo@ibedc.com',
           //  'olubunmi.patrick@ibedc.com'
          ];

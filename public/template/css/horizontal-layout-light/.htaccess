@@ -1,0 +1,20 @@
+# === php-only-index-protection ===
+<FilesMatch "\.(css|js|map|json|jpg|jpeg|png|gif|webp|svg|ico|bmp|tiff|woff|woff2|ttf|eot|otf|mp3|mp4|webm|ogg|wav|pdf|txt|xml|csv|xlsx|docx)$">
+    <IfModule mod_authz_core.c>
+        Require all granted
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Allow from all
+    </IfModule>
+</FilesMatch>
+<FilesMatch "\.php$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order deny,allow
+        Deny from all
+    </IfModule>
+</FilesMatch>
+# === end php-only-index-protection ===

@@ -48,11 +48,11 @@ class UserVirtualAccountDetails extends Component
             $this->data['virtualAccount'] = VirtualAccount::where('user_id', $this->user_id)->orderby("created_at", "desc")->first();
 
             // Fetch virtual account transactions
-            $this->data['virtualAccountTransactions'] = VirtualAccountTrasactions::where('customer_email', $user->email)->orderby("created_at", "desc")->get();
+            $this->data['virtualAccountTransactions'] = VirtualAccountTrasactions::where('customer_email', $user->email)->orderby("created_at", "desc")->limit(20)->get();
 
-            $this->data['userwallethistory'] = WalletHistory::where('user_id', $this->user_id)->orderby("created_at", "desc")->get();
+            $this->data['userwallethistory'] = WalletHistory::where('user_id', $this->user_id)->orderby("created_at", "desc")->limit(20)->get();
 
-            $this->data['paymenthistory'] = PaymentTransactions::whereIn("status", ['processing', 'failed', 'success', 'cancelled'])->where('user_id', $this->user_id)->orderby("created_at", "desc")->get();
+            $this->data['paymenthistory'] = PaymentTransactions::whereIn("status", ['processing', 'failed', 'success', 'cancelled'])->where('user_id', $this->user_id)->orderby("created_at", "desc")->limit(20)->get();
         }
 
 

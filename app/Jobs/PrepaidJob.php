@@ -137,7 +137,7 @@ class PrepaidJob implements ShouldQueue
                 ]);
 
                 // Send notifications
-                $this->sendSms($receipt);
+               // $this->sendSms($receipt);
                 $this->sendEmail($receipt);
 
             } else {

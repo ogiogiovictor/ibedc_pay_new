@@ -1,4 +1,4 @@
-<div wire:poll>
+<div>
     
 <x-navbar />
 
@@ -39,7 +39,37 @@
                                                     <h1>Wallet Account</h1>
                                                     <p>User ID: {{ $data['user']->id ?? 'N/A' }}</p>
                                                     <p>User Name: {{ $data['user']->name ?? 'N/A' }}</p>
-                                                    <p>Wallet Balance: ₦ {{ number_format($data['wallet']->wallet_amount, 2) ?? 'N/A' }}</p>
+                                                    <p>Wallet Balance: ₦ {{ isset($data['wallet']) ? number_format($data['wallet']->wallet_amount, 2) : '0.00' }}
+                                                    &nbsp;&nbsp;&nbsp;&nbsp;
+                                                    <td>
+
+                                                    @if($data['wallet']->wallet_amount > 0)
+                                                    @canany(['super_admin'])
+                                                      <button 
+                                                        wire:click="refund(
+                                                            '{{ $data['wallet']->wallet_amount }}',
+                                                            '{{ $data['user']->id }}',
+                                                            '{{ $data['virtualAccount']->account_name }}',
+                                                            '{{ $data['virtualAccount']->customer_email }}',
+                                                            '{{ $data['user']->email }}'
+                                                        )"
+                                                        wire:loading.attr="disabled"
+                                                        class="btn btn-danger btn-sm"
+                                                    >
+                                                        <span wire:loading.remove>
+                                                            Refund - ({{ number_format($data['wallet']->wallet_amount, 2) }})
+                                                        </span>
+
+                                                        <span wire:loading>
+                                                            <i class="fa fa-spinner fa-spin"></i> Processing...
+                                                        </span>
+                                                    </button>
+                                                     @endcanany
+
+
+                                                    @endif
+                                                </td>
+                                                    </p>
                                                     <p>Virtual Account Number: {{ $data['virtualAccount']->account_no ?? 'N/A' }}</p>
                                                     <p>Virtual Account Email: {{ $data['virtualAccount']->customer_email ?? 'N/A' }}</p>
                                                     <p>Virtual Account Name: {{ $data['virtualAccount']->account_name ?? 'N/A' }}</p>
@@ -113,6 +143,7 @@
                                                    <td> ₦{{ number_format($transaction->amount, 2) }}</td>
                                                    <!-- <td>{{ $transaction->customer_name }}</td> -->
                                                    <td>{{ $transaction->status }}</td>
+                                                   
                                                <tr>
                                               
                                                 @endforeach

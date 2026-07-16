@@ -34,6 +34,7 @@ use App\Livewire\NewAccount;
 use App\Livewire\TrackingDetails;
 use App\Livewire\NewAccountDetails;
 use App\Livewire\Evaluation;
+use App\Livewire\AccountSummary;
 
 use App\Livewire\CustomerPendingAccount;
 use App\Livewire\ServiceCenterAreaCode;
@@ -44,6 +45,10 @@ use App\Livewire\ChangePassword;
 use App\Livewire\ViewWalletTopUp;
 
 use App\Livewire\RecordsTable;
+
+use App\Livewire\CreditUserWallet;
+use App\Livewire\ReportUpdate;
+use App\Http\Controllers\NAC\ReportExportController;
 
 /*
 |--------------------------------------------------------------------------
@@ -92,6 +97,10 @@ Route::middleware(['auth', 'check_access'])->group(function () {
     });
 
 
+    //only super admin can access wallet user accounts and payment channel
+    Route::get('/wallet_user_accounts', WalletAccount::class)->name('wallet_user_accounts');
+    Route::get('/view_wallet/{id}/{user_id}', WalletDetaisls::class)->name('view_wallet');
+
     Route::get('/records/{status}', RecordsTable::class)->name('records.status');
 
     //// super_admin_access
@@ -99,8 +108,10 @@ Route::middleware(['auth', 'check_access'])->group(function () {
       Route::get('/application_settings', ApplicationSettings::class)->name('application_settings');
       Route::get('/syslog', AppLog::class)->name('syslog');
       Route::get('/auditlogs', AuditLogs::class)->name('auditlog');
-      Route::get('/wallet_user_accounts', WalletAccount::class)->name('wallet_user_accounts');
-      Route::get('/view_wallet/{id}/{user_id}', WalletDetaisls::class)->name('view_wallet');
+
+      Route::get('/credit_wallet', CreditUserWallet::class)->name('credit_wallet');
+      
+      
       Route::get('/commission_settings', CommissionSettings::class)->name('commission_settings');
 
       Route::get('/new_account', NewAccount::class)->name('new_account');
@@ -113,7 +124,7 @@ Route::middleware(['auth', 'check_access'])->group(function () {
 
 
      //// super_admin_access
-    Route::middleware(['auth', 'new_account_access'])->group(function () { 
+    Route::middleware(['auth', 'new_account_access'])->group(function () {
       Route::get('/new_account', NewAccount::class)->name('new_account');
       Route::get('/account_details/{tracking_id}', AccountDetails::class)->name('account_details');
       Route::get('/tracking_details/{id}/{tracking_id}', NewAccountDetails::class)->name('tracking_details');
@@ -122,11 +133,16 @@ Route::middleware(['auth', 'check_access'])->group(function () {
       Route::get('/auditlogs', AuditLogs::class)->name('auditlog');
       Route::get('/service_area_code', ServiceCenterAreaCode::class)->name('service_area_code');
       Route::get('/area_code', AddAreaCode::class)->name('area_code');
+      Route::get('/account_summary', AccountSummary::class)->name('account_summary');
+      Route::get('/summary/{status?}', [RecordsTable::class, 'show'])->name('summary.records');
+      Route::get('/report-update', ReportUpdate::class)->name('report_update');
+      Route::get('/report-update/export', [ReportExportController::class, 'download'])->name('report_update.export');
+
      // Route::get('/tracking_details', NewAccountDetails::class)->name('tracking_details');
 
     });
 
-   
+
 
      Route::get('/change_password', ChangePassword::class)->name('change_password');
     

@@ -31,28 +31,20 @@ class AccountNotificationJob implements ShouldQueue
      */
     public function handle(): void
     {
-        
-        $records = UploadHouses::where("tracking_id", $this->tracking_id)->first();
+        $records = UploadHouses::where('tracking_id', $this->tracking_id)->first();
 
-        //get the business hub
-        $user_data = ServiceAreaCode::where("BHUB", strtoupper($records->business_hub))->first();
-      
-        // foreach ($user_data as $data) {
-           // if ($data->dtm_emails) {
-            //    Mail::to($data->dtm_emails)
-                    //->cc($data->dte_emails)
-                    //->bcc("customercare@ibedc.com")
-                 //   ->send(new AccountNotificationMail($data));
-          //  }
+        if (! $records) {
+            return;
+        }
 
-            $user = User::where("business_hub", strtoupper($records->business_hub))->value("email");
-            if($user) {
-                Mail::to($user)->send(new AccountNotificationMail($data));
-            }
-      //  }
+        // get the business hub service area record if needed
+        $serviceArea = ServiceAreaCode::where('BHUB', strtoupper($records->business_hub))->first();
 
-        
+        $user = User::where('business_hub', strtoupper($records->business_hub))->value('email');
 
+        if ($user) {
+            Mail::to($user)->send(new AccountNotificationMail($records));
+        }
     }
 
 

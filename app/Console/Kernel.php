@@ -14,21 +14,30 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 
-        $schedule->command('app:prepaid-look-up')
-             ->withoutOverlapping()
-             ->everyMinute();
 
-        $schedule->command('app:postpaid-look-up')
-                ->withoutOverlapping()
-                ->everyFifteenMinutes();
+        $schedule->command('app:get-customerpull')->weekly()->withoutOverlapping();
 
-        $schedule->command('app:payment-look-up')
-                ->withoutOverlapping()
-                ->everyFiveMinutes();  //everyTwoMinutes
+        $schedule->command('app:get-customerpull')->hourly()->withoutOverlapping();
 
-        $schedule->command('app:no-payment-provider')
-                ->withoutOverlapping()
-                ->everyTwoMinutes();
+        //Remove this before you leave the office, this is just for testing purposes
+        $schedule->command('app:get-ubvs-customers')->twiceDaily(8, 18)->withoutOverlapping();
+
+        $schedule->command('app:programme-meter')->hourly()->withoutOverlapping();
+        // $schedule->command('app:prepaid-look-up')
+        //      ->withoutOverlapping()
+        //      ->everyMinute();
+
+        // $schedule->command('app:postpaid-look-up')
+        //         ->withoutOverlapping()
+        //         ->everyFifteenMinutes();
+
+        // $schedule->command('app:payment-look-up')
+        //         ->withoutOverlapping()
+        //         ->everyFiveMinutes();  //everyTwoMinutes
+
+        // $schedule->command('app:no-payment-provider')
+        //         ->withoutOverlapping()
+        //         ->everyTwoMinutes();
 
         $schedule->command('app:clean-log')->dailyAt('02:00');
 
@@ -36,21 +45,31 @@ class Kernel extends ConsoleKernel
                 ->withoutOverlapping()
                 ->everyFifteenMinutes();
 
-        $schedule->command('app:fcmbflutter-verify-transactions')
-                ->withoutOverlapping()
-                ->everyFiveMinutes();
+        // $schedule->command('app:fcmbflutter-verify-transactions')
+        //         ->withoutOverlapping()
+        //         ->everyFiveMinutes();
 
-         $schedule->command('app:prepaid-error-fix')
-             ->withoutOverlapping()
-             ->everyFiveMinutes();
+        //  $schedule->command('app:prepaid-error-fix')
+        //      ->withoutOverlapping()
+        //      ->everyFiveMinutes();
 
-         $schedule->command('app:prepaid-look-up-improve')
-             ->withoutOverlapping()
-             ->everyTwoMinutes();
+        //  $schedule->command('app:prepaid-look-up-improve')
+        //      ->withoutOverlapping()
+        //      ->everyTwoMinutes();
 
-        $schedule->command('app:polaris-verify-payment')
-        ->withoutOverlapping()
-        ->cron('*/3 * * * *');
+        //   $schedule->command('app:resync-account-number')
+        //      ->withoutOverlapping()
+        //      ->everyFifteenMinutes();
+
+
+        // $schedule->command('app:polaris-verify-payment')
+        // ->withoutOverlapping()
+        // ->cron('*/3 * * * *');
+
+        // $schedule->command('app:create-stage-ems-accounts')
+        //         ->withoutOverlapping()
+        //         ->everyFifteenMinutes();
+
         //->appendOutputTo(storage_path('logs/polaris_verify.log'));
 
         // $schedule->command('app:polaris-verify-payment')
@@ -65,7 +84,7 @@ class Kernel extends ConsoleKernel
       // $schedule->command('app:failed-transactions')->everyFiveMinutes();
       // $schedule->command('app:postpaid-error-fix')->everyFiveMinutes();
       // $schedule->command('app:prepaid-error-fix')->everyFiveMinutes();
-       $schedule->command('app:weekly-payment-checkup')->weekly()->mondays()->at(rand(0, 23) . ':' . rand(0, 59));
+       //$schedule->command('app:weekly-payment-checkup')->weekly()->mondays()->at(rand(0, 23) . ':' . rand(0, 59));
       // $schedule->command('telescope:prune')->daily();  app:prepaid-error-fix
         
        //Enable task scheduler logging

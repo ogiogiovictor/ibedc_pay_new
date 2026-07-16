@@ -44,7 +44,7 @@ class StateWideMiddleware
             if ($checkRequest) {
                 return $next($request);
             } else {
-                return $this->getResponse(402, 'Invalid Header Information');
+                return $this->getResponse(402, 'Invalid Information');
             }
         } catch (ModelNotFoundException $exception) {
             return $this->getResponse(402, 'Bad request, your token may have expired');

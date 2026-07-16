@@ -44,8 +44,11 @@ class WalletAccount extends Component
         return;
     }
 
+
     $useremail = User::where("email", $this->clearValue)->first();
-    //dd($this->clearOption);
+
+
+   //dd($useremail);
     if(!$useremail) {
         session()->flash('error', 'Please select an option');
         return;
@@ -64,7 +67,7 @@ class WalletAccount extends Component
     //     ->paginate(10);
 
         $users = WalletUser::query()
-            ->where($this->clearOption, '=', $useremail->id) // Ensure $useremail is valid
+            ->where('user_id', '=', $useremail->id) // Ensure $useremail is valid
             ->orderByDesc('created_at')
             ->paginate(10);
 

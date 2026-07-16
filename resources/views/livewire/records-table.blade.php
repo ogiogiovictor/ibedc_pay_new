@@ -50,6 +50,7 @@
                                   <th>Status</th>
                                   <th>Account No</th>
                                   <th>Date Past</th>
+                                   <th>Evaluated</th>
                                   <th>Actions</th>
                                 </tr>
                               </thead>
@@ -60,7 +61,7 @@
                               @if(count($accounts['links']) > 0)
 
                               @foreach($accounts['data'] as $transaction)
-                                <tr>
+                                <tr class="{{ $transaction['evaluated'] === 'yes' ? 'table-success' : '' }}">
                                   <!-- <td> {{ $transaction['created_at'] }} </td> -->
                                   <td>{{ \Carbon\Carbon::parse($transaction['created_at'])->timezone('Africa/Lagos')->format('Y-m-d H:i:s') }}</td>
                                   <td><strong>{{ $transaction['tracking_id'] }}</strong></td>
@@ -93,7 +94,7 @@
                                           ? \Carbon\Carbon::parse($transaction['created_at'])->diffForHumans()
                                           : \Carbon\Carbon::parse($transaction['updated_at'])->diffForHumans() }}
                                   </td>
-                                 
+                                  <td>{{ $transaction['evaluated'] }}</td>
                                 
                                   
                                   <td>

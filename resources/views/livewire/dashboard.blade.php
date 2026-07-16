@@ -291,7 +291,9 @@
                                     @elseif($transaction->status == "success")
                                     <label class="badge badge-success">Successful</label>
                                     @elseif($transaction->status == "cancelled")
-                                    <label class="badge badge-warning">Cancelled</label>
+                                    <label class="badge badge-danger">Cancelled</label>
+                                     @elseif($transaction->status == "pause")
+                                    <label class="badge badge-warning">Pause</label>
                                     @else
                                     <label class="badge badge-danger">Failed</label>
                                     @endif

@@ -41,8 +41,11 @@ class TransactionDetails extends Component
     public function checkPaymentStatus($id) {
 
         //dd($this->user);
+          Session::flash('error', 'This function is currently disabled');
+            return;
 
         $this->transactions = PaymentTransactions::where("id", $id)->first();
+
 
         if(!$this->transactions->transaction_id) { 
             Session::flash('error', 'Please provide a valid provider Reference');
@@ -63,7 +66,7 @@ class TransactionDetails extends Component
         $iresponse = Http::post($flutterUrl, $flutterData);
         $flutterResponse = $iresponse->json(); 
 
-        //dd($iresponse);
+        //dd($flutterResponse);
 
         if (isset($flutterResponse['status']) && $flutterResponse['status'] == "success" && $flutterResponse['data']['status'] == 'successful' ) {
        // if (isset($flutterResponse['status']) && $flutterResponse['status'] == "success" && isset($flutterResponse['data']['status']) && $flutterResponse['data']['status'] == 'successful') {
@@ -106,6 +109,9 @@ class TransactionDetails extends Component
 
 
     public function processTransaction($id){
+
+           Session::flash('error', 'This function is currently disabled');
+            return;
         
         $user = Auth::user();
 
@@ -273,6 +279,8 @@ class TransactionDetails extends Component
     public function checkFCMBPayment($id) {
 
         //dd($this->transactions->transaction_id);
+          Session::flash('error', 'This function is currently disabled');
+            return;
 
         $this->transactions = PaymentTransactions::where("id", $id)->first();
 
@@ -330,6 +338,8 @@ class TransactionDetails extends Component
     public function addProviderReference($id) {
 
         //dd($id);
+          Session::flash('error', 'This function is currently disabled');
+            return;
 
         $this->transactions = PaymentTransactions::where("id", $id)->first();
 
@@ -442,6 +452,9 @@ class TransactionDetails extends Component
 
     public function processWalletTransaction($id) {
 
+         Session::flash('error', 'This function is currently disabled');
+            return;
+
         $user = Auth::user();
 
 
@@ -492,6 +505,8 @@ class TransactionDetails extends Component
             ])->post($addCustomerUrl, $data);
     
             $newResponse =  $response->json();
+
+            //dd($newResponse);
 
             \Log::info('RESPONSE FROM MOMAS VIEW TRANSACTION: ' . json_encode($newResponse));
 

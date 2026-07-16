@@ -39,7 +39,7 @@ class Dashboard extends Component
 
         $user = Auth::user();
 
-         if ($user->default_password == 1 || $user->default_password == "1") {
+         if ($user->default_password == 9 || $user->default_password == "9") {
              // Redirect to dashboard if password already changed
             return redirect()->route('change_password');
         }
@@ -75,7 +75,7 @@ class Dashboard extends Component
 
         /////////////// MONTHLY COLLECTION ///////////////////////
         $monthlyCollectionv2 = $transaction->whereBetween('created_at', [$startDate, $endDate])
-        ->whereIn('status', ['success', 'processing'])
+        ->whereIn('status', ['success', 'processing', 'pause'])
         ->whereNotNull('providerRef')
         ->select(DB::raw('CAST(SUM(CAST(amount AS DECIMAL(18, 2))) AS DECIMAL(18, 2)) AS sum_amount'))
         ->first()
@@ -91,21 +91,21 @@ class Dashboard extends Component
 
  /////////////////////////////////////////////////////////// IBEDC VERSION 1//////////////////////////////////////////////////////V1ibedc Pay
         $today_ibedcv1 = PayTransactions::whereDate('created_at', $today)
-        ->whereIn('status', ['pending', 'success'])
+        ->whereIn('status', ['pending', 'success', 'pause'])
         ->whereNotNull('providerRef')
         ->select(DB::raw('CAST(SUM(CAST(amount AS DECIMAL(10, 2))) AS DECIMAL(10, 2)) AS sum_amount'))
         ->first()
         ->sum_amount;
 
         $monthlyCollectionv1 = PayTransactions::whereBetween('created_at', [$startDate, $endDate])
-            ->whereIn('status', ['pending', 'success'])
+            ->whereIn('status', ['pending', 'success', 'pause'])
             ->whereNotNull('providerRef')
             ->select(DB::raw('CAST(SUM(CAST(amount AS DECIMAL(18, 2))) AS DECIMAL(18, 2)) AS sum_amount'))
             ->first()
             ->sum_amount;
 
         
-        $totalCollectionv1 = PayTransactions::whereIn('status', ['pending', 'success'])
+        $totalCollectionv1 = PayTransactions::whereIn('status', ['pending', 'success', 'pause'])
             ->whereNotNull('providerRef')
             ->select(DB::raw('CAST(SUM(CAST(amount AS DECIMAL(18, 2))) AS DECIMAL(18, 2)) AS sum_amount'))
             ->first()

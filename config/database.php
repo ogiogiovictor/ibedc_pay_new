@@ -125,6 +125,19 @@ return [
             'prefix_indexes' => true,
         ],
 
+         'middleware_data_warehouse' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST_MIDDLEWARE_DATAWAREHOUSE', 'localhost'),
+            'port' => env('DB_PORT_MIDDLEWARE_DATAWAREHOUSE', '1433'),
+            'database' => env('DB_DATABASE_MIDDLEWARE_DATAWAREHOUSE', 'forge'),
+            'username' => env('DB_USERNAME_MIDDLEWARE_DATAWAREHOUSE', 'forge'),
+            'password' => env('DB_PASSWORD_MIDDLEWARE_DATAWAREHOUSE', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+        ],
+
         'ecmi_prod' => [
             'driver' => 'sqlsrv',
             'url' => env('DATABASE_URL'),
@@ -189,6 +202,22 @@ return [
             'database' => env('DB_DATABASE_MIDDLEWARE1', 'forge'),
             'username' => env('DB_USERNAME_MIDDLEWARE1', 'forge'),
             'password' => env('DB_PASSWORD_MIDDLEWARE1', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
+
+        'ubvs' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST_UBVS', 'localhost'),
+            'port' => env('DB_PORT_UBVS', '1433'),
+            'database' => env('DB_DATABASE_UBVS', 'forge'),
+            'username' => env('DB_USERNAME_UBVS', 'forge'),
+            'password' => env('DB_PASSWORD_UBVS', ''),
             'charset' => 'utf8',
             'prefix' => '',
             'prefix_indexes' => true,

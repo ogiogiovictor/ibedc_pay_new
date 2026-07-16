@@ -90,7 +90,7 @@ class PrepaidLookUp extends Command
                                  'status' => 'success',
                                  'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] : $newResponse['data']['recieptNumber'],
                                  'Descript' =>  isset($newResponse['message']) ? $newResponse['message']."-".$newResponse['transactionReference'] : $newResponse['transaction_status']."-".$newResponse['transactionReference'],
-                                'units' => isset($newResponse['Units']) ? $newResponse['Units'] : $newResponse['data']['Units'], 
+                                'units' => isset($newResponse['Units']) ? $newResponse['Units'] : $newResponse['units'], 
                                 'minimumPurchase' => isset($newResponse['customer']['minimumPurchase']) ? $newResponse['customer']['minimumPurchase'] : '',
                                 'tariffcode'  => isset($newResponse['customer']['tariffcode']) ? $newResponse['customer']['tariffcode'] : '',
                                 'customerArrears' => isset($newResponse['customer']['customerArrears']) ? $newResponse['customer']['customerArrears'] : '',
@@ -115,7 +115,7 @@ class PrepaidLookUp extends Command
                             ];
                              
                              $idata = [
-                                 'token' => env('SMS_TOKEN2'),
+                                 'token' => env('SMS_TOKEN'),
                                  'sender' => "IBEDC",
                                  'to' => $paymentLog->phone,
                                  "message" => "Meter Token: $token  Your IBEDC Prepaid payment of $paymentLog->amount for Meter No $paymentLog->meter_no  was successful. REF: $paymentLog->transaction_id. For Support: 07001239999",
@@ -149,7 +149,7 @@ class PrepaidLookUp extends Command
                             }
                             
 
-                            $iresponse = Http::asForm()->post($baseUrl, $idata);
+                           // $iresponse = Http::asForm()->post($baseUrl, $idata);
      
                           //  return $newResponse;
                             Log::info("Successfully processed transaction: " . $paymentLog->transaction_id);

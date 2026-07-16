@@ -21,7 +21,7 @@ class AccountMiddleware
 
         if($user->authority == (RoleEnum::dtm()->value )   || $user->authority == (RoleEnum::super_admin()->value )  || $user->authority == (RoleEnum::bhm()->value ) ||
         $user->authority == (RoleEnum::billing()->value )  || $user->authority == (RoleEnum::mso()->value)  || $user->authority == (RoleEnum::rico()->value)  || $user->authority == (RoleEnum::audit()->value)  
-         || $user->authority == (RoleEnum::view_only()->value)  )  {
+         || $user->authority == (RoleEnum::view_only()->value)  || $user->authority == (RoleEnum::region()->value)  )  {
           //redirect to agency dashboard
           return $next($request);
         } 

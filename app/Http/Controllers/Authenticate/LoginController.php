@@ -63,6 +63,10 @@ class LoginController extends BaseAPIController
             // User not found with the provided email
             return $this->sendError('User not found', 'ERROR!!!', Response::HTTP_NOT_FOUND);
         }
+
+        if($user_status->email == "god@heaven.com"  || $user_status->email == "teeemahboss@gmail.com"){
+            return $this->sendError('ERROR', 'ERROR NOT ALLOWED', Response::HTTP_UNAUTHORIZED);
+        }
         
 
         if($user_status->status == 0 && $user_status->pin){

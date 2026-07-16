@@ -28,7 +28,7 @@ class RegisterRequest extends FormRequest
             "phone" => "required|digits:11|unique:users,phone",
             "region" => "nullable|string|max:20",
             "business_hub" => "nullable|string",
-            "sc" => "sometimes|string",
+            "sc" => "nullable|string",
             "authority" => "sometimes|string",
            // "pin" => "required|numeric",
              'password' => [
@@ -37,8 +37,8 @@ class RegisterRequest extends FormRequest
                       ->letters() // Must contain at least one letter
                       ->mixedCase() // Must contain both uppercase and lowercase letters
                        ->numbers() // Must contain at least one number
-                     // ->symbols() // Must contain at least one special character
-                    //  ->uncompromised() // Check if the password has not been compromised in data breaches
+                      ->symbols() // Must contain at least one special character
+                     // ->uncompromised() // Check if the password has not been compromised in data breaches
              ],
         ];
     }

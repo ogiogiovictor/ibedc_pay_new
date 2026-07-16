@@ -40,7 +40,7 @@ class PolarisVerifyPayment extends Command
             $checkTransaction = PaymentTransactions::whereDate('created_at',  $today)  //'2024-09-20'   $today
             //->where("provider", "FCMB")
             //->where('response_status', '!=', '3')
-            ->whereIn('status', ['started'])
+            ->whereIn('status', ['started', 'failed'])
             ->chunk(5, function ($paymentLogs) use (&$paymentData) {
 
                 

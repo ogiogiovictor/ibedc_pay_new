@@ -42,7 +42,7 @@ class PaymentController extends BaseAPIController
     }
 
     public function store(PaymentRequest $request){
-       // return $this->sendError("System Downtime", 'System Unavailable, please try again later', Response::HTTP_BAD_REQUEST); 
+        return $this->sendError("System Downtime", 'System Unavailable, please try again later', Response::HTTP_BAD_REQUEST); 
 
 
        if($request->email == "Danielprincedgreat@gmail.com") {

@@ -65,12 +65,19 @@ class WalletPaymentConfirmation extends BaseAPIController
               return $this->sendError('Wallet history entry already exists for this transaction', "Error", Response::HTTP_BAD_REQUEST);
           }
 
+         
+          //$providerRef = VirtualAccountTrasactions::where("email" , $authUser->email)->latest()->first()->flw_ref ?: StringHelper::generateUUIDReference();
+          $transaction = VirtualAccountTrasactions::where("customer_email", $authUser->email)->latest('created_at')->first();
+         // $providerRef = $transaction ? $transaction->flw_ref : StringHelper::generateUUIDReference();
+          $providerRef = $transaction->flw_ref;
+
+          if(!$providerRef) {
+            return $this->sendError('Invalid Provider', "Error", Response::HTTP_BAD_REQUEST);
+          }
+
           $transactionAmount = abs($request->amount);
           $authUser->wallet->decrement('wallet_amount', $transactionAmount);
 
-          //$providerRef = VirtualAccountTrasactions::where("email" , $authUser->email)->latest()->first()->flw_ref ?: StringHelper::generateUUIDReference();
-          $transaction = VirtualAccountTrasactions::where("customer_email", $authUser->email)->latest('created_at')->first();
-          $providerRef = $transaction ? $transaction->flw_ref : StringHelper::generateUUIDReference();
 
 
          $chekUpdate =  PaymentTransactions::where("transaction_id", $request->transacion_id)->update([

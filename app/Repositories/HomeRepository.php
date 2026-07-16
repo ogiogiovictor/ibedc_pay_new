@@ -64,8 +64,6 @@ class HomeRepository implements HomeRepositoryInterface
              //we need to check if the email you want to update already exist before even updating..
              $user->email = isset($userRequest->email) ? $userRequest->email : $user->email;
              $user->phone = isset($userRequest->phone) ? $userRequest->phone : $user->phone;
-
-             //$checkFormerEmail->update(["customer_email", $user->email]);
        }
 
         // Update user attributes based on the request

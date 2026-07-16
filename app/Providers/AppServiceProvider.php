@@ -72,5 +72,9 @@ class AppServiceProvider extends ServiceProvider
          Gate::define('isviewonly', function(User $user) {
             return $user->authority == RoleEnum::view_only()->value;
         });
+
+         Gate::define('region', function(User $user) {
+            return $user->authority == RoleEnum::region()->value;
+        });
     }
 }

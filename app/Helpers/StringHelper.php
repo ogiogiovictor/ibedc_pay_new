@@ -45,7 +45,7 @@ class StringHelper
       }
 
 
-      public static function formatAccountNumber($cleanedAccountNumber) {
+    public static function formatAccountNumber($cleanedAccountNumber) {
         // Define the regular expression pattern for formatting the account number
         $pattern = '/(\d{2})(\d{2})(\d{2})(\d{4})(\d{2})/';
     

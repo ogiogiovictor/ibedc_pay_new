@@ -18,6 +18,7 @@ use App\Http\Controllers\Token\TokenController;
 use App\Http\Controllers\VirtualAccount\VirtualController;
 use App\Http\Controllers\Payment\WalletPaymentConfirmation;
 use App\Http\Controllers\AppVersionController;
+use App\Http\Controllers\Middleware\TransactionHistory;
 
 
 
@@ -35,7 +36,9 @@ use App\Http\Controllers\AppVersionController;
  
  
 
-Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth'], function () {
+//Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth'], function () {
+Route::group(['prefix' => 'V3_OUTRIBD_iOAUTH_markedxMONITOR', 'middleware' => 'myAuth'], function () {
+
 
     Route::group(['prefix' => 'app'], function () {  
         Route::get('version', [AppVersionController::class, 'getVersionNumber']);
@@ -52,6 +55,7 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
         Route::post('retry-verification-code', 'retyCode')->name('retry-verification-code');
         Route::post('add-meter', 'addMeter')->name('add-meter');
         Route::post('start_registration', 'storeRegister')->name('startRegistration');
+       
     });
 
     Route::post('authenticate', [LoginController::class, 'store']);
@@ -94,7 +98,6 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
                 Route::post('complete-payment', 'CompletePayment')->name('complete-payment');
                 Route::get('get-token-notification', 'TokenNotifications')->name('get-token-notification');
                 Route::post('retry-payment', 'retryPayment2')->name('retry-payment');
-                //Route::post('retry-payments', 'retryPayment2')->name('retry-payments');
             });
 
             Route::controller(WalletPaymentConfirmation::class)->group(function() {
@@ -103,6 +106,24 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
 
           
         });
+
+
+    ///////////////////////// MIDDLEWARE PAYMENT HISTORY AND OUTSTANDING BALANCE //////////////////
+        Route::group(['prefix' => 'middleware'], function () {  
+           Route::controller(TransactionHistory::class)->group(function() {
+             Route::get('self_transaction_meter_primary', 'TransactionHistory')->name('self_transaction_meter_primary');
+             Route::get('middleware_transaction', 'MoreTransactionHistory')->name('middleware_transaction');
+             Route::post('get_any_transaction', 'getAnyTransaction')->name('get_any_transaction');
+           });
+        });
+
+        Route::group(['prefix' => 'ubvs'], function () {  
+           Route::controller(TransactionHistory::class)->group(function() {
+              Route::get('transactions', 'getUBVSCustomerHistory')->name('transactions');
+           });
+        });
+
+
 
         Route::group(['prefix' => 'virtual'], function () {  
             Route::post('account', [VirtualController::class, 'createVirtualAccount']);
@@ -126,9 +147,11 @@ Route::group(['prefix' => 'V2_ibedc_OAUTH_tokenReviwed', 'middleware' => 'myAuth
             Route::post('show-balance', 'showBalance')->name('show-balance');
         });
 
+        
         ///////////////////////// OUTSTANDING BALANCE | PREPAID //////////////////
         Route::group(['prefix' => 'contact'], function () {  
             Route::post('help', [ContactUsController::class, 'store']);
+           
         });
 
 

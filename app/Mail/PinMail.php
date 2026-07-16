@@ -39,7 +39,8 @@ class PinMail extends Mailable
     {
         return new Content(
             view: 'email.pin',
-            with: ['name' => $this->user->name, 'email' => $this->user->email, 'user_code' => $this->user->user_code, 'pin'=> $this->user->pin, 'phone' => $this->user->phone ],
+            with: ['name' => $this->user->name, 'email' => $this->user->email, 
+            'user_code' => $this->user->user_code, 'pin'=> $this->user->pin, 'phone' => $this->user->phone ],
         );
     }
 

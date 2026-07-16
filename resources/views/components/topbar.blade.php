@@ -57,6 +57,10 @@ $user = auth()->user();
                                 <a  href="/log_transactions"  wire:navigate class="nav-link" id="users-tab" data-toggle="tab" href="#" role="tab" aria-controls="users" aria-selected="false">IBEDC Transactions - (v1)</a>
                                 </li>
 
+                                 <li class="nav-item">
+                                <a  href="/wallet_user_accounts"  wire:navigate class="nav-link" id="more-tab" data-toggle="tab" href="#" role="tab" aria-controls="more" aria-selected="false">Users Wallet</a>
+                                </li>
+
                                 <li class="nav-item">
                                 <a  href="/user_virtual_account"  wire:navigate class="nav-link" id="more-tab" data-toggle="tab" href="#" role="tab" aria-controls="more" aria-selected="false">Virtual Accounts</a>
                                 </li>

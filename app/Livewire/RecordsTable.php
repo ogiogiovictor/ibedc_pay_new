@@ -25,6 +25,9 @@ class RecordsTable extends Component
         'with-compliance' => 3,
         'completed'  => 4,
         'rejected'   => 5,
+        'staged'   => 6,
+        'with-regional-billing'   => 2,
+        'with-regional-head'  => 2,
     ];
 
       public function mount($status)
@@ -44,9 +47,9 @@ class RecordsTable extends Component
 
         $user = Auth::user();
 
-         if($user->authority == (RoleEnum::agency_admin()->value )) {
+         if($user->authority == (RoleEnum::super_admin()->value )) {
 
-            $accounts = $records->paginate(30)->toArray();
+            $accounts = $records->orderByRaw("CASE WHEN evaluated = 'yes' THEN 1 ELSE 2 END")->paginate(30)->toArray();
 
          } elseif ($user->authority == RoleEnum::bhm()->value) {
 
@@ -56,11 +59,11 @@ class RecordsTable extends Component
 
              if($user->region == "HQ"){
 
-                  $accounts = $records->paginate(30)->toArray();
+                  $accounts = $records->orderByRaw("CASE WHEN evaluated = 'yes' THEN 1 ELSE 2 END")->paginate(30)->toArray();
 
              } else {
 
-                 $accounts = $records->where('region', $user->region)->where('business_hub', $user->business_hub)->paginate(30)->toArray();
+                 $accounts = $records->where('region', $user->region)->where('business_hub', $user->business_hub)->where('evaluated', 'yes')->orderByRaw("CASE WHEN evaluated = 'yes' THEN 1 ELSE 2 END")->paginate(30)->toArray();
              }
 
          }elseif ($user->authority == RoleEnum::rico()->value) {
@@ -98,6 +101,10 @@ class RecordsTable extends Component
              }
 
         
+
+        } elseif ($user->authority == RoleEnum::region()->value) {
+
+              $accounts = $records->where('region', $user->region)->where('status', 2)->where('evaluated', "no")->paginate(30)->toArray();
 
         } else {
 

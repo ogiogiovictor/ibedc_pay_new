@@ -103,7 +103,7 @@ class PrePaidService extends BaseAPIController
                         'status' => 'success',
                         'receiptno' =>   isset($newResponse['recieptNumber']) ? $newResponse['recieptNumber'] : $newResponse['data']['recieptNumber'],  //Carbon::now()->format('YmdHis').time()
                         'Descript' =>  isset($newResponse['message']) ? $newResponse['message'] :  '', //$newResponse['transactionStatus'],
-                        'units' => isset($newResponse['Units']) ? $newResponse['Units'] : $newResponse['data']['Units'], 
+                        'units' => isset($newResponse['Units']) ? $newResponse['Units'] : $newResponse['units'], 
                         'minimumPurchase' => isset($newResponse['customer']['minimumPurchase']) ? $newResponse['customer']['minimumPurchase'] : '',
                         'tariffcode'  => isset($newResponse['customer']['tariffcode']) ? $newResponse['customer']['tariffcode'] : '',
                         'customerArrears' => isset($newResponse['customer']['customerArrears']) ? $newResponse['customer']['customerArrears'] : '',

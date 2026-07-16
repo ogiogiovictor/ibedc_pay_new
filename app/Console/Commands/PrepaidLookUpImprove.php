@@ -24,7 +24,7 @@ class PrepaidLookUpImprove extends Command
         try {
             PaymentTransactions::whereNull('receiptno')
                 ->where('account_type', 'Prepaid')
-                ->where('status', 'processing')
+                ->where('status', 'processing')   //processing
                 ->whereNotNull('providerRef')
                 ->orderBy('created_at', 'desc')
                 ->chunk(10, function ($transactions) {
@@ -132,7 +132,7 @@ class PrepaidLookUpImprove extends Command
         $url = env('SMS_MESSAGE');
 
         $smsPayload = [
-            'token'   => env('SMS_TOKEN2'),
+            'token'   => env('SMS_TOKEN'),
             'sender'  => 'IBEDC',
             'to'      => $transaction->phone,
             'message' => "Meter Token: $token. Your IBEDC Prepaid payment of {$transaction->amount} for Meter No {$transaction->meter_no} was successful. REF: {$transaction->transaction_id}. For Support: 07001239999",
@@ -140,8 +140,8 @@ class PrepaidLookUpImprove extends Command
             'routing' => 3,
         ];
 
-        Http::asForm()->post($url, $smsPayload);
-        Log::info("SMS sent for transaction: {$transaction->transaction_id}");
+        // Http::asForm()->post($url, $smsPayload);
+        // Log::info("SMS sent for transaction: {$transaction->transaction_id}");
     }
 
     private function sendEmail($transaction, $response)

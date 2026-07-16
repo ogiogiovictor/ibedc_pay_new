@@ -13,7 +13,7 @@ class IbedcPayLogService
             'user_id'    => $data['user_id'] ?? Auth::id(),
             'module'     => $data['module'] ?? null,
             'comment'    => $data['comment'] ?? null,
-            'user_email' => $data['user_email'] ?? (Auth::check() ? Auth::user()->email : null),
+            'user_email' => $data['user_email'], //?? (Auth::check() ? Auth::user()->email : null),
             'type'       => $data['type'] ?? null,
             'module_id'  => $data['module_id'] ?? null,
             'status'     => $data['status'] ?? null,

@@ -33,7 +33,7 @@
                                 <label for="selectOption" class="mr-2">Select:</label>
                                 <select class="form-control" id="selectOption" wire:model="clearOption">
                                   <option value="">Select</option>
-                                  <option value="user_id">Email</option>
+                                  <option value="email">Email</option>
                                 </select>
                               </div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
                               <div class="form-group mr-2">

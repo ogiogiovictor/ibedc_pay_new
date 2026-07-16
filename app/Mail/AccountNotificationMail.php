@@ -19,7 +19,11 @@ class AccountNotificationMail extends Mailable
      */
     public function __construct($data)
     {
-        $this->data = $data;
+        if (is_array($data)) {
+            $data = (object) $data;
+        }
+
+        $this->data = is_object($data) ? $data : null;
     }
 
     /**
@@ -37,12 +41,24 @@ class AccountNotificationMail extends Mailable
      */
     public function content(): Content
     {
+        $data = optional($this->data);
+
         return new Content(
             view: 'email.accounts',
-            with: ['tracking_id' => $this->data->tracking_id, 'region' => $this->data->region, 'latitude' => $this->data->latitude
-            , 'longitude' => $this->data->longitude,  'house_no' => $this->data->house_no,  'full_address' => $this->data->full_address
-            ,  'business_hub' => $this->data->business_hub,  'service_center' => $this->data->service_center,  'dss' => $this->data->dss
-            ,  'nearest_bustop' => $this->data->nearest_bustop,  'lga' => $this->data->lga,  'landmark' => $this->data->landmark  ]
+            with: [
+                'tracking_id' => $data->tracking_id,
+                'region' => $data->region,
+                'latitude' => $data->latitude,
+                'longitude' => $data->longitude,
+                'house_no' => $data->house_no,
+                'full_address' => $data->full_address,
+                'business_hub' => $data->business_hub,
+                'service_center' => $data->service_center,
+                'dss' => $data->dss,
+                'nearest_bustop' => $data->nearest_bustop,
+                'lga' => $data->lga,
+                'landmark' => $data->landmark,
+            ]
         );
     }
 

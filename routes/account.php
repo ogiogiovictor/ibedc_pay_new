@@ -5,7 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\NAC\AccountController;
 use App\Http\Controllers\NAC\NewAccountUpload;
 use App\Http\Controllers\BusinessLocation;
-
+use App\Http\Controllers\NAC\UpdateAccountController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -17,7 +17,8 @@ use App\Http\Controllers\BusinessLocation;
 |
 */
 
-
+//Route::get('/syncto-msms/{id}', [UpdateAccountController::class, 'synctoMSMS']);
+Route::post('/webhook/meter-installed', [UpdateAccountController::class, 'notifySetup']);
 
 
 Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync', 'middleware' => 'myAuth'], function () {  
@@ -35,6 +36,7 @@ Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync', 'middleware' => 'myA
         Route::post('upload-lecan-form-application', 'lecanapplication')->name('upload-lecan-form-application');
         Route::post('process_account_dte', 'dtmprocess')->name('process_account');
 
+        Route::post('get_trackingid', 'getTracker')->name('get_trackingid');
 
 
         ///////////////////// ALL CUSTOMER EDIT API INFORMATION ///////////////////////////////////
@@ -45,12 +47,25 @@ Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync', 'middleware' => 'myA
 
         Route::post('change_account_location', 'changedtmprocess')->name('change_account_location');
 
+        Route::post('change_status', 'changeStatus')->name('change_status');
+
         Route::middleware('auth:sanctum')->group(function() {
             Route::post('process_account', 'dtmprocess')->name('process_account');
             Route::get('get_pending_account', 'getpendingaccounts')->name('process_account');
             Route::post('rejectform', 'reject')->name('rejectfrom');
             Route::post('approve_request', 'approveDTERequest')->name('approve_request');
+
+            Route::post('search-customer', 'searchCustomer')->name('search-customer');
+          
         });
+
+
+        Route::middleware('auth:sanctum')->group(function() {
+            Route::get('get_region_pending_account', 'getRegionPendingAccounts')->name('get_region_pending_account');
+            Route::post('post_region_pending_account', 'posttRegionPendingAccounts')->name('post_region_pending_account');
+          
+        });
+
         
        // Route::post('upload-application', 'upload')->name('upload-application');
        // Route::post('complete-application', 'complete')->name('complete-application');
@@ -64,19 +79,39 @@ Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync', 'middleware' => 'myA
         Route::get('service_centers/{business_hub_name}', 'getDssServiceCenter')->name('service_centers');
         Route::get('get_tarriff', 'getTarriff')->name('get_tarriff');
         Route::get('get_auth', 'NINService')->name('get_auth');
+
+
+         ///////////////////////I WANT TO ADD ANOTHER PREFIX HERE /////////////////////////////////////////////////////
+          Route::prefix('v5')->controller(UpdateAccountController::class)->group(function () {
+            Route::post('customer_house_upload_latlong', 'customeruploadlatlong')->name('customer_house_upload_latlong');
+
+             Route::middleware('auth:sanctum')->group(function() {
+              Route::post('dtm_customer_validation', 'dtmprocess')->name('dtm_customer_validation');
+             });
+           
+           });
+        
         
     });
 
     //Route::post('start_process', [AccountController::class, 'store']);
 
     Route::prefix('initiate')->controller(BusinessLocation::class)->group(function () {
-          Route::prefix('new')->group(function () {
+        Route::prefix('new')->group(function () {
         Route::get('regions', 'getRegion')->name('regions');
         Route::get('business_hub/{region_name}', 'getBusinessHubs')->name('business_hub');
         Route::get('service_centers/{business_hub_name}', 'getServiceCenter')->name('service_centers');
         Route::post('change_location_profile', 'changeProfile')->name('change_location_profile');
-          });
+
+
+            //Meter Programming Decision Tree API
+            Route::post('meter_programming_decision_tree', 'meterProgrammingDecisionTree');
+            Route::post('meter_programming', 'programMeter');
+        });
     });
+
+
+       
 
 
 });
@@ -93,7 +128,8 @@ Route::group(['prefix' => 'V4IBEDC_new_account_setup_sync'], function () {
          Route::get('get_prepaid_customers', 'getprepaidcustomers')->name('get_prepaid_customers');
 
          Route::get('get_postpaid_customers', 'getpostpaidcustomers')->name('get_postpaid_customers');
-
+         
+          Route::post('sync_account', 'syncAccount')->name('sync_account');
 
     });
 });

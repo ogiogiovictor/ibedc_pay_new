@@ -20,6 +20,8 @@ class NewAccount extends Component
     public $submittedThisMonth;
     public $completedAccounts;
      public $totalCustomers;
+    public $clearOption = '';
+    public $clearValue = '';
 
     public function mount()
     {
@@ -197,6 +199,16 @@ class NewAccount extends Component
                     //  $this->submittedToday = AccoutCreaction::whereMonth('created_at', Carbon::now()->month)->where('region', $user->region)
                     //      ->whereYear('created_at', Carbon::now()->year)->whereIn('status', ['started', 'processing', 'with-dtm', 'with-bhm', 'with-billing'])->count();
                 }
+            }else if($user->authority == RoleEnum::region()->value) {
+
+              if (isset($user->region)) {
+                    //$this->customers = collect(); // empty collection
+                   // $this->customers = $this->customers->paginate(30)->toArray();
+                    $this->totalCustomers = AccoutCreaction::count();
+                    $this->customers = $this->customers->orderBy('created_at', 'desc')->where('region', $user->region)->paginate(30)->toArray();
+                    
+              }
+
             }
 
 
@@ -204,9 +216,35 @@ class NewAccount extends Component
     }
 
 
-    public function searchTransactions() {
-        
+
+
+
+
+    public function searchTransactions()
+    {
+        // Validate input combinations
+        if ((empty($this->clearOption) && !empty($this->clearValue)) || (!empty($this->clearOption) && empty($this->clearValue))) {
+            session()->flash('error', 'Both "Select" and "Enter Value" fields are required for search.');
+            return;
+        }
+
+        // ✅ Initialize query builder properly
+        $query = AccoutCreaction::query();
+
+        // Apply search filter only if both fields are filled
+        if (!empty($this->clearOption) && !empty($this->clearValue)) {
+            // Use "like" for partial matching (case insensitive for MSSQL)
+            $query->whereRaw("LOWER({$this->clearOption}) LIKE ?", ['%' . strtolower($this->clearValue) . '%']);
+        }
+
+
+        // Paginate and convert to array for your Livewire view
+        $this->customers = $query->orderBy('id', 'desc')->paginate(30)->toArray();
     }
+
+
+
+
 
 
     public function render()

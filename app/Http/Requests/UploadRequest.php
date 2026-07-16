@@ -22,6 +22,7 @@ class UploadRequest extends FormRequest
     public function rules(): array
     {
        return [
+           // "house_no" => "required",
            // "means_of_identification" => "required",
            // "tracking_id" => "required",
            // "identification" => "required|image|mimes:jpg,jpeg,png|max:4096",

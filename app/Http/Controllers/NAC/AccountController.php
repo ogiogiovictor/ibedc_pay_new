@@ -149,106 +149,19 @@ class AccountController extends BaseAPIController
     {
         $data = $request->validated();
 
-        ////////////////////////////// IN ANY OTHER YOU EXISTS////////////////////////////////////
-        // Normalize and collect all name parts
-        $names = collect([
-            strtolower(trim($data['surname'])),
-            strtolower(trim($data['firstname'])),
-        ]);
-
-        if (!empty($data['other_name'])) {
-            $names->push(strtolower(trim($data['other_name'])));
-        }
-
-        $sortedInputNames = $names->sort()->values()->toArray(); // e.g. ['john', 'michael', 'smith']
-
-        // Search existing accounts where the sorted combination of names match
-        $potentialMatches = AccoutCreaction::all()->filter(function ($user) use ($sortedInputNames) {
-            $existingNames = collect([
-                strtolower(trim($user->surname)),
-                strtolower(trim($user->firstname)),
-            ]);
-
-            if (!empty($user->other_name)) {
-                $existingNames->push(strtolower(trim($user->other_name)));
-            }
-
-            return $existingNames->sort()->values()->toArray() === $sortedInputNames;
-        });
-
-        if ($potentialMatches->isNotEmpty()) {
-           //  return $this->sendError('A user with the same name (in any order) already exists. Please use your tracking ID to continue.', 'ERROR', Response::HTTP_UNAUTHORIZED);
-         }
-
-
-            $existingUserQuery = AccoutCreaction::where('surname', $data['surname'])
-            ->where('firstname', $data['firstname']);
-
-           if (array_key_exists('other_name', $data)) {
-                if ($data['other_name'] === null) {
-                    $existingUserQuery->whereNull('other_name');
-                } else {
-                    $existingUserQuery->where('other_name', $data['other_name']);
-                }
-            } else {
-                $existingUserQuery->whereNull('other_name');
-            }
-
-
-            $existingUser = $existingUserQuery->first();
-
-            if ($existingUser) {
-               // return $this->sendError('A user with the same name already exists. Please use your tracking ID to continue', 'ERROR', Response::HTTP_UNAUTHORIZED);
-            }
-
-
-
-        //////////////////////////////////////////// --  EMS VALIDATION -- ////////////////////////////////
-            // 🔎 Normalize request names (lowercase + trim)
-            // $requestNames = collect([
-            //     strtolower(trim($data['surname'])),
-            //     strtolower(trim($data['firstname'])),
-            // ])->sort()->values()->toArray();
-
-            // // 🔎 Fetch possible Zone matches (only surname/firstname columns)
-            //  $zoneCustomers = ZoneCustomers::whereIn('Surname', $requestNames)
-            // ->orWhereIn('FirstName', $requestNames)
-            // ->get(['Surname', 'FirstName']);
-
-            //   $exists = $zoneCustomers->contains(function ($zone) use ($requestNames) {
-            //     $zoneNames = collect([
-            //         strtolower(trim($zone->Surname)),
-            //         strtolower(trim($zone->FirstName)),
-            //     ])->sort()->values()->toArray();
-
-            //     return $zoneNames === $requestNames; // Match in any order
-            // });
-
-            // if ($exists) {
-            //     return $this->sendError(
-            //         'A user with the same surname and firstname already exists in our records. Please login with your tracking ID',
-            //         'ERROR - ACCOUNT NO ALREADY EXIST',
-            //         Response::HTTP_UNAUTHORIZED
-            //     );
-            // }
-
-             //////////////////////////////////////////// --  END OF EMS VALIDATION -- ////////////////////////////////
-        
-
-        if(!$existingUser) {
-            $requestData = $request->all();
-            $requestData['status'] = 'started'; // or '1'
-            $requestData['status_name'] = 'Application Initiated'; // or '1'
-            $userData = AccoutCreaction::create($requestData);
+        $requestData = $request->all();
+        $requestData['status'] = 'started'; // or '1'
+        $requestData['status_name'] = 'Application Initiated'; // or '1'
+        $userData = AccoutCreaction::create($requestData);
              // You can customize the response based on your needs
 
-             dispatch(new TrackingIDJob($userData));
+        dispatch(new TrackingIDJob($userData));
 
 
-            return $this->sendSuccess([
+        return $this->sendSuccess([
                     'customer' => $userData,
                 ], 'CUSTOMER SUCCESSFULLY CREATED', Response::HTTP_OK);
-        } 
+        
             
         return $this->sendError('There was an error creating your account .', 'ERROR', Response::HTTP_UNAUTHORIZED);
         
@@ -321,7 +234,8 @@ class AccountController extends BaseAPIController
         });
 
         if ($potentialMatches->isNotEmpty()) {
-          //   return $this->sendError('Landlord Information already exist. Please use your tracking ID to continue.', 'ERROR', Response::HTTP_UNAUTHORIZED);
+              $data['duplicate'] = 1; // ✅ mark as suspected
+            // return $this->sendError('Landlord Information already exist. Please use your tracking ID to continue.', 'ERROR', Response::HTTP_UNAUTHORIZED);
          }
 
 
@@ -523,7 +437,7 @@ class AccountController extends BaseAPIController
         ->where('status', 0)
         ->count();
 
-         if ($startedCount > 10) {    // default_house_no
+         if ($startedCount > 20) {    // default_house_no
 
             return $this->sendError(
                     'The number of accounts  for this tracking ID exceeds the allowed limit (15). Please visit our offices for more information',
@@ -542,7 +456,7 @@ class AccountController extends BaseAPIController
         $landlordInformation = ContinueAccountCreation::where('tracking_id', $request->tracking_id)->first();
         $allAccounts = UploadHouses::where('tracking_id', $request->tracking_id)->first();
 
-        if ($statusCount > $numberOfaccount->default_house_no) {    // default_house_no
+        if ($statusCount > $numberOfaccount->default_house_no) {    //  -  // default_house_no 
 
             // Send email to the business manager and regional head with this customer information and summary copy cco
              dispatch(new IncreaseCustomerAccountJob($numberOfaccount, $allAccounts));
@@ -573,7 +487,7 @@ class AccountController extends BaseAPIController
             'uploads.*.service_center' => 'required|string',
             'uploads.*.lga' => 'required|string',
             'uploads.*.state' => 'required|string',
-           // 'uploads.*.house_no' => 'required|string',
+            'uploads.*.house_no' => 'required|string',
             'uploads.*.full_address' => 'required|string|min:10|max:255|regex:/^[a-zA-Z0-9\s,.\-\/]+$/',
            // 'uploads.*.full_address' => 'required|string',  
         ]);
@@ -787,13 +701,13 @@ class AccountController extends BaseAPIController
 
                 $uploadRecord->update([
                     'lecan_link' =>  $path,
-                    'status' => 1,
+                  //  'status' => 1,
                 ]);
             }
         }
 
         //we should have a job that send email to the DTM
-        dispatch(new AccountNotificationJob($request->tracking_id));
+      //  dispatch(new AccountNotificationJob($request->tracking_id));
 
         $checkID->update([
             'status' => 'with-dtm',
@@ -836,7 +750,7 @@ class AccountController extends BaseAPIController
 
     }
 
-     public function businesshub($region_name){
+    public function businesshub($region_name){
 
         $region_name  = $region_name. " REGION";
         $get_business_hubs = Regions::where("Region", $region_name)->get();
@@ -845,7 +759,7 @@ class AccountController extends BaseAPIController
 
     }
 
-     public function allBusinessHub(){
+    public function allBusinessHub(){
 
         $get_business_hubs = Regions::get();
           
@@ -854,11 +768,7 @@ class AccountController extends BaseAPIController
     }
 
 
-
-    
-
-
-     public function getDss(Request $request){
+    public function getDss(Request $request){
 
          $region = $request->query('region');
          $hub = $request->query('hub');
@@ -885,7 +795,7 @@ class AccountController extends BaseAPIController
 
     public function getTarriff(Request $request){
 
-        $tarriff = NewTarrif::get();
+         $tarriff = NewTarrif::where('TariffID', '!=', ['8', '2'])->get();
          return $this->sendSuccess([ 'tarriff' => $tarriff ], 'Tarriff Loaded', Response::HTTP_OK);
 
     }
@@ -893,7 +803,7 @@ class AccountController extends BaseAPIController
 
     public function dtmprocess(Request $request){
 
-         $checkID =  $this->checktracking($request->tracking_id);
+        $checkID =  $this->checktracking($request->tracking_id);
 
        // 🛑 If checktracking() returned an error response, return early
         if ($checkID instanceof \Illuminate\Http\JsonResponse) {
@@ -901,15 +811,15 @@ class AccountController extends BaseAPIController
         }
 
 
-         $statusCount = UploadHouses::where('tracking_id', $request->tracking_id)
+        $statusCount = UploadHouses::where('tracking_id', $request->tracking_id)
         ->where('status', 4)
         ->count();
 
         $numberOfaccount = AccoutCreaction::where('tracking_id', $request->tracking_id)->first();
 
-        if ($statusCount > $numberOfaccount->default_house_no) {
+        if ($statusCount > 20) {  //$numberOfaccount->default_house_no  //10
             return $this->sendError(
-                    'The number of accounts  for this tracking ID exceeds the allowed limit (10). You cannot approve request, contact administrator',
+                    'The number of accounts  for this tracking ID exceeds the allowed limit (15). You cannot approve request, contact administrator',
                     'LIMIT EXCEEDED',
                     Response::HTTP_FORBIDDEN
                 );
@@ -928,6 +838,16 @@ class AccountController extends BaseAPIController
             'tarrif' => 'required|string', 
         ]);  
 
+
+        $user =  Auth::user();
+
+        if($user->business_hub != $request->business_hub) {
+            return $this->sendError('You are not authorized to approve this request, invalid Business Hub: ' . $request->business_hub, 'UNAUTHORIZED', Response::HTTP_UNAUTHORIZED); 
+        }
+
+        if($user->sc != $request->service_center) {
+            return $this->sendError('You are not authorized to approve this request, invalid service center: ' . $request->service_center, 'UNAUTHORIZED', Response::HTTP_UNAUTHORIZED); 
+        }
         
         // ✅ Check if latitude + longitude already exist
         $locationExists = UploadHouses::where('latitude', $request['latitude'])->where('longitude', $request['longitude'])->exists();
@@ -965,24 +885,24 @@ class AccountController extends BaseAPIController
             'service_center' => $request['service_center'], 
             'dss' => $request['dss'], 
             'tarrif' => $request['tarrif'], 
-            'status' => isset(Auth::user()->id) ? 3 : 1,  // 3 is rico-compliance, while 1 is still started 
+            'status' => isset(Auth::user()->id) ? 2 : 1,  // 3 is rico-compliance, while 1 is still started   isset(Auth::user()->id) ? 3 : 1,
             'validated_by' => isset(Auth::user()->id) ? Auth::user()->email : $request->email,  // use the code to validate the email
             'comment' => $request->email
         ]);
 
         
-            if(Auth::check()) {
+        if(Auth::check()) {
                 IbedcPayLogService::create([
-                    'module'     => 'New Account',
+                    'module'     => 'DTM',
                     'comment'    => '',
                     'type'       => 'Approved',
                     'module_id'  => $request->id,
-                    'status'     => 'with-compliance',
+                    'status'     => 'with-billing',  //'with-compliance',
                 ]);
-            }
+        }
         
         $update = AccoutCreaction::where('id', $checkID->id)->update([
-            'status' => Auth::check() ? 'with-compliance' : 'with-dtm',
+            'status' => Auth::check() ? 'with-billing' : 'with-dtm',    //Auth::check() ? 'with-compliance' : 'with-dtm',
             'status_name' => 'Account Verified by ' . (Auth::check() ? Auth::user()->email : $request->email),
             'region' => $request->input('region'),
         ]);
@@ -1003,10 +923,6 @@ class AccountController extends BaseAPIController
 
 
     }
-
-
-
-   
 
 
     private function generateAccount($id, $uploadHouses) {
@@ -1056,8 +972,6 @@ class AccountController extends BaseAPIController
     }
 
 
-
-
     public function changedtmprocess(Request $request) {
 
         
@@ -1091,8 +1005,6 @@ class AccountController extends BaseAPIController
 
 
     }
-
-
     
 
     public function getpendingaccounts() {
@@ -1101,15 +1013,14 @@ class AccountController extends BaseAPIController
 
         $data = UploadHouses::with(['landlordinfo'])->whereRaw('LOWER(business_hub) = ?', [strtolower($user->business_hub)])
         ->whereRaw('LOWER(service_center) = ?', [strtolower($user->sc)])
-        ->whereIn('status', ['1', '5'])
+        ->whereIn('status', ['1'])
         ->with('account')
         //->orderByRaw("CASE WHEN status = 1 THEN 0 ELSE 1 END") // status=1 first
-        //->orderByDesc('created_at') // then order by created_at descending
+        ->orderByDesc('created_at') // then order by created_at descending
         ->paginate(10);
 
         return $this->sendSuccess([ 'accounts' => $data], 'CUSTOMER APPLICATION SUCCESSFUL SUBMITTED', Response::HTTP_OK);
     }
-
 
 
 
@@ -1124,18 +1035,18 @@ class AccountController extends BaseAPIController
          $user = Auth::user();
 
         $updated = UploadHouses::where('id', $request->id)->update([
-            'lecan_link' => NULL,
+            //'lecan_link' => NULL,
             'status' => 5,
             'dtm_comment' => $request->comment
         ]);
 
        
         IbedcPayLogService::create([
-                    'module'     => 'New Account',
-                    'comment'    => $request->comment,
-                    'type'       => 'Rejected',
-                    'module_id'  => $request->id,
-                    'status'     => 'rejected',
+                'module'     => 'DTM',
+                'comment'    => $request->comment,
+                'type'       => 'Rejected',
+                'module_id'  => $request->id,
+                'status'     => 'rejected',
         ]);
             
 
@@ -1178,13 +1089,13 @@ class AccountController extends BaseAPIController
         if($request->type == 'approve'){
 
              $checkUpdate = UploadHouses::where("id", $request->id)->update([
-            'status' => isset(Auth::user()->id) ? 3 : 1,
+            'status' => isset(Auth::user()->id) ? 2 : 1,    //isset(Auth::user()->id) ? 3 : 1,
             'validated_by' => isset(Auth::user()->id) ? Auth::user()->email : $request->email,  // use the code to validate the email
             'comment' => $request->comment
              ]);
 
              $update = AccoutCreaction::where('id', $checkID->id)->update([
-                'status' => Auth::check() ? 'with-compliance' : 'with-dtm',
+                'status' => Auth::check() ? 'with-billing' : 'with-dtm',   // 'with-compliance' : 'with-dtm',
                 'status_name' => Auth::check() 
                     ? 'Account Verified by ' . Auth::user()->email 
                     : 'Account Verified',
@@ -1193,11 +1104,11 @@ class AccountController extends BaseAPIController
 
              if(Auth::check()) {
                 IbedcPayLogService::create([
-                    'module'     => 'New Account',
+                    'module'     => 'DTE',
                     'comment'    => $request->comment,
                     'type'       => 'Approved',
                     'module_id'  => $request->id,
-                    'status'     => 'with-compliance',
+                    'status'     => 'with-billing',  //'with-compliance',
                 ]);
             }
 
@@ -1355,13 +1266,6 @@ class AccountController extends BaseAPIController
     }
 
 
-
-
-
-  
-
-
-
   
 
     public function edithouses(Request $request)
@@ -1374,7 +1278,7 @@ class AccountController extends BaseAPIController
         // 🧾 Validate base input
         $request->validate([
             'tracking_id' => 'required|string',
-            'uploads' => 'required|array|min:1',
+           // 'uploads' => 'required|array|min:1',
             'uploads.*.house_no' => 'required|string',
             'uploads.*.full_address' => 'required|string|min:10|max:255|regex:/^[a-zA-Z0-9\s,.\-\/]+$/',
             'uploads.*.business_hub' => 'required|string',
@@ -1382,7 +1286,8 @@ class AccountController extends BaseAPIController
             'uploads.*.landmark' => 'required|string',
             'uploads.*.lga' => 'required|string',
             'uploads.*.state' => 'required|string',
-            'uploads.*.picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // ✅ Image validation
+            
+           // 'uploads.*.picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048', // ✅ Image validation
         ]);
 
         $trackingId = $request->tracking_id;
@@ -1396,9 +1301,9 @@ class AccountController extends BaseAPIController
 
         // ✅ Limit checks
         $startedCount = UploadHouses::where('tracking_id', $trackingId)->where('status', 0)->count();
-        if ($startedCount > 10) {
+        if ($startedCount > 20) {
             return $this->sendError(
-                'The number of accounts for this tracking ID exceeds the allowed limit (15). Please update other accounts you have pending.',
+                'The number of accounts for this tracking ID exceeds the allowed limit (20). Please update other accounts you have pending.',
                 'LIMIT EXCEEDED',
                 Response::HTTP_FORBIDDEN
             );
@@ -1445,11 +1350,11 @@ class AccountController extends BaseAPIController
         // ✅ Process each upload entry (update or create)
         foreach ($uploads as $index => $uploadData) {
             // Handle picture if present
-            $picturePath = null;
-            if (isset($uploadData['picture']) && $uploadData['picture'] instanceof \Illuminate\Http\UploadedFile) {
-                $filename = uniqid('house_') . '.' . $uploadData['picture']->getClientOriginalExtension();
-                $picturePath = $uploadData['picture']->storeAs($folder, $filename, 'public');
-            }
+            // $picturePath = null;
+            // if (isset($uploadData['picture']) && $uploadData['picture'] instanceof \Illuminate\Http\UploadedFile) {
+            //     $filename = uniqid('house_') . '.' . $uploadData['picture']->getClientOriginalExtension();
+            //     $picturePath = $uploadData['picture']->storeAs($folder, $filename, 'public');
+            // }
 
             UploadHouses::updateOrCreate(
                 ['id' => $uploadData['id'] ?? null],
@@ -1462,10 +1367,10 @@ class AccountController extends BaseAPIController
                     'full_address' => $uploadData['full_address'],
                     'nearest_bustop' => $uploadData['nearest_bustop'] ?? null,
                     'lga' => $uploadData['lga'],
-                    'picture' => $picturePath ? $picturePath : 0,
-                    'latitude' => 0,
-                    'longitude' => 0,
-                    'status' => 0,
+                   // 'picture' => $picturePath ? $picturePath : 0,
+                    // 'latitude' => 0,
+                    // 'longitude' => 0,
+                    // 'status' => 0,
                     'landmark' => $uploadData['landmark'],
                     'type_of_premise' => $uploadData['type_of_premise'] ?? null,
                     'use_of_premise' => $uploadData['use_of_premise'] ?? null,
@@ -1474,11 +1379,11 @@ class AccountController extends BaseAPIController
             );
         }
 
-        // ✅ Update tracking record status
-        $checkID->update([
-            'status' => 'processing',
-            'status_name' => 'Pending Form Upload',
-        ]);
+        // // ✅ Update tracking record status
+        // $checkID->update([
+        //     'status' => 'processing',
+        //     'status_name' => 'Pending Form Upload',
+        // ]);
 
         return $this->sendSuccess([
             'customer' => $checkID,
@@ -1487,6 +1392,332 @@ class AccountController extends BaseAPIController
         ], 'CUSTOMER APPLICATION SUCCESSFULLY SUBMITTED', Response::HTTP_OK);
     }
 
+
+
+    public function getTracker(Request $request) {
+
+         if(!$request->tracker){
+            return $this->sendError('Please enter phone or email', 'ERROR', Response::HTTP_UNAUTHORIZED);  //meter_no_primary
+        }
+
+        $checkForMeter = AccoutCreaction::where('email', $request->tracker)->orwhere("phone",  $request->tracker)->first();
+
+        if($request->tracker) {
+            return $this->sendSuccess([
+               'customer' => $checkForMeter,
+            ], 'Customer Information Load', Response::HTTP_OK);
+        } else {
+
+             return $this->sendError(
+                    "No Information",
+                    'ERROR',
+                    Response::HTTP_CONFLICT
+                );
+        }
+
+    }
+
+
+
+
+    public function getRegionPendingAccounts(Request $request) {
+        //Auth
+        $user = Auth::user();
+
+        $data = UploadHouses::with(['landlordinfo'])->whereRaw('LOWER(region) = ?', [strtolower($user->region)])
+        //->where('status','2')->where('evaluated', 'no')->where('region', $user->region)
+        ->where('status','2')->where('evaluated', 'approved')->where('region', $user->region) // for regional head approved
+        ->with('account')
+        //->orderByRaw("CASE WHEN status = 1 THEN 0 ELSE 1 END") // status=1 first
+        //->orderByDesc('created_at') // then order by created_at descending
+        ->paginate(10);
+
+        return $this->sendSuccess([ 'accounts' => $data], 'CUSTOMER APPLICATION SUCCESSFUL SUBMITTED', Response::HTTP_OK);
+    }
+
+
+
+    public function posttRegionPendingAccounts(Request $request) {
+
+         $user = Auth::user();
+
+         if($user->authority != 'region') {
+             return $this->sendError('Unauthorized Access', 'ERROR', Response::HTTP_UNAUTHORIZED);
+         }
+
+
+          $checkID =  $this->checktracking($request->tracking_id);
+
+       // 🛑 If checktracking() returned an error response, return early
+        if ($checkID instanceof \Illuminate\Http\JsonResponse) {
+            return $checkID;
+        }
+
+
+        $statusCount = UploadHouses::where('tracking_id', $request->tracking_id)
+        ->where('status', 4)
+        ->count();
+
+        $numberOfaccount = AccoutCreaction::where('tracking_id', $request->tracking_id)->first();
+
+        if ($statusCount > $numberOfaccount->default_house_no) {
+            return $this->sendError(
+                    'The number of accounts  for this tracking ID exceeds the allowed limit (10). You cannot approve request, contact administrator',
+                    'LIMIT EXCEEDED',
+                    Response::HTTP_FORBIDDEN
+                );
+        }
+
+        $request->validate([
+           // 'id' => 'required|string',
+            'id' => 'required',
+            'id.*' => 'integer|exists:upload_houses,id',
+            'tracking_id' => 'required|string',
+            'status' => 'required|boolean',
+        ]);  
+
+         // Normalize ID(s) into array
+         $ids = is_array($request->id) ? $request->id : [$request->id];
+
+
+
+         if($request->status ==  true) {
+
+            //$updated = UploadHouses::where('id', $request->id)->update(['evaluated' => 'approved']); // move to billing or next stage
+            $updated = UploadHouses::whereIn('id',  $ids)->update(['evaluated' => 'yes']); // Regional Head approved
+
+            $email = Auth::user()->email;
+            //$checkID = $checkID->email;
+            // Send email with token   $checkID->email;
+            // Mail::raw("Your request with tracking ID have been approved. Tracking ID is: {$request->tracking_id} ", function ($message) use ($email, $checkID) {
+            //     $message->to($checkID)->cc($email) // add copy (CC)
+            //             ->subject('Request Approved');
+            // });
+
+            return $this->sendSuccess([ 'accounts' => $updated], 'CUSTOMER APPLICATION SUCCESSFUL APPROVED', Response::HTTP_OK);
+             
+         } else {
+
+            $updated = UploadHouses::whereIn('id', $ids)->update(
+                [
+                'status' => 1, 
+                'evaluated' => 'no',
+                'dtm_comment' => isset($request->comment) ? $request->comment : null
+                ]
+            ); // move to back to DTM 
+       
+            // IbedcPayLogService::create([
+            //         'module'     => 'REGIONAL HEAD',
+            //         'comment'    => isset($request->comment) ? $request->comment : null,
+            //         'type'       => 'Rejected',
+            //         'module_id'  => $request->id,
+            //         'status'     => 'rejected',
+            // ]);
+
+             // 📝 Log each rejected account
+            foreach ($ids as $id) {
+                IbedcPayLogService::create([
+                    'module'    => 'REGIONAL HEAD',
+                    'comment'   => $request->comment ?? null,
+                    'type'      => 'Rejected',
+                    'module_id' => $id,
+                    'status'    => 'rejected',
+                     'user_email' => isset(Auth::user()->email) ? Auth::user()->email : 'System',
+                ]);
+            }
+
+
+            // $email = Auth::user()->email;
+            // // Send email with token
+            // Mail::raw("Your request with tracking ID was rejected. Tracking ID is: {$request->tracking_id} Comments: { $request->comment } ", function ($message) use ($email) {
+            //     $message->to($email)
+            //             ->subject('Request Rejected');
+            // });
+
+            return $this->sendSuccess([ 'accounts' => $updated], 'CUSTOMER APPLICATION SUCCESSFUL REJECTED', Response::HTTP_OK);
+         }
+         
+      
+    }
+
+
+
+
+    public function searchCustomer(Request $request)
+    {
+        $request->validate([
+            'query' => 'required|string|min:3',
+        ]);
+
+        $query = $request->input('query');
+        $user  = Auth::user(); // ← fixed: was User()::where(...) which is invalid
+
+        $customers = UploadHouses::with(['landlordinfo', 'account'])
+            ->where(function ($q) use ($query) {      // ← everything grouped inside ONE closure
+                $q->where('tracking_id', 'like', "%{$query}%")
+                ->orWhere('full_address', 'like', "%{$query}%")
+                ->orWhereHas('landlordinfo', function ($q) use ($query) {  // ← moved inside
+                    $q->where('landlord_email', 'like', "%{$query}%")
+                        ->orWhere('landlord_telephone', 'like', "%{$query}%");
+                });
+            })
+            // status filter is now applied AFTER the grouped block, correctly
+            ->when($user->authority === 'dtm',    fn($q) => $q->where('status', 1))
+            ->when($user->authority === 'region', fn($q) => $q->where('status', 2))
+            // else (no authority match) → no status filter, sees all records
+            ->get();
+
+        if ($customers->isEmpty()) {
+            return $this->sendError(
+                'No customer record found for the provided search criteria.',
+                Response::HTTP_NOT_FOUND
+            );
+        }
+
+
+        return $this->sendSuccess(
+                ['customers' => $customers],
+                'Search Results',
+                Response::HTTP_OK
+            );
+
+        // ... rest of your method
+    }
+
+
+
+    // public function searchCustomer(Request $request){
+
+    //     $request->validate([
+    //         'query' => 'required|string|min:3',
+    //     ]);
+
+    //     $query = $request->input('query');
+
+    //     $user = User()::where('id', Auth::user()->id)->first();
+
+    //     if($user->authority ==  'dtm') {
+            
+    //         $customers = UploadHouses::with([
+    //             'landlordinfo',
+    //             'account'
+    //         ])
+    //         ->where(function ($q) use ($query) {
+    //             $q->where('tracking_id', 'like', "%{$query}%")
+    //             ->orWhere('full_address', 'like', "%{$query}%");
+    //         })
+    //         ->orWhereHas('landlordinfo', function ($q) use ($query) {
+    //             $q->where('landlord_email', 'like', "%{$query}%")
+    //             ->orWhere('landlord_telephone', 'like', "%{$query}%");
+    //         })->where('status', 1)
+    //         ->get();
+
+    //     } else if ($user->authority ==  'region') {
+
+    //      $customers = UploadHouses::with([
+    //             'landlordinfo',
+    //             'account'
+    //         ])
+    //         ->where(function ($q) use ($query) {
+    //             $q->where('tracking_id', 'like', "%{$query}%")
+    //             ->orWhere('full_address', 'like', "%{$query}%");
+    //         })
+    //         ->orWhereHas('landlordinfo', function ($q) use ($query) {
+    //             $q->where('landlord_email', 'like', "%{$query}%")
+    //             ->orWhere('landlord_telephone', 'like', "%{$query}%");
+    //         })->where('status', 2)
+    //         ->get();
+
+    //     } else {
+
+    //      $customers = UploadHouses::with([
+    //         'landlordinfo',
+    //         'account'
+    //     ])
+    //     ->where(function ($q) use ($query) {
+    //         $q->where('tracking_id', 'like', "%{$query}%")
+    //           ->orWhere('full_address', 'like', "%{$query}%");
+    //     })
+    //     ->orWhereHas('landlordinfo', function ($q) use ($query) {
+    //         $q->where('landlord_email', 'like', "%{$query}%")
+    //           ->orWhere('landlord_telephone', 'like', "%{$query}%");
+    //     })
+    //     ->get();
+
+
+    //     }
+
+       
+    // if ($customers->isEmpty()) {
+    //     return $this->sendError(
+    //         'No customer record found for the provided search criteria.',
+    //         Response::HTTP_NOT_FOUND
+    //     );
+    // }
+
+
+    //     return $this->sendSuccess(
+    //         ['customers' => $customers],
+    //         'Search Results',
+    //         Response::HTTP_OK
+    //     );
+
+    // }
+
+
+  
+
+    public function changeStatus(Request $request)
+    {
+        $checkID = $this->checktracking($request->tracking_id);
+
+        // 🛑 If checktracking() returned an error response, return early
+        if ($checkID instanceof \Illuminate\Http\JsonResponse) {
+            return $checkID;
+        }
+
+        $request->validate([
+            'id' => 'required|array',
+            'id.*' => 'integer|exists:upload_houses,id',
+            'tracking_id' => 'required|string',
+        ]);
+
+        // Fetch all records matching ids + tracking_id
+        $records = UploadHouses::whereIn('id', $request->id)
+            ->where('tracking_id', $request->tracking_id)
+            ->get();
+
+        // Ensure all IDs exist for this tracking_id
+        if ($records->count() !== count($request->id)) {
+            return $this->sendError(
+                'Some records were not found for the provided tracking ID.',
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        // Ensure all records have status = 5
+        $invalidStatus = $records->where('status', '!=', 5);
+
+        if ($invalidStatus->count() > 0) {
+            return $this->sendError(
+                'Cannot update status. One or more applications are not in the expected state.',
+                Response::HTTP_BAD_REQUEST
+            );
+        }
+
+        // Perform bulk update
+        UploadHouses::whereIn('id', $request->id)
+            ->where('tracking_id', $request->tracking_id)
+            ->update([
+                'status' => 1,
+            ]);
+
+        return $this->sendSuccess(
+            ['customer' => $checkID],
+            'CUSTOMER APPLICATION SUCCESSFULLY UPDATED',
+            Response::HTTP_OK
+        );
+    }
     
     
 

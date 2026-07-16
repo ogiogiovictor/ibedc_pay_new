@@ -1,0 +1,637 @@
+<div wire:poll.10s>
+    <x-navbar />
+
+    <div class="container-fluid page-body-wrapper">
+        <x-sidebar />
+
+        <div class="main-panel">
+            <div class="content-wrapper">
+                <div class="row mb-4">
+                    <div class="col-md-12 d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">
+                            Customer Details for <span class="text-primary">{{ $details->tracking_id }}</span>
+                        </h4>
+                        <a href="/new_account" class="btn btn-outline-secondary btn-sm" wire:navigation>
+                            &laquo; Back
+                        </a>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <!-- Left: Transaction Details -->
+                    <div class="col-md-8">
+                        <div class="card shadow-sm rounded-3">
+                            <div class="card-header bg-light text-white">
+                                <h6 class="mb-0">Customer Details</h6>
+                            </div>
+                            <div class="card-body">
+                                @if(isset($errorMessage))
+                                    <div class="alert alert-danger">
+                                        {{ $errorMessage }}
+                                    </div>
+                                @endif
+
+                                @if(session()->has('error'))
+                                    <div class="alert alert-danger">
+                                        {{ session('error') }}
+                                    </div>
+                                @endif
+
+                                @if(session()->has('success'))
+                                    <div class="alert alert-success">
+                                        {{ session('success') }}
+                                    </div>
+                                @endif
+
+                              
+
+                                 <!-- Grouped Info Layout -->
+            <div class="mb-4">
+                <h6 class="text-muted mb-3">Basic Information</h6>
+                <div class="row">
+                    <div class="col-sm-4 mb-3"><strong>Date:</strong> {{ $details->created_at->format('d M, Y H:i') }}</div>
+                    <div class="col-sm-4 mb-3"><strong>Title:</strong> {{ $details->title }}</div>
+                     <div class="col-sm-4 mb-3"><strong>Surname:</strong> {{ $details->surname }}</div>
+                    <div class="col-sm-4 mb-3"><strong>FirstName:</strong> {{ $details->firstname }}</div>
+                    <div class="col-sm-4 mb-3"><strong>Other Names:</strong> {{ $details->other_name }}</div>
+                    
+                    @if (auth()->check() && auth()->user()->authority !== 'dtm')
+                        <div class="col-sm-4 mb-3"><strong>Email:</strong> {{ $details->email }}</div>
+                        <div class="col-sm-4 mb-3"><strong>Phone:</strong> {{ $details->phone }}</div>
+                    @endif
+
+
+                    <!-- <div class="col-sm-4 mb-3"><strong>House No:</strong> {{ $details->house_no }}</div>
+                    <div class="col-sm-4 mb-3"><strong>Nearest Bustop:</strong> {{ $details->nearest_bustop }}</div>
+                    <div class="col-sm-4 mb-3"><strong>LGA:</strong> {{ $details->lga }}</div> -->
+                    <!-- <div class="col-sm-4 mb-3"><strong>Full Address:</strong> {{ $details->address }}</div> -->
+                    <!-- <div class="col-sm-4 mb-3"><strong>Type Of Premise:</strong> {{ $details->type_of_premise }}</div> -->
+                    <!-- <div class="col-sm-4 mb-3"><strong>Use Of Premise:</strong> {{ $details->use_of_premise }}</div> -->
+                    <!-- <div class="col-sm-4 mb-3"><strong>Region:</strong> {{ $details->region }}</div>
+                    <div class="col-sm-4 mb-3"><strong>Business Hub:</strong> {{ $details->business_hub }}</div>
+                    <div class="col-sm-4 mb-3"><strong>Service Center:</strong> {{ $details->service_center }}</div>
+                    <div class="col-sm-4 mb-3"><strong>DSS:</strong> {{ $details->dss }}</div> -->
+                    <!-- <div class="col-sm-4 mb-3"><strong>Meter Book:</strong> {{ $details->meter_book }}</div>   $details->continuation->no_of_account_apply_for -->
+                    <div class="col-sm-4 mb-3"><strong>Numbe of Accounts(s) Applied For:</strong> {{ $details->uploadedPictures->count() }}</div>
+
+                    <div class="col-sm-4 mb-3"><strong>Tracking ID:</strong> {{ $details->tracking_id  }}</div>
+
+                    
+                </div>
+            </div>
+
+            <div class="mb-4">
+                <h6 class="text-muted mb-3">LandLoard Information</h6>
+                <div class="row">
+                    <div class="col-sm-4 mb-3"><strong>NIN:</strong> {{ $details->continuation?->nin_number }}</div>
+                    <div class="col-sm-4 mb-3"><strong>Landlord Surname:</strong> {{ $details->continuation?->landlord_surname }}</div>
+                    <div class="col-sm-4 mb-3"><strong>Landlord Othernames:</strong> {{ $details->continuation?->landlord_othernames }}</div>
+
+                    @if (auth()->check() && auth()->user()->authority !== 'dtm')
+                    <div class="col-sm-4 mb-3"><strong>Landlord Telephone:</strong> {{ $details->continuation?->landlord_telephone }}</div>
+                    <div class="col-sm-4 mb-3"><strong>Landlord Email:</strong> {{ $details->continuation?->landlord_email }}</div>
+                    @endif
+                    <div class="col-sm-4 mb-3"><strong>Previous Employer:</strong> {{ $details->continuation?->name_address_of_previous_employer }}</div>
+                    <div class="col-sm-4 mb-3"><strong>Previous Account Numbers:</strong> {{ $details->continuation?->previous_account_number }}</div>
+                    <div class="col-sm-4 mb-3"><strong>Previous Meter Numbers:</strong> {{ $details->continuation?->previous_meter_number }}</div>
+
+                    <div class="col-sm-4 mb-3"><strong>Preferred Method of Reciveing Bills:</strong> {{ $details->continuation?->prefered_method_recieving_bill }}</div>
+                    
+                    <div class="col-sm-4 mb-3">
+                        <strong>CAC Number:</strong>
+                        <span>{{  $details->continuation?->cac_number }}</span>
+                    </div>
+
+                     <div class="col-sm-4 mb-3">
+                        <strong>Organisation Name:</strong>
+                        <span>{{  $details->continuation?->organisational_name }}</span>
+                    </div>
+
+                    <div class="col-sm-4 mb-3">
+                        <strong>ID:</strong>
+                        <span class="badge bg-info text-dark">{{ $details->id }}</span>
+                    </div>
+
+
+
+                    <div class="col-sm-4 mb-3">
+                        <strong>Progress:</strong>
+                        <span class="badge bg-info text-dark">{{ $details->status_name }}</span>
+                    </div>
+
+                  
+                   
+
+
+                    
+
+
+                    
+                </div>
+            </div>
+
+            <!-- <div class="mb-4">
+                <h6 class="text-muted mb-3">Geo Code Current Location</h6>
+                <div class="row">
+                    <div class="col-sm-6 mb-2"><strong>Longitude:</strong> {{ $details->continuation?->longitude }}</div>
+                    <div class="col-sm-6 mb-2"><strong>Latitude:</strong> {{ $details->continuation?->latitude }}</div>
+                </div>
+            </div> -->
+
+
+            <div class="mb-4">
+                <h6 class="text-muted mb-3">No of Accounts</h6>
+                <div class="row">
+                  
+                 @if($details->uploadedPictures && $details->uploadedPictures->count() > 0)
+                    <table class="table table-bordered table-responsive">
+                        <thead>
+                            <tr>
+                                <th>
+                                    @if(auth()->user()->authority === 'super_admin' || auth()->user()->authority === 'billing' || auth()->user()->authority === 'region')
+                                       <input type="checkbox" wire:model="selectAll">
+                                    @endif
+                                </th>
+                                <th>ID</th>
+                                 <th>Region</th>
+                                 <th>No</th>
+                                <th>Address</th>
+                             <th>Hub</th>
+                               <th>Lat</th>
+                                <th>Long</th>
+                                <th>AccountNo</th>
+                                  <th>Evaluated</th>
+                                   <th>Meter</th>
+                                    <th>MapID</th>
+                                <th>Status</th>
+                                <th>View</th>
+                                 @canany(['billing', 'super_admin'])
+                                        @if ($details->status == 'with-bhm')
+                                        <!-- <button wire:click="generateAccount({{ $details->id }})" class="btn btn-md btn-success">Generate Accounts</button> -->
+                                         <th>Generate Account</th>
+                                        @endif
+                                     @endcanany
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach ($details->uploadedPictures as $account)
+                                <tr>
+                                     <td>
+                                    @if($account->status == 2 &&  $account->evaluated == "no" &&  auth()->user()->authority === 'billing' )
+                                        <input 
+                                            type="checkbox" 
+                                            wire:model="selected"
+                                            value="{{ $account->id }}"
+                                        >
+                                    @endif
+
+                                    @if($account->status == 2 &&  $account->evaluated == "approved" &&  auth()->user()->authority === 'region' )
+                                        <input 
+                                            type="checkbox" 
+                                            wire:model="selected"
+                                            value="{{ $account->id }}"
+                                        >
+                                    @endif
+                                </td>
+                                    <td>{{ $account->id }}</td>
+                                    <td>{{ $account->region }}</td>
+                                    <td>{{ $account->house_no }}</td>
+                                    <td>{{ $account->full_address }}</td>
+                                    <td>{{ $account->business_hub }}</td>
+                                    <td>{{ $account->latitude }}</td>
+                                    <td>{{ $account->longitude }}</td>
+                                    <td>{{ $account->account_no }}</td>
+                                  
+                                    <!-- <td>{{ $account->status == 4 ? 'Completed' : 'in-progress' }}</td> -->
+                                     <td>
+                                        @if($account->evaluated == "approved")
+                                      <label class="badge badge-info">Approved</label>
+                                       @else
+                                      <label class="badge badge-danger">{{ $account->evaluated }}</label>
+                                      @endif
+
+                                     </td>
+                                       <td>{{ $account->paid_for_meter }}</td>
+                                       <td>{{ $account->map_id }}</td>
+                                     <td>
+                                      @if($account->status == "0")
+                                      <label class="badge badge-info">Started</label>
+                                      @elseif($account->status == "1")
+                                      <label class="badge badge-warning">with DTM</label>
+                                       @elseif($account->status == "3")
+                                      <label class="badge badge-warning">with Compliance</label>
+                                     
+                                       @elseif($account->status == "2" && $account->evaluated == "no")
+                                      <label class="badge badge-warning">with Regional Billing</label>
+                                       @elseif($account->status == "2" && $account->evaluated == "approved")
+                                      <label class="badge badge-warning">with Regional Head</label>
+                                       @elseif($account->status == "2" && $account->evaluated == "yes")
+                                      <label class="badge badge-warning">with Billing</label>
+                                       @elseif($account->status == "2")
+                                      <label class="badge badge-warning">with Billing</label>
+                                      @elseif($account->status == "4")
+                                      <label class="badge badge-success">Completed</label>
+                                       @elseif($account->status  == "5")
+                                      <label class="badge badge-danger">Rejected</label>
+                                       @elseif($account->status  == "6")
+                                      <label class="badge badge-primary">staged</label>
+                                      @else
+                                      <label class="badge badge-danger">N/A</label>
+                                      @endif
+                                  
+                                  </td>
+
+                                    <td> <a target="_blank" href="/tracking_details/{{$account->id }}/{{$account->tracking_id}}" class="mr-1 text-muted p-2"><i class="mdi mdi-dots-horizontal"></i></a></td>
+                                   
+                                     @canany(['rico', 'super_admin'])
+
+                                       @if ($account->status == 3 )
+                                            <td>
+                                                <button  wire:click="ricoApprove( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-success">Approve</button>&nbsp;&nbsp;
+                                            </td>
+                                        @endif
+
+                                      @endcanany
+
+
+                                       @canany(['super_admin'])
+
+                                       @if ($account->status == 5  && $account->picture != "" && $account->lecan_link != "")
+                                            <td>
+                                                <button  wire:click="move( {{ $account->id }} )" class="btn btn-xs btn-success">Move</button>&nbsp;&nbsp;
+                                            </td>
+                                        @endif
+
+                                      @endcanany
+
+
+                                        @canany(['region'])
+
+                                       @if ($account->status == 2  && $account->picture != "" && $account->lecan_link != "" && $account->evaluated == "approved")
+                                            <td>
+                                               <button 
+                                                    class="btn btn-xs btn-danger"
+                                                    wire:click="confirmBillingReject({{ $details->id }}, {{ $account->id }})"
+                                                >
+                                                    Reject
+                                                </button>&nbsp;&nbsp;
+                                            </td>
+                                        @endif
+
+                                      @endcanany
+
+
+
+                                      
+
+                                     
+
+
+
+                                    @canany(['billing', 'super_admin'])
+                                       
+                                         <td>
+
+                                         @if($account->account_no && $account->status == 2)
+                                         
+                                            <button class="btn btn-xs btn-primary" wire:click="generate( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Approve</button>&nbsp;&nbsp;
+
+                                         @endif
+
+
+
+
+                                          @if(!$account->account_no && $account->status == 2)
+                                           @if (auth()->check() && auth()->user()->default_password == '1')
+                                            <!-- <button class="btn btn-xs btn-success" wire:click="generate( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Generate</button> -->
+                                            
+                                            
+                                            @if(($account->evaluated == 'yes') && $account->status == 2)
+                                            <!-- <button class="btn btn-xs btn-success" 
+                                                    wire:click="generate({{ $details->id }}, {{ $account->id }})"
+                                                    wire:loading.attr="disabled">
+                                                <span wire:loading.remove wire:target="generate({{ $details->id }}, {{ $account->id }})">
+                                                    Generate
+                                                </span>
+                                                <span wire:loading wire:target="generate({{ $details->id }}, {{ $account->id }})">
+                                                    Processing...
+                                                </span>
+                                            </button> -->
+                                            
+                                            &nbsp;&nbsp;
+
+                                            <!-- <button 
+                                            type="button" 
+                                            class="btn btn-danger" 
+                                            wire:click="submitBillingReject" 
+                                            wire:loading.attr="disabled" 
+                                            wire:target="submitBillingReject"
+                                            >
+                                            <span wire:loading.remove wire:target="submitBillingReject">Reject</span>
+                                            <span wire:loading wire:target="submitBillingReject">Processing...</span>
+                                            </button> -->
+
+                                            <button 
+                                                    class="btn btn-xs btn-danger"
+                                                    wire:click="confirmBillingReject({{ $details->id }}, {{ $account->id }})"
+                                                >
+                                                    Reject
+                                                </button>
+
+
+                                                 @if(in_array($account->paid_for_meter, ['Yes', 'Old']) && in_array(auth()->user()->email, ['victor.ogiogio@ibedc.com', 'tolulope.olaniyan@ibedc.com']))
+                                                   &nbsp;&nbsp;&nbsp;
+                                                  <!-- <button 
+                                                     class="btn btn-xs btn-primary"
+                                                     wire:click="stageRequest({{ $details->id }}, {{ $account->id }})"
+                                                    >
+                                                     Stage
+                                                    </button>   &nbsp;&nbsp;&nbsp; -->
+                                                &nbsp;&nbsp;&nbsp;
+                                                 <button 
+                                                    class="btn btn-xs btn-secondary"
+                                                    wire:click="stageUBVSAccount({{ $details->id }}, {{ $account->id }})"
+                                                    wire:loading.attr="disabled"
+                                                >
+                                                    <span wire:loading.remove wire:target="stageUBVSAccount({{ $details->id }}, {{ $account->id }})">
+                                                        Generate(Pass)
+                                                    </span>
+                                                    <span wire:loading wire:target="stageRequest({{ $details->id }}, {{ $account->id }})">
+                                                        Processing...
+                                                    </span>
+                                                </button> 
+                                                @endif
+
+
+                                             
+
+
+                                                  @if(in_array($account->paid_for_meter, ['Yes', 'Paid', 'Old']))
+                                                   &nbsp;&nbsp;&nbsp;
+                                                  <!-- <button 
+                                                     class="btn btn-xs btn-primary"
+                                                     wire:click="stageRequest({{ $details->id }}, {{ $account->id }})"
+                                                    >
+                                                     Stage
+                                                    </button>   &nbsp;&nbsp;&nbsp; -->
+                                                &nbsp;&nbsp;&nbsp;
+                                                 <button 
+                                                    class="btn btn-xs btn-secondary"
+                                                    wire:click="stageUBVSAccount({{ $details->id }}, {{ $account->id }})"
+                                                    wire:loading.attr="disabled"
+                                                >
+                                                    <span wire:loading.remove wire:target="stageUBVSAccount({{ $details->id }}, {{ $account->id }})">
+                                                        Generate via UBVS
+                                                    </span>
+                                                    <span wire:loading wire:target="stageRequest({{ $details->id }}, {{ $account->id }})">
+                                                        Processing...
+                                                    </span>
+                                                </button> 
+                                                @endif
+                                               
+
+                                                &nbsp;&nbsp;&nbsp;
+
+                                                <button 
+                                                    class="btn btn-xs btn-dark"
+                                                    wire:click="closeAccount({{ $details->id }}, {{ $account->id }})"
+                                                >
+                                                    Close
+                                                </button>  
+
+                                            @endif
+
+
+                                                 &nbsp;&nbsp;&nbsp;
+
+                                                <!-- <button 
+                                                    class="btn btn-xs btn-default"
+                                                    wire:click="approveRequest({{ $details->id }}, {{ $account->id }})"
+                                                >
+                                                    Approve
+                                                </button> -->
+
+                                             <!-- <button class="btn btn-xs btn-danger" 
+                                                    wire:click="billingreject({{ $details->id }}, {{ $account->id }})"
+                                                    wire:loading.attr="disabled">
+                                                <span wire:loading.remove wire:target="billingreject({{ $details->id }}, {{ $account->id }})">
+                                                    Reject
+                                                </span>
+                                                <span wire:loading wire:target="billingreject({{ $details->id }}, {{ $account->id }})">
+                                                    Rejecting Request...
+                                                </span>
+                                            </button> -->
+                                             <!-- <button class="btn btn-xs btn-danger" wire:click="billingreject( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Reject</button> -->
+                                              @endif
+
+
+                                              @if (auth()->check() && auth()->user()->default_password == '9'  && $account->evaluated == 'no')
+                                               <button class="btn btn-xs btn-primary" wire:click="approveaccountbilling( {{ $details->id }}, {{ $account->id }} )" class="btn btn-xs btn-primary">Approve</button>&nbsp;&nbsp;
+                                                <button 
+                                                    class="btn btn-xs btn-danger"
+                                                    wire:click="confirmBillingReject({{ $details->id }}, {{ $account->id }})"
+                                                >
+                                                    Reject
+                                                </button>
+                                              @endif
+                                         @endif
+
+                                       
+                                       
+                                        </td>
+                                      
+                                     @endcanany
+                                </tr>
+                            @endforeach
+
+                        </tbody>
+                    </table>
+
+                    {{-- ✅ PUT BUTTON HERE, AFTER TABLE --}}
+                    @canany(['region'])
+                        @if(count($selected) > 0)
+                            <button 
+                                wire:click="approveSelected" 
+                                class="btn btn-success mt-3"
+                                wire:loading.attr="disabled"
+                            >
+                                Approve Selected ({{ count($selected) }})
+                            </button>
+                        @endif
+                    @endcanany
+
+                    <br/><hr/>
+
+                     @canany(['super_admin', 'billing'])
+
+                     <!-- <button  class="btn btn-xs btn-danger" wire:click="stageAll(@js($details->tracking_id))" >
+                         Stage All
+                    </button> -->
+                    @if(in_array(auth()->user()->email, ['victor.ogiogio@ibedc.com', 'grace.odejayi@ibedc.com', 'emmanuel.adeoye@ibedc.com', 'azeez.aderibigbe@ibedc.com', 'douglass.awpiah@ibedc.com',
+                    'basirat.akande@ibedc.com']))
+
+                    <button
+                            class="btn btn-xs btn-danger"
+                            wire:click="GenerateAll('{{ $details->tracking_id }}')"
+                            wire:loading.attr="disabled"
+                            wire:target="GenerateAll"
+                        >
+                            <span wire:loading.remove wire:target="GenerateAll">
+                                Generate All
+                            </span>
+
+                            <span wire:loading wire:target="GenerateAll">
+                                Processing...
+                            </span>
+                        </button>
+                        <!-- <button
+                            class="btn btn-xs btn-danger"
+                            wire:click="stageAll('{{ $details->tracking_id }}')"
+                            wire:loading.attr="disabled"
+                            wire:target="stageAll"
+                        >
+                            <span wire:loading.remove wire:target="stageAll">
+                                Stage All
+                            </span>
+
+                            <span wire:loading wire:target="stageAll">
+                                Processing...
+                            </span>
+                        </button> -->
+                    @endif
+
+                    @endcanany
+
+                @else
+                    <p>No accounts found.</p>
+                @endif
+
+                    
+                </div>
+            </div>
+
+            <?php
+               //echo  auth()->user()->authority . ' '. $details->id
+            ?>
+
+
+                                 @if(session()->has('error'))
+                                    <div class="alert alert-danger">
+                                        {{ session('error') }}
+                                    </div>
+                                @endif
+
+                                <div class="d-flex gap-2">
+                                     @canany(['super_admin', 'dtm'])
+                                        @if ($details->status == 'with-dtm')
+                                        <!-- <button wire:click="processforbhm({{ $details->id }})" class="btn btn-md btn-primary">Account(s) Validated</button> -->
+                                        @endif
+                                     @endcanany
+
+                                      @canany(['super_admin', 'bhm'])
+                                        @if ($details->status == 'with-bhm')
+                                        <button wire:click="approveforbilling({{ $details->id }})" class="btn btn-md btn-success">Approve Accounts</button>
+                                        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+                                        <button wire:click="rejectbacktodtm({{ $details->id }})" class="btn btn-md btn-danger">Reject</button>
+                                        @endif
+                                     @endcanany
+
+                                      @canany(['super_admin', 'billing'])
+                                        @if ($details->status == 'with-billing')
+                                        <!-- <button wire:click="generateAccount({{ $details->id }}, {{ $account->id  }})" class="btn btn-md btn-success">Generate Multiple Accounts</button> -->
+                                        @endif
+                                     @endcanany
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Right: Image or Additional Info -->
+                    <div class="col-md-4">
+                        <div class="card shadow-sm rounded-3">
+                            <div class="card-header bg-light">
+                                <h6 class="mb-0">Image Information</h6>
+                            </div>
+                            <!-- <div class="card-body text-center">  
+                                 <p><strong>Customer Photo</p>
+                                <img src="https://ipay.ibedc.com:7642/storage/{{ $details->uploadinformation?->photo }}" class="img-fluid rounded mb-3 w-50" alt="Customer Image">
+                            </div>
+
+                             <div class="card-body text-center">  
+                                 <p><strong>Customer Means of Identification</p>
+                                <img src="https://ipay.ibedc.com:7642/storage/{{ $details->uploadinformation?->identification }}" class="img-fluid rounded mb-3 w-50" alt="Customer Image">
+                            </div> -->
+
+                            <div class="card-body text-center">  
+                                 <p><strong>Landlord Photo</p>
+                                   <a href="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->landloard_picture }}" target="_blank">
+                                <img src="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->landloard_picture }}" class="img-fluid rounded mb-3 w-50 " alt="Landlord Photo">
+                                    </a>
+                                
+                               
+                            </div>
+
+
+                       
+
+                            <div class="card-body text-center">  
+                                <p><strong>NIN Slip</strong></p>
+                                <a href="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->nin_slip }}" target="_blank">
+                                    <img src="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->nin_slip }}" 
+                                        class="img-fluid rounded mb-3 w-50" 
+                                        alt="NIN Slip">
+                                </a>
+                                
+                            </div>
+
+                            <div class="card-body text-center">  
+                                <p><strong>CAC Slip</strong></p>
+                                <a href="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->cac_slip }}" target="_blank">
+                                    <img src="https://ipay.ibedc.com:7642/storage/{{ $details->continuation?->cac_slip }}" 
+                                        class="img-fluid rounded mb-3 w-50" 
+                                        alt="CAC Slip">
+                                </a>
+                               
+                            </div>
+
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            @if($showRejectModal)
+            <div class="modal fade show d-block" tabindex="-1" role="dialog" style="background: rgba(0,0,0,0.5);">
+            <div class="modal-dialog modal-dialog-centered" role="document">
+                <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Reject Account</h5>
+                    <button type="button" class="close" wire:click="$set('showRejectModal', false)">
+                    <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <label for="rejectComment">Comment</label>
+                    <textarea id="rejectComment" wire:model.defer="rejectComment" class="form-control" rows="3" placeholder="Enter reason for rejection..."></textarea>
+                    @error('rejectComment') <small class="text-danger">{{ $message }}</small> @enderror
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" wire:click="$set('showRejectModal', false)">Cancel</button>
+                    <button type="button" class="btn btn-danger" wire:click="submitBillingReject" wire:loading.attr="disabled">
+                    <span wire:loading.remove>Submit Rejection</span>
+                    <span wire:loading>Processing...</span>
+                    </button>
+                </div>
+                </div>
+            </div>
+            </div>
+            @endif
+
+
+            <x-footer />
+        </div>
+    </div>
+</div>

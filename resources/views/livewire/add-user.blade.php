@@ -173,7 +173,6 @@
                     </div>
 
 
-
                     <div class="col-md-12">
                         <div class="form-group row">
                           <label class="col-sm-3 col-form-label">User Role</label>
@@ -181,6 +180,7 @@
                             
                           <select name="authority" class="form-control" wire:model="authority">
                           <option value="">Select Role</option>
+                          <option value="region">Region</option>
                           <option value="customer">Customer</option>
                           <option value="bhm">Business Hub Manager</option>
                            <option value="dtm">DTM</option>
