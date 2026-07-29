@@ -12,4 +12,6 @@ class UBVSCustomers extends Model
     protected $table = "MAIN_WAREHOUSE.dbo.ubvs_customers";
 
     protected $connection = 'data_warehouse';
+
+    protected $guarded = [];
 }

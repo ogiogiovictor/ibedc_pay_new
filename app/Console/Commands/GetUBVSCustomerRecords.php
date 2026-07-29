@@ -284,8 +284,12 @@ class GetUBVSCustomerRecords extends Command
         }
 
         if (!empty($recordsToInsert)) {
-            foreach (array_chunk($recordsToInsert, 500) as $chunk) {
-                UBVSCustomers::insert($chunk);
+            // foreach (array_chunk($recordsToInsert, 500) as $chunk) {
+            //     UBVSCustomers::insert($chunk);
+            // }
+
+            foreach ($recordsToInsert as $record) {
+                UBVSCustomers::create($record);
             }
         }
 

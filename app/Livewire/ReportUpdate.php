@@ -30,6 +30,7 @@ class ReportUpdate extends Component
         'service_center' => 'upload_houses.service_center',
         'status'         => 'upload_houses.status',
         'dss'            => 'upload_houses.dss',
+        'paid_for_meter' => 'upload_houses.paid_for_meter',
         'created_at'     => 'upload_houses.created_at',
     ];
 
@@ -119,6 +120,7 @@ class ReportUpdate extends Component
             'upload_houses.house_no', 'upload_houses.service_center', 'upload_houses.full_address',
             'upload_houses.region', 'upload_houses.business_hub', 'upload_houses.status',
             'upload_houses.map_id', 'upload_houses.dss', 'upload_houses.lecan_link',
+            'upload_houses.paid_for_meter',
             'upload_houses.evaluated', 'upload_houses.comment',
             'upload_houses.dtm_comment', 'upload_houses.billing_comment',
             'upload_houses.created_at',

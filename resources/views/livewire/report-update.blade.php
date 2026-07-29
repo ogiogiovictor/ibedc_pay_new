@@ -287,9 +287,14 @@
                                             <i class="mdi mdi-tag mr-1" style="opacity:0.7;"></i>Status
                                             <i class="mdi {{ sortIcon('status', $sortCol, $sortDir, $sortable) }} ru-sort-icon"></i>
                                         </th>
+                                        
                                         <th class="py-2 px-3 ru-th-sort" wire:click="sort('dss')" style="{{ $thSort }}">
                                             <i class="mdi mdi-link-variant mr-1" style="opacity:0.7;"></i>DSS
                                             <i class="mdi {{ sortIcon('dss', $sortCol, $sortDir, $sortable) }} ru-sort-icon"></i>
+                                        </th>
+                                        <th class="text-center py-2 px-3 ru-th-sort" wire:click="sort('paid_for_meter')" style="{{ $thSort }}">
+                                            <i class="mdi mdi-cash-check mr-1" style="opacity:0.7;"></i>Paid For Meter
+                                            <i class="mdi {{ sortIcon('paid_for_meter', $sortCol, $sortDir, $sortable) }} ru-sort-icon"></i>
                                         </th>
                                         <th class="py-2 px-3" style="{{ $thBase }}">
                                             <i class="mdi mdi-comment-text-outline mr-1" style="opacity:0.7;"></i>Remarks
@@ -360,6 +365,15 @@
                                                 </span>
                                             </td>
                                             <td class="align-middle px-3" style="font-size:0.82rem;">{{ $rec->dss ?: '—' }}</td>
+                                            <td class="text-center align-middle px-3" style="font-size:0.82rem;">
+                                                @if($rec->paid_for_meter === 'Yes' || $rec->paid_for_meter === 'Old')
+                                                    <span class="badge badge-success" style="font-size:0.72rem;">{{ $rec->paid_for_meter }}</span>
+                                                @elseif($rec->paid_for_meter)
+                                                    <span class="badge badge-secondary" style="font-size:0.72rem;">{{ $rec->paid_for_meter }}</span>
+                                                @else
+                                                    <span class="text-muted">—</span>
+                                                @endif
+                                            </td>
                                             <td class="align-middle px-3" style="max-width:200px;">
                                                 @php
                                                     $hasDtm     = !empty($rec->dtm_comment);

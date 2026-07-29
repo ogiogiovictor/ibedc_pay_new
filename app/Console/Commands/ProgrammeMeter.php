@@ -147,6 +147,7 @@ class ProgrammeMeter extends Command
             $allocationStatus = $data['AllocationInformation']['AllocationStatus'] ?? null;
             $installationStatus = $data['InstallationInformation']['InstallationStatus'] ?? null;
             $meterNo = $data['InstallationInformation']['MeterNo'] ?? null;
+            $paymentAmount = $data['PaymentInformation']['AmountPaid'] ?? 0;
 
             $this->line("   📄 Payment: {$paymentStatus} | Allocation: {$allocationStatus} | Installation: {$installationStatus} | Meter No: " . ($meterNo ?: 'N/A'));
 
@@ -161,6 +162,8 @@ class ProgrammeMeter extends Command
             $programPayload = [
                 'meter_number' => $meterNo,
                 'account_number' => $house->account_no,
+                'type' => 'map',
+                'amount' => $paymentAmount,
             ];
 
             $this->info("   📡 Sending meter {$meterNo} to UBVS for programming...");
@@ -186,11 +189,16 @@ class ProgrammeMeter extends Command
                 'response' => $programData,
             ]);
 
-            // UBVS returns 422 "Account already has a meter linked" when this meter
-            // was already programmed on a previous run — treat that as already-done
-            // rather than a failure so the record still gets marked programmed.
+            // UBVS returns 422 "Account already has a meter linked" or "Meter is
+            // already linked to another account" when this meter was already
+            // programmed on a previous run — treat that as already-done rather
+            // than a failure so the record still gets marked programmed.
+            $ubvsErrMessage = (string) ($programData['err_message'] ?? '');
             $alreadyProgrammed = $programResponse->status() === 422
-                && str_contains((string) ($programData['err_message'] ?? ''), 'Account already has a meter linked');
+                && (
+                    str_contains($ubvsErrMessage, 'Account already has a meter linked')
+                    || str_contains($ubvsErrMessage, 'Meter is already linked to another account')
+                );
 
             if (!$programResponse->successful() && !$alreadyProgrammed) {
                 $this->error("   ❌ UBVS PROGRAMMING FAILED for meter {$meterNo} (ID {$house->id}): " . ($programData['err_message'] ?? $programData['message'] ?? $programResponse->body()));

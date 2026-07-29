@@ -27,6 +27,10 @@ class MSMSProcessCommand extends Command
             ->whereNull('map_id')
             ->whereRaw("LOWER(TRIM(paid_for_meter)) = ?", ['no'])
             ->whereNotNull('dss')
+             ->whereBetween('updated_at', [
+                now()->subDay()->startOfDay(),
+                now()->endOfDay(),
+            ])
             ->chunk(50, function ($records) use (&$totalProcessed, &$totalSuccess, &$totalFailed) {
 
 

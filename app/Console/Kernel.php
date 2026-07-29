@@ -37,13 +37,20 @@ class Kernel extends ConsoleKernel
 
         // $schedule->command('app:no-payment-provider')
         //         ->withoutOverlapping()
-        //         ->everyTwoMinutes();
+        //  
+        //        ->everyTwoMinutes();
+
+         $schedule->command('app:update-msms-meters')->hourly()->withoutOverlapping();
+
+        $schedule->command('app:get-ubvs-customer-records')->weekly()->mondays()->at(rand(0, 23) . ':' . rand(0, 59));
 
         $schedule->command('app:clean-log')->dailyAt('02:00');
 
         $schedule->command('monitor:sql-connections')
                 ->withoutOverlapping()
                 ->everyFifteenMinutes();
+
+        
 
         // $schedule->command('app:fcmbflutter-verify-transactions')
         //         ->withoutOverlapping()
