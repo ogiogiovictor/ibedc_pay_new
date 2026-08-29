@@ -59,11 +59,11 @@ class RecordsTable extends Component
 
              if($user->region == "HQ"){
 
-                  $accounts = $records->orderByRaw("CASE WHEN evaluated = 'yes' THEN 1 ELSE 2 END")->paginate(30)->toArray();
+                  $accounts = $records->where('paid_for_meter', 'Yes')->orderByRaw("CASE WHEN evaluated = 'yes' THEN 1 ELSE 2 END")->paginate(30)->toArray();
 
              } else {
 
-                 $accounts = $records->where('region', $user->region)->where('business_hub', $user->business_hub)->where('evaluated', 'yes')->orderByRaw("CASE WHEN evaluated = 'yes' THEN 1 ELSE 2 END")->paginate(30)->toArray();
+                 $accounts = $records->where('region', $user->region)->where('business_hub', $user->business_hub)->where('evaluated', 'yes')->where('paid_for_meter', 'Yes')->orderByRaw("CASE WHEN evaluated = 'yes' THEN 1 ELSE 2 END")->paginate(30)->toArray();
              }
 
          }elseif ($user->authority == RoleEnum::rico()->value) {

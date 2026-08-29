@@ -42,7 +42,7 @@ class ReportExportController extends Controller
         $sheet       = $spreadsheet->getActiveSheet();
         $sheet->setTitle('Pending Transactions');
 
-        $lastCol = 'L';
+        $lastCol = 'M';
 
         $sheet->mergeCells("A1:{$lastCol}1");
         $sheet->setCellValue('A1', 'IBEDC — Ibadan Electricity Distribution Company');
@@ -80,6 +80,7 @@ class ReportExportController extends Controller
             'A' => '#', 'B' => 'Tracking ID', 'C' => 'Customer Name', 'D' => 'MAP ID',
             'E' => 'Region', 'F' => 'Business Hub', 'G' => 'Service Center', 'H' => 'Address',
             'I' => 'Status', 'J' => 'DSS', 'K' => 'DTM Comment', 'L' => 'Billing Comment',
+            'M' => 'Paid For Meter',
         ];
 
         foreach ($headers as $col => $label) {
@@ -123,6 +124,7 @@ class ReportExportController extends Controller
             $sheet->setCellValue("J{$dataRow}", $rec->dss ?? '—');
             $sheet->setCellValue("K{$dataRow}", $rec->dtm_comment ?? '—');
             $sheet->setCellValue("L{$dataRow}", $rec->billing_comment ?? '—');
+            $sheet->setCellValue("M{$dataRow}", $rec->paid_for_meter ?? '—');
 
             $bgArgb = ($i % 2 === 0) ? 'FFF7F9FF' : 'FFFFFFFF';
             $sheet->getStyle("A{$dataRow}:{$lastCol}{$dataRow}")->applyFromArray([
@@ -160,7 +162,7 @@ class ReportExportController extends Controller
             'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
         ]);
 
-        $widths = ['A'=>5,'B'=>16,'C'=>22,'D'=>18,'E'=>14,'F'=>22,'G'=>18,'H'=>30,'I'=>18,'J'=>14,'K'=>24,'L'=>24];
+        $widths = ['A'=>5,'B'=>16,'C'=>22,'D'=>18,'E'=>14,'F'=>22,'G'=>18,'H'=>30,'I'=>18,'J'=>14,'K'=>24,'L'=>24,'M'=>16];
         foreach ($widths as $col => $w) {
             $sheet->getColumnDimension($col)->setWidth($w);
         }
@@ -311,7 +313,7 @@ class ReportExportController extends Controller
             'upload_houses.region', 'upload_houses.business_hub', 'upload_houses.status',
             'upload_houses.map_id', 'upload_houses.dss', 'upload_houses.lecan_link',
             'upload_houses.evaluated', 'upload_houses.dtm_comment',
-            'upload_houses.billing_comment', 'upload_houses.created_at',
+            'upload_houses.billing_comment', 'upload_houses.paid_for_meter', 'upload_houses.created_at',
             'ac.firstname', 'ac.other_name',
         ])->orderBy('upload_houses.region')->orderBy('upload_houses.business_hub');
     }

@@ -47,6 +47,17 @@ return [
             'verify_peer' => false,
         ],
 
+
+        'alerts' => [
+            'transport' => 'smtp',
+            'host' => env('MAIL_ALERTS_HOST'),
+            'port' => env('MAIL_ALERTS_PORT'),
+            'encryption' => env('MAIL_ALERTS_ENCRYPTION'),
+            'username' => env('MAIL_ALERTS_USERNAME'),
+            'password' => env('MAIL_ALERTS_PASSWORD'),
+            'timeout' => null,
+        ],
+
         'ses' => [
             'transport' => 'ses',
         ],

@@ -25,7 +25,7 @@ class MSMSProcessCommand extends Command
         
         UploadHouses::with(['landlordinfo', 'account'])
             ->whereNull('map_id')
-            ->whereRaw("LOWER(TRIM(paid_for_meter)) = ?", ['no'])
+            ->whereRaw("LOWER(TRIM(paid_for_meter)) IN (?, ?)", ['no', 'old'])
             ->whereNotNull('dss')
              ->whereBetween('updated_at', [
                 now()->subDay()->startOfDay(),

@@ -4,6 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
+use Carbon\Carbon;
 
 class Kernel extends ConsoleKernel
 {
@@ -23,6 +24,26 @@ class Kernel extends ConsoleKernel
         $schedule->command('app:get-ubvs-customers')->twiceDaily(8, 18)->withoutOverlapping();
 
         $schedule->command('app:programme-meter')->hourly()->withoutOverlapping();
+
+       // $schedule->command('app:programme-old-accounts')->dailyAt('06:00');
+       // $schedule->command('app:programme-disrep-meters')->twiceDaily(8, 18)->withoutOverlapping();
+
+       $schedule->command('app:programme-old-accounts')
+        ->dailyAt('06:00')
+        ->when(function () {
+            $anchor = Carbon::parse('2026-08-24'); // the day it should run
+            return Carbon::now()->startOfDay()->diffInDays($anchor) % 2 === 0;
+        });
+
+
+        $schedule->command('app:programme-disrep-meters')
+        ->twiceDaily(8, 18)
+        ->withoutOverlapping()
+        ->when(function () {
+            $anchor = Carbon::parse('2026-08-24');
+            return Carbon::now()->startOfDay()->diffInDays($anchor) % 2 === 0;
+        });
+
         // $schedule->command('app:prepaid-look-up')
         //      ->withoutOverlapping()
         //      ->everyMinute();
@@ -40,11 +61,17 @@ class Kernel extends ConsoleKernel
         //  
         //        ->everyTwoMinutes();
 
-         $schedule->command('app:update-msms-meters')->hourly()->withoutOverlapping();
+        $schedule->command('app:update-msms-meters')->hourly()->withoutOverlapping();
 
         $schedule->command('app:get-ubvs-customer-records')->weekly()->mondays()->at(rand(0, 23) . ':' . rand(0, 59));
 
         $schedule->command('app:clean-log')->dailyAt('02:00');
+
+        $schedule->command('app:generatemapid', [Carbon::now()->year, Carbon::now()->month])
+                ->dailyAt('03:00')
+                ->withoutOverlapping();
+
+       
 
         $schedule->command('monitor:sql-connections')
                 ->withoutOverlapping()

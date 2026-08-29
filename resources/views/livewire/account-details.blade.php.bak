@@ -469,7 +469,7 @@
                          Stage All
                     </button> -->
                     @if(in_array(auth()->user()->email, ['victor.ogiogio@ibedc.com', 'grace.odejayi@ibedc.com', 'emmanuel.adeoye@ibedc.com', 'azeez.aderibigbe@ibedc.com', 'douglass.awpiah@ibedc.com',
-                    'basirat.akande@ibedc.com']))
+                    'basirat.akande@ibedc.com', 'janet.dairo@ibedc.com']))
 
                     <button
                             class="btn btn-xs btn-danger"

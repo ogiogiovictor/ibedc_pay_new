@@ -216,9 +216,10 @@ class CustomerPendingAccount extends Component
 
                 $this->accounts = (clone $baseQuery)
                 ->whereIn('status', ['2'])
+                ->whereIn('paid_for_meter', ['Yes'])
                 ->whereNull('account_no')
                 ->orderByRaw("CASE WHEN evaluated = 'yes' THEN 1 ELSE 2 END") // ✅ evaluated = 'yes' first
-                ->orderByRaw("CASE WHEN paid_for_meter = 'Yes' THEN 1 WHEN paid_for_meter = 'Old' THEN 2 ELSE 3 END")    // Old
+                //->orderByRaw("CASE WHEN paid_for_meter = 'Yes' THEN 1 WHEN paid_for_meter = 'Old' THEN 2 ELSE 3 END")    // Old
                 ->orderBy('created_at', 'asc')
                 ->paginate(30)->toArray();
 
@@ -277,8 +278,9 @@ class CustomerPendingAccount extends Component
                     ->where('region', $user->region)
                     ->whereNull('account_no')
                     ->whereIn('status', ['2'])
+                    ->whereIn('paid_for_meter', ['Yes'])
                     ->orderByRaw("CASE WHEN evaluated = 'yes' THEN 1 ELSE 2 END") // ✅ evaluated = 'approved' first
-                    ->orderByRaw("CASE WHEN paid_for_meter = 'Yes' THEN 1 ELSE 2 END")   
+                   // ->orderByRaw("CASE WHEN paid_for_meter = 'Yes' THEN 1 ELSE 2 END")   
                     ->orderBy('created_at', 'asc')
                     ->paginate(30)->toArray();
 
@@ -342,8 +344,9 @@ class CustomerPendingAccount extends Component
                     ->where('region', $user->region)
                     ->whereNull('account_no')
                     ->whereIn('status', ['2'])
+                    ->whereIn('paid_for_meter', ['Yes'])
                     ->orderByRaw("CASE WHEN evaluated = 'no' THEN 1 ELSE 2 END") // ✅ evaluated = 'no' first
-                    ->orderByRaw("CASE WHEN paid_for_meter = 'Yes' THEN 1 ELSE 2 END")   
+                    //->orderByRaw("CASE WHEN paid_for_meter = 'Yes' THEN 1 ELSE 2 END")   
                     ->orderBy('created_at', 'asc')
                     ->paginate(30)->toArray();
 
@@ -374,7 +377,7 @@ class CustomerPendingAccount extends Component
 
                 $this->withbilling = (clone $baseQuery)
                     ->where('region', $user->region)
-                    ->where('status', '2')->whereIn('evaluated', ['yes'])->whereIn('paid_for_meter', ['Old', 'Yes'])
+                    ->where('status', '2')->whereIn('evaluated', ['yes'])->whereIn('paid_for_meter',  ['Yes'])  //  ['Old', 'Yes']
                     ->count();
 
                      $this->paidformeter = (clone $baseQuery)
@@ -406,8 +409,9 @@ class CustomerPendingAccount extends Component
                     ->where('region', $user->region)
                     ->whereNull('account_no')
                     ->whereIn('status', ['2'])
+                    ->whereIn('paid_for_meter', ['Yes'])
                     ->orderByRaw("CASE WHEN evaluated = 'no' THEN 1 ELSE 2 END") // ✅ evaluated = 'no' first
-                    ->orderByRaw("CASE WHEN paid_for_meter = 'Yes' THEN 1 ELSE 2 END")   
+                    //->orderByRaw("CASE WHEN paid_for_meter = 'Yes' THEN 1 ELSE 2 END")   
                     ->orderBy('created_at', 'asc')
                     ->paginate(30)->toArray();
 

@@ -2,10 +2,12 @@
 
 namespace App\Console\Commands;
 
+use App\Mail\DisrepMetersErrorReportMail;
 use App\Models\StoreDisrepMeter;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 
 class ProgrammeDirespMeters extends Command
 {
@@ -36,6 +38,7 @@ class ProgrammeDirespMeters extends Command
     protected int $programmed = 0;
     protected int $skipped = 0;
     protected int $failed = 0;
+    protected array $errorRows = [];
 
     /**
      * Execute the console command.
@@ -67,6 +70,32 @@ class ProgrammeDirespMeters extends Command
         $this->info("   Skipped:    {$this->skipped}");
         $this->info("   Failed:     {$this->failed}");
         $this->info('***********************************************************');
+
+        if (!empty($this->errorRows)) {
+            try {
+                Mail::to('Basirat.Opoola@ibedc.com')
+                   ->cc([
+                        'victor.ogiogio@ibedc.com',
+                        'babatunde.bodunde@ibedc.com',
+                        'Fatima.Ayandeko@ibedc.com',
+                        'adebayo.oyebamiji@ibedc.com',
+                        'Ademola.Adewumi@ibedc.com',
+                        'Eyinade.Wintope@ibedc.com',
+                        'Akintunde.Akinlabi@ibedc.com',
+                        'AllBHMs@ibedc.com',
+                        'oluwasegun.ukana@ibedc.com',
+                        'frank.obasogie@ibedc.com',
+                         'olumide.adeoye@ibedc.com',
+                        'Charles.Edeigba@ibedc.com',
+                        'john.essien@ibedc.com',
+                        'grace.odejayi@ibedc.com'
+                    ])
+                    ->send(new DisrepMetersErrorReportMail($this->errorRows));
+                $this->info("📧 Error report email queued for " . count($this->errorRows) . " failed record(s).");
+            } catch (\Throwable $e) {
+                $this->error("   ❌ Failed to send error report email: " . $e->getMessage());
+            }
+        }
 
         return Command::SUCCESS;
     }
@@ -171,7 +200,7 @@ class ProgrammeDirespMeters extends Command
                 'meter_number' => $meterNo,
                 'account_number' => str_replace(['/', '-'], '', $accountNo),
                 'type' => 'disrep',
-                'amount' => 0,
+                'amount' => 1,
             ];
 
             $this->info("   📡 Sending meter {$meterNo} for programming...");
@@ -203,8 +232,15 @@ class ProgrammeDirespMeters extends Command
                 || str_contains($errMessage, 'Unlink the currently linked meter first before linking a new one');
 
             if (!$programResponse->successful() && !$alreadyProgrammed) {
-                $this->error("   ❌ UBVS PROGRAMMING FAILED for meter {$meterNo}: " . ($programData['err_message'] ?? $programData['message'] ?? $programResponse->body()));
+                $errMsg = $programData['err_message'] ?? $programData['message'] ?? $programResponse->body();
+                $this->error("   ❌ UBVS PROGRAMMING FAILED for meter {$meterNo}: " . $errMsg);
                 $this->failed++;
+                $this->errorRows[] = [
+                    'meter_no' => $meterNo,
+                    'account_no' => $accountNo,
+                    'address' => $record['Address'] ?? '',
+                    'error_message' => (string) $errMsg,
+                ];
 
                 return;
             }
@@ -255,8 +291,15 @@ class ProgrammeDirespMeters extends Command
             ]);
 
             if (!$notifyResponse->successful()) {
-                $this->error("   ❌ MSMS NOTIFY FAILED for {$accountNo}: " . ($notifyData['message'] ?? $notifyResponse->body()));
+                $errMsg = $notifyData['message'] ?? $notifyResponse->body();
+                $this->error("   ❌ MSMS NOTIFY FAILED for {$accountNo}: " . $errMsg);
                 $this->failed++;
+                $this->errorRows[] = [
+                    'meter_no' => $meterNo,
+                    'account_no' => $accountNo,
+                    'address' => $record['Address'] ?? '',
+                    'error_message' => (string) $errMsg,
+                ];
 
                 return;
             }
@@ -274,6 +317,12 @@ class ProgrammeDirespMeters extends Command
             ]);
 
             $this->error("   ❌ EXCEPTION while processing {$accountNo}: " . $e->getMessage());
+            $this->errorRows[] = [
+                'meter_no' => $meterNo,
+                'account_no' => $accountNo,
+                'address' => $record['Address'] ?? '',
+                'error_message' => $e->getMessage(),
+            ];
         }
     }
 }

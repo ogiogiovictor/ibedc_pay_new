@@ -8,47 +8,54 @@ use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Log;
 
-class UbvsResyncAccount extends Command
+class Generatemapid extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:ubvs-resync-account  {tracking_ids}';
-    protected $description = 'Process MSMS map generation using tracking IDs';
+    protected $signature = 'app:generatemapid {year} {month}';
+
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Generate MSMS MAP IDs for all eligible records created in the given year and month';
 
     /**
      * Execute the console command.
      */
     public function handle()
     {
-       
-       $this->info('🔄 Starting processing using provided tracking IDs...');
-        $this->newLine();
+        $year = $this->argument('year');
+        $month = $this->argument('month');
 
-        $trackingIdsInput = $this->argument('tracking_ids');
-
-        // Convert "1,2,3" → [1,2,3]
-        $trackingIds = array_filter(array_map('trim', explode(',', $trackingIdsInput)));
-
-        if (empty($trackingIds)) {
-            $this->error('❌ No tracking IDs provided.');
+        if (!ctype_digit((string) $year) || !ctype_digit((string) $month) || $month < 1 || $month > 12) {
+            $this->error('❌ Invalid year or month provided.');
             return;
         }
+
+        $this->info("🔄 Starting processing for {$year}-{$month}...");
+        $this->newLine();
 
         $totalProcessed = 0;
         $totalSuccess = 0;
         $totalFailed = 0;
 
         UploadHouses::with(['landlordinfo', 'account'])
-            ->whereIn('id', $trackingIds)
-            //->where('status', ['2', '1'])
+            ->whereYear('created_at', $year)
+            ->whereMonth('created_at', $month)
             ->whereIn('paid_for_meter', ["No", "Old"])
             ->whereNull('map_id')
+            ->whereNotNull('dss')
+            ->where('status', '2')
             ->chunk(50, function ($records) use (&$totalProcessed, &$totalSuccess, &$totalFailed) {
 
                 foreach ($records as $data) {
+
+                    $response = [];
 
                     try {
                         $this->info("➡️ Processing ID: {$data->id}");
@@ -74,18 +81,20 @@ class UbvsResyncAccount extends Command
                         } else {
                             $totalFailed++;
                             $this->error("❌ Failed for ID: {$data->id}");
+
+                            Log::error('MSMS Command Failed', [
+                                'id' => $data->id,
+                                'status' => $response['status'] ?? null,
+                                'message' => $response['message'] ?? null,
+                                'error' => $response['error'] ?? null,
+                                'payload' => $response['payload'] ?? null,
+                                'response' => $response['response'] ?? null,
+                            ]);
                         }
 
                     } catch (\Exception $e) {
 
                         $totalFailed++;
-
-                        Log::error('MSMS Command Error', [
-                            'id' => $data->id,
-                            'error' => $e->getMessage(),
-                            'payload' => $response['payload'] ?? null,
-                            'response' => $response['response'] ?? null,
-                        ]);
 
                         $this->error("❌ Exception for ID: {$data->id}");
                         $this->line($e->getMessage());
@@ -95,6 +104,13 @@ class UbvsResyncAccount extends Command
 
                         $this->line("Response:");
                         $this->line(json_encode($response['response'] ?? [], JSON_PRETTY_PRINT));
+
+                        Log::error('MSMS Command Exception', [
+                            'id' => $data->id,
+                            'error' => $e->getMessage(),
+                            'payload' => $response['payload'] ?? null,
+                            'response' => $response['response'] ?? null,
+                        ]);
                     }
 
                     $this->newLine();
@@ -118,7 +134,7 @@ class UbvsResyncAccount extends Command
         $responseData = null;
 
         try {
-            $apiKey = "LIVEKEY_0XJLDYJZOQWF8UQ9XWVTH" ?? env('MSMS_API_KEY');
+            $apiKey = env('MSMS_API_KEY', 'LIVEKEY_0XJLDYJZOQWF8UQ9XWVTH');
 
             $data = UploadHouses::with(['landlordinfo', 'account'])
                 ->findOrFail($id);
@@ -234,21 +250,27 @@ class UbvsResyncAccount extends Command
             $responseData = $createResponse->json();
             $mapId = $responseData['data']['MAP ID'] ?? null;
 
-            $customerEmail = $data->account->email;
-            $customerName = $data->account->surname . ' ' . $data->account->firstname;
-            $landlordEmail = $data->landlordinfo->landlord_email;
-
             if ($createResponse->successful() && $mapId) {
 
                 UploadHouses::where('id', $id)->update([
                     'map_id' => $mapId
                 ]);
 
-                Mail::raw("Dear {$customerName},\n\nYour meter processing with tracking ID {$data->id} has been successfully validated.\n\nYour MAP ID is: {$mapId}\n\nPlease proceed to the MSMS portal to complete your payment.\n\nhttps://msms.ibedc.com/\n\nThank you.", function ($message) use ($customerEmail, $landlordEmail) {
-                    $message->to($customerEmail)
-                            ->cc($landlordEmail)
-                            ->subject('Meter Process Validated');
-                });
+                $customerEmail = $data->account->email ?? null;
+                $customerName = trim(($data->account->surname ?? '') . ' ' . ($data->account->firstname ?? ''));
+                $landlordEmail = $data->landlordinfo->landlord_email ?? null;
+
+                if ($customerEmail) {
+                    Mail::raw("Dear {$customerName},\n\nYour meter processing with tracking ID {$data->id} has been successfully validated.\n\nYour MAP ID is: {$mapId}\n\nPlease proceed to the MSMS portal to complete your payment.\n\nhttps://msms.ibedc.com/\n\nThank you.", function ($message) use ($customerEmail, $landlordEmail) {
+                        $message->to($customerEmail);
+
+                        if ($landlordEmail) {
+                            $message->cc($landlordEmail);
+                        }
+
+                        $message->subject('Meter Process Validated');
+                    });
+                }
 
                 return [
                     "success" => true,

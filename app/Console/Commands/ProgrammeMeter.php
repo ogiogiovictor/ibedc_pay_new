@@ -76,12 +76,10 @@ class ProgrammeMeter extends Command
 
             $this->info("📅 Restricting to updated_at year={$year} month={$month}");
 
-            $query->whereYear('updated_at', $year)
-                ->whereMonth('updated_at', $month);
+            $query->whereYear('updated_at', $year)->whereMonth('updated_at', $month);
         }
 
         $this->totalFound = (clone $query)->count();
-
         $this->info("📊 Total Records Found: {$this->totalFound}");
 
         if ($this->totalFound === 0) {
@@ -148,6 +146,10 @@ class ProgrammeMeter extends Command
             $installationStatus = $data['InstallationInformation']['InstallationStatus'] ?? null;
             $meterNo = $data['InstallationInformation']['MeterNo'] ?? null;
             $paymentAmount = $data['PaymentInformation']['AmountPaid'] ?? 0;
+
+            $this->info('   📦 Payment Amount Before VAT: ' . $paymentAmount);
+
+            $paymentAmount -= $paymentAmount * 0.075; // remove 7.5% VAT
 
             $this->line("   📄 Payment: {$paymentStatus} | Allocation: {$allocationStatus} | Installation: {$installationStatus} | Meter No: " . ($meterNo ?: 'N/A'));
 

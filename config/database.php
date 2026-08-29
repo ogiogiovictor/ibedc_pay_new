@@ -225,6 +225,22 @@ return [
             // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
         ],
 
+
+         'msms' => [
+            'driver' => 'sqlsrv',
+            'url' => env('DATABASE_URL'),
+            'host' => env('DB_HOST_MSMS', 'localhost'),
+            'port' => env('DB_PORT_MSMS', '1433'),
+            'database' => env('DB_DATABASE_MSMS', 'forge'),
+            'username' => env('DB_USERNAME_MSMS', 'forge'),
+            'password' => env('DB_PASSWORD_MSMS', ''),
+            'charset' => 'utf8',
+            'prefix' => '',
+            'prefix_indexes' => true,
+            // 'encrypt' => env('DB_ENCRYPT', 'yes'),
+            // 'trust_server_certificate' => env('DB_TRUST_SERVER_CERTIFICATE', 'false'),
+        ],
+
         'castingmvp' => [
             'driver' => 'sqlsrv',
             'url' => env('DATABASE_URL'),

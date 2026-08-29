@@ -194,7 +194,7 @@
                                     @if(in_array(auth()->user()->email, [
                                         'victor.ogiogio@ibedc.com','grace.odejayi@ibedc.com',
                                         'emmanuel.adeoye@ibedc.com','azeez.aderibigbe@ibedc.com',
-                                        'douglass.awpiah@ibedc.com','basirat.akande@ibedc.com'
+                                        'janet.dairo@ibedc.com','basirat.akande@ibedc.com'
                                     ]))
                                     <button
                                         class="btn btn-sm btn-danger"
@@ -374,7 +374,7 @@
                                                                         </button>
                                                                         @endif
 
-                                                                        @if(in_array($account->paid_for_meter, ['Yes','Paid','Old']))
+                                                                        @if(in_array($account->paid_for_meter, ['Yes','Paid']))
                                                                         <button wire:click="stageUBVSAccount({{ $details->id }}, {{ $account->id }})"
                                                                                 wire:loading.attr="disabled"
                                                                                 class="btn btn-xs btn-success"
