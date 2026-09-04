@@ -275,7 +275,7 @@ class CustomerPendingAccount extends Component
            } else if ($user->region != "HQ" && $user->default_password == 1) {  // for HQ staff in the region
 
                 $this->accounts = (clone $baseQuery)
-                    ->where('region', $user->region)
+                    ->whereIn('region', $this->regionGroup($user->region))
                     ->whereNull('account_no')
                     ->whereIn('status', ['2'])
                     ->whereIn('paid_for_meter', ['Yes'])
@@ -285,12 +285,12 @@ class CustomerPendingAccount extends Component
                     ->paginate(30)->toArray();
 
                 $this->completed = (clone $baseQuery)
-                 ->where('region', $user->region)
+                 ->whereIn('region', $this->regionGroup($user->region))
                 ->whereIn('status', ['4'])
                 ->count();
 
                 $this->pending = (clone $baseQuery)
-                 ->where('region', $user->region)
+                 ->whereIn('region', $this->regionGroup($user->region))
                     ->whereIn('status', ['1', '2', '3'])
                     ->count();
 
@@ -300,7 +300,7 @@ class CustomerPendingAccount extends Component
 
 
                 $this->pendingApproval = (clone $baseQuery)
-                 ->where('region', $user->region)
+                 ->whereIn('region', $this->regionGroup($user->region))
                     ->whereIn('status', ['1', '2', '0'])
                     ->count();
 
@@ -310,38 +310,38 @@ class CustomerPendingAccount extends Component
                 //     ->count();
 
                 $this->with_regional_billing  = (clone $baseQuery)
-                    ->where('region', $user->region)
+                    ->whereIn('region', $this->regionGroup($user->region))
                     ->where('status', '2')->whereIn('evaluated', ['no'])
                     ->count();
 
                  $this->withbilling = (clone $baseQuery)
-                    ->where('region', $user->region)
+                    ->whereIn('region', $this->regionGroup($user->region))
                     ->where('status', '2')->where('evaluated', 'yes')->whereIn('paid_for_meter', ['Yes'])
                     ->count();
 
-                 $this->with_region = UploadHouses::where('evaluated', 'approved')->where('region', $user->region)
+                 $this->with_region = UploadHouses::where('evaluated', 'approved')->whereIn('region', $this->regionGroup($user->region))
                 ->where('status', 2)->count();
 
                  $this->paidformeter = (clone $baseQuery)
-                   ->where('region', $user->region)
+                   ->whereIn('region', $this->regionGroup($user->region))
                     ->where('paid_for_meter', 'Yes')
                     ->count();
 
                   $this->pendingpayment = (clone $baseQuery)
-                    ->where('region', $user->region)
+                    ->whereIn('region', $this->regionGroup($user->region))
                     ->where('paid_for_meter', 'No')
                     ->count();
 
 
                 $this->rejected = (clone $baseQuery)
-                 ->where('region', $user->region)
+                 ->whereIn('region', $this->regionGroup($user->region))
                     ->whereIn('status', ['5'])
                     ->count();
 
            }else if ($user->region != "HQ" && $user->default_password == 9) {
 
                 $this->accounts = (clone $baseQuery)
-                    ->where('region', $user->region)
+                    ->whereIn('region', $this->regionGroup($user->region))
                     ->whereNull('account_no')
                     ->whereIn('status', ['2'])
                     ->whereIn('paid_for_meter', ['Yes'])
@@ -351,12 +351,12 @@ class CustomerPendingAccount extends Component
                     ->paginate(30)->toArray();
 
                 $this->completed = (clone $baseQuery)
-                 ->where('region', $user->region)
+                 ->whereIn('region', $this->regionGroup($user->region))
                 ->whereIn('status', ['4'])
                 ->count();
 
                 $this->pending = (clone $baseQuery)
-                 ->where('region', $user->region)
+                 ->whereIn('region', $this->regionGroup($user->region))
                     ->whereIn('status', ['1', '2', '3'])
                     ->count();
 
@@ -366,7 +366,7 @@ class CustomerPendingAccount extends Component
 
 
                 $this->pendingApproval = (clone $baseQuery)
-                 ->where('region', $user->region)
+                 ->whereIn('region', $this->regionGroup($user->region))
                     ->whereIn('status', ['1', '2', '0'])
                     ->count();
 
@@ -376,26 +376,26 @@ class CustomerPendingAccount extends Component
                 //     ->count();
 
                 $this->withbilling = (clone $baseQuery)
-                    ->where('region', $user->region)
+                    ->whereIn('region', $this->regionGroup($user->region))
                     ->where('status', '2')->whereIn('evaluated', ['yes'])->whereIn('paid_for_meter',  ['Yes'])  //  ['Old', 'Yes']
                     ->count();
 
                      $this->paidformeter = (clone $baseQuery)
-                     ->where('region', $user->region)
+                     ->whereIn('region', $this->regionGroup($user->region))
                     ->where('paid_for_meter', 'Yes')
                     ->count();
 
 
                  $this->with_regional_billing  = (clone $baseQuery)
-                    ->where('region', $user->region)
+                    ->whereIn('region', $this->regionGroup($user->region))
                     ->where('status', '2')->whereIn('evaluated', ['no'])
                     ->count();
 
-                 $this->with_region = UploadHouses::where('evaluated', 'approved')->where('region', $user->region)
+                 $this->with_region = UploadHouses::where('evaluated', 'approved')->whereIn('region', $this->regionGroup($user->region))
                 ->where('status', 2)->count();
 
                 $this->rejected = (clone $baseQuery)
-                 ->where('region', $user->region)
+                 ->whereIn('region', $this->regionGroup($user->region))
                     ->whereIn('status', ['5'])
                     ->count();
 
@@ -406,7 +406,7 @@ class CustomerPendingAccount extends Component
            }else if ($user->region) {
 
                 $this->accounts = (clone $baseQuery)
-                    ->where('region', $user->region)
+                    ->whereIn('region', $user->region)
                     ->whereNull('account_no')
                     ->whereIn('status', ['2'])
                     ->whereIn('paid_for_meter', ['Yes'])
@@ -416,12 +416,12 @@ class CustomerPendingAccount extends Component
                     ->paginate(30)->toArray();
 
                 $this->completed = (clone $baseQuery)
-                 ->where('region', $user->region)
+                 ->whereIn('region', $user->region)
                 ->whereIn('status', ['4'])
                 ->count();
 
                 $this->pending = (clone $baseQuery)
-                 ->where('region', $user->region)
+                 ->whereIn('region', $user->region)
                     ->whereIn('status', ['1', '2', '3'])
                     ->count();
 
@@ -430,7 +430,7 @@ class CustomerPendingAccount extends Component
                 ->count();
 
                   $this->paidformeter = (clone $baseQuery)
-                  ->where('region', $user->region)
+                  ->whereIn('region', $user->region)
                     ->where('paid_for_meter', 'Yes')
                     ->count();
 
@@ -440,7 +440,7 @@ class CustomerPendingAccount extends Component
 
 
                 $this->pendingApproval = (clone $baseQuery)
-                 ->where('region', $user->region)
+                 ->whereIn('region', $user->region)
                     ->whereIn('status', ['1', '2', '0'])
                     ->count();
 
@@ -450,20 +450,20 @@ class CustomerPendingAccount extends Component
                 //     ->count();
 
                  $this->withbilling = (clone $baseQuery)
-                    ->where('region', $user->region)
+                    ->whereIn('region', $user->region)
                     ->where('status', '2')->whereIn('evaluated', ['yes'])
                     ->count();
 
-                 $this->with_region = UploadHouses::where('evaluated', 'approved')->where('region', $user->region)
+                 $this->with_region = UploadHouses::where('evaluated', 'approved')->whereIn('region', $this->regionGroup($user->region))
                 ->where('status', 2)->count();
 
                  $this->with_regional_billing  = (clone $baseQuery)
-                    ->where('region', $user->region)
+                    ->whereIn('region', $user->region)
                     ->where('status', '2')->whereIn('evaluated', ['no'])
                     ->count();
 
                 $this->rejected = (clone $baseQuery)
-                 ->where('region', $user->region)
+                 ->whereIn('region', $user->region)
                     ->whereIn('status', ['5'])
                     ->count();
 
@@ -859,6 +859,16 @@ class CustomerPendingAccount extends Component
             $this->accounts = collect(); // fallback empty
         }
 
+    }
+
+    private function regionGroup($region)
+    {
+        return match ($region) {
+            'OGUN' => ['OGUN', 'OGUN WEST'],
+            'OYO' => ['OYO', 'NEW OYO'],
+            'OSUN' => ['OSUN', 'NEW OSUN'],
+            default => [$region],
+        };
     }
 
     private function baseQueryForUser($user)

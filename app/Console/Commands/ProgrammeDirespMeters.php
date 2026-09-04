@@ -73,22 +73,22 @@ class ProgrammeDirespMeters extends Command
 
         if (!empty($this->errorRows)) {
             try {
-                Mail::to('Basirat.Opoola@ibedc.com')
-                   ->cc([
+               Mail::to([ 'AllBHMs@ibedc.com', 'olumide.adeoye@ibedc.com',  'Eyinade.Wintope@ibedc.com',
+                'oluwasegun.ukana@ibedc.com', 'AllRegionalHeads@ibedc.com', 'adebayo.olanipekun@ibedc.com'])
+                    ->cc([
                         'victor.ogiogio@ibedc.com',
                         'babatunde.bodunde@ibedc.com',
                         'Fatima.Ayandeko@ibedc.com',
                         'adebayo.oyebamiji@ibedc.com',
                         'Ademola.Adewumi@ibedc.com',
-                        'Eyinade.Wintope@ibedc.com',
+                        'Basirat.Opoola@ibedc.com',
                         'Akintunde.Akinlabi@ibedc.com',
-                        'AllBHMs@ibedc.com',
-                        'oluwasegun.ukana@ibedc.com',
                         'frank.obasogie@ibedc.com',
-                         'olumide.adeoye@ibedc.com',
                         'Charles.Edeigba@ibedc.com',
                         'john.essien@ibedc.com',
-                        'grace.odejayi@ibedc.com'
+                        'grace.odejayi@ibedc.com',
+                        'customercare@ibedc.com'
+                        
                     ])
                     ->send(new DisrepMetersErrorReportMail($this->errorRows));
                 $this->info("📧 Error report email queued for " . count($this->errorRows) . " failed record(s).");
@@ -239,6 +239,8 @@ class ProgrammeDirespMeters extends Command
                     'meter_no' => $meterNo,
                     'account_no' => $accountNo,
                     'address' => $record['Address'] ?? '',
+                    'Region' => $record['Region'] ?? '',
+                    'BHub' => $record['BHub'] ?? '',
                     'error_message' => (string) $errMsg,
                 ];
 
@@ -298,6 +300,8 @@ class ProgrammeDirespMeters extends Command
                     'meter_no' => $meterNo,
                     'account_no' => $accountNo,
                     'address' => $record['Address'] ?? '',
+                    'Region' => $record['Region'] ?? '',
+                    'BHub' => $record['BHub'] ?? '',
                     'error_message' => (string) $errMsg,
                 ];
 

@@ -26,7 +26,7 @@ class OldAccountsErrorReportMail extends Mailable implements ShouldQueue
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Accounts Programming - Error Report (' . count($this->errors) . ' failed)',
+            subject: 'MAP Programming - Error Report (' . count($this->errors) . ' failed)',
         );
     }
 

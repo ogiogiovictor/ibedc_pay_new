@@ -105,6 +105,9 @@
                           <option value="OSUN">OSUN</option>
                           <option value="OYO">OYO</option>
                           <option value="IBADAN">IBADAN</option>
+                          <option value="NEW OYO">NEW OYO</option>
+                          <option value="NEW OSUN">NEW OSUN</option>
+                          <option value="OGUN WEST">OGUN WEST</option>
                            
                         </select>
                         @error('region') <small class="text-danger">{{ $message }}</small>@enderror
@@ -141,7 +144,7 @@
                           <option value="">Select Business Hub</option>
                             @foreach($buid as $b)
                               
-                                <option value="{{ $b->Name }}">{{ $b->Name }}</option>
+                                <option value="{{ $b->bhub }}">{{ $b->bhub }}</option>
                             @endforeach
                            
                         </select>
@@ -162,7 +165,7 @@
                           <option value="">Select Service Center</option>
                             @foreach($get_service as $b)
                               
-                                <option value="{{ $b->DSS_11KV_415V_Owner }}">{{ $b->DSS_11KV_415V_Owner }}</option>
+                                <option value="{{ $b->service_center }}">{{ $b->service_center }}</option>
                             @endforeach
                            
                         </select>

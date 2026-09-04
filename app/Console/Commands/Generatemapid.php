@@ -189,7 +189,11 @@ class Generatemapid extends Command
             /**
              * 🔹 REGION
              */
-            $region = collect($regions)->firstWhere('name', $data->region . ' Region');
+          //  $region = collect($regions)->firstWhere('name', $data->region . ' Region');
+           // $region_id = $region['id'] ?? null;
+            
+            $expectedRegionName = ucwords($data->region) . ' Region';
+            $region = collect($regions)->firstWhere('name', $expectedRegionName);
             $region_id = $region['id'] ?? null;
 
             /**

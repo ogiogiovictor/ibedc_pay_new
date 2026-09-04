@@ -198,22 +198,21 @@ class ProgrammeOldAccounts extends Command
         if (!empty($errorRows)) {
             try {
                // Mail::mailer('alerts')->to('Basirat.Opoola@ibedc.com')
-                Mail::to('Basirat.Opoola@ibedc.com')
+                Mail::to([ 'AllBHMs@ibedc.com', 'olumide.adeoye@ibedc.com',  'Eyinade.Wintope@ibedc.com',
+                'oluwasegun.ukana@ibedc.com', 'AllRegionalHeads@ibedc.com', 'adebayo.olanipekun@ibedc.com'])
                     ->cc([
                         'victor.ogiogio@ibedc.com',
                         'babatunde.bodunde@ibedc.com',
                         'Fatima.Ayandeko@ibedc.com',
                         'adebayo.oyebamiji@ibedc.com',
                         'Ademola.Adewumi@ibedc.com',
-                        'Eyinade.Wintope@ibedc.com',
+                        'Basirat.Opoola@ibedc.com',
                         'Akintunde.Akinlabi@ibedc.com',
-                        'AllBHMs@ibedc.com',
-                        'oluwasegun.ukana@ibedc.com',
                         'frank.obasogie@ibedc.com',
-                        'olumide.adeoye@ibedc.com',
                         'Charles.Edeigba@ibedc.com',
                         'john.essien@ibedc.com',
-                        'grace.odejayi@ibedc.com'
+                        'grace.odejayi@ibedc.com',
+                         'customercare@ibedc.com'
                         
                     ])
                     ->send(new OldAccountsErrorReportMail($errorRows));

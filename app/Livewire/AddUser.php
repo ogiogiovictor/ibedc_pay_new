@@ -9,7 +9,7 @@ use App\Models\NAC\DSS;
 use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Mail;
-use App\Mail\UserAccountCreated;
+use App\Models\Location;
 
 class AddUser extends Component
 {
@@ -19,8 +19,10 @@ class AddUser extends Component
 
 
     public function mount() {
-        $this->buid = BusinessUnit::orderby("Name", "asc")->get();
-        $this->get_service = DSS::select("DSS_11KV_415V_Owner")->orderby("DSS_11KV_415V_Owner", "asc")->distinct()->get();
+        //$this->buid = BusinessUnit::orderby("Name", "asc")->get();
+        $this->buid = Location::distinct()->select('bhub')->get();
+       // $this->get_service = DSS::select("DSS_11KV_415V_Owner")->orderby("DSS_11KV_415V_Owner", "asc")->distinct()->get();
+        $this->get_service = Location::distinct()->select('service_center')->get();
     }
 
     public function addUser()

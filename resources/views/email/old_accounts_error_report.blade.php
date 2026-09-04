@@ -91,7 +91,7 @@
             <table role="presentation" border="0" cellpadding="0" cellspacing="0" class="main">
               <tr>
                 <td class="wrapper">
-                  <p><b>MAP - (Old) Accounts Programming — Error Report</b></p>
+                  <p><b>MAP Programming — Error Report</b></p>
 
                   <p>
                     The scheduled map accounts meter programming run encountered
@@ -108,7 +108,7 @@
                         <th>Service Center</th>
                         <th>City</th>
                         <th>Location</th>
-                        <th>Error Message</th>
+                        <th>Error Message From UBVS</th>
                       </tr>
                     </thead>
                     <tbody>

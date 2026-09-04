@@ -123,6 +123,8 @@ class UbvsResyncAccount extends Command
             $data = UploadHouses::with(['landlordinfo', 'account'])
                 ->findOrFail($id);
 
+            $this->info("Data region: {$data->region} | Data business_hub: {$data->business_hub}");
+
             /**
              * 🔹 FETCH LOCATIONS
              */
@@ -156,6 +158,12 @@ class UbvsResyncAccount extends Command
             $regions = $locations['data']['Regions'];
             $bhubs = $locations['data']['BusinessHubs'];
 
+            $this->info("MSMS Regions:");
+            $this->line(json_encode($regions, JSON_PRETTY_PRINT));
+
+            $this->info("MSMS Business Hubs:");
+            $this->line(json_encode($bhubs, JSON_PRETTY_PRINT));
+
             /**
              * 🔥 MAPPING
              */
@@ -173,8 +181,13 @@ class UbvsResyncAccount extends Command
             /**
              * 🔹 REGION
              */
-            $region = collect($regions)->firstWhere('name', $data->region . ' Region');
+            $expectedRegionName = ucwords($data->region) . ' Region';
+            $region = collect($regions)->firstWhere('name', $expectedRegionName);
             $region_id = $region['id'] ?? null;
+
+            $this->info("Looking for region: {$expectedRegionName}");
+            $this->info("Matched region: " . ($region['name'] ?? 'NOT FOUND') . " (id: " . ($region_id ?? 'null') . ")");
+            $this->info("Match: " . (($region['name'] ?? null) === $expectedRegionName ? 'YES' : 'NO'));
 
             /**
              * 🔹 BUSINESS HUB

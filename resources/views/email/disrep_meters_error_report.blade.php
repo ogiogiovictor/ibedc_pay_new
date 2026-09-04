@@ -105,7 +105,9 @@
                         <th>Account No</th>
                         <th>Meter No</th>
                         <th>Address</th>
-                        <th>Error Message</th>
+                        <th>Region</th>
+                        <th>Business Hub</th>
+                        <th>Error Message From UBVS</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -114,6 +116,8 @@
                           <td>{{ $row['account_no'] ?: 'N/A' }}</td>
                           <td>{{ $row['meter_no'] ?: 'N/A' }}</td>
                           <td>{{ $row['address'] ?: 'N/A' }}</td>
+                          <td>{{ $row['Region'] ?: 'N/A' }}</td>
+                          <td>{{ $row['BHub'] ?: 'N/A' }}</td>
                           <td>{{ $row['error_message'] ?: 'N/A' }}</td>
                         </tr>
                       @endforeach
