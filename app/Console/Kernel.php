@@ -16,7 +16,7 @@ class Kernel extends ConsoleKernel
         // $schedule->command('inspire')->hourly();
 
 
-        //$schedule->command('app:get-customerpull')->weekly()->withoutOverlapping();
+        $schedule->command('app:get-customerpull')->weekly()->withoutOverlapping();
 
         $schedule->command('app:get-customerpull')->hourly()->withoutOverlapping();
 
@@ -78,6 +78,15 @@ class Kernel extends ConsoleKernel
                 ->everyFifteenMinutes();
 
         
+        $schedule->command('app:export-paid-for-meter')->weekdays()->at('07:00')->withoutOverlapping();
+
+         $schedule->command('sync:meter-status')
+        ->twiceDaily(8, 18)
+        ->withoutOverlapping()
+        ->when(function () {
+            $anchor = Carbon::parse('2026-08-24');
+            return Carbon::now()->startOfDay()->diffInDays($anchor) % 2 === 0;
+        });
 
         // $schedule->command('app:fcmbflutter-verify-transactions')
         //         ->withoutOverlapping()

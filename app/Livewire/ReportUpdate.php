@@ -18,9 +18,6 @@ class ReportUpdate extends Component
     public string $filterDateFrom = '';
     public string $filterDateTo   = '';
 
-    private string $userRegion = '';
-    private bool   $isHQ       = false;
-
     private array $sortable = [
         'tracking_id'    => 'upload_houses.tracking_id',
         'firstname'      => 'ac.firstname',
@@ -37,11 +34,13 @@ class ReportUpdate extends Component
     public string $sortCol = 'upload_houses.created_at';
     public string $sortDir = 'desc';
 
-    public function mount(): void
+    // Resolved per request: private props are not persisted between Livewire requests.
+    private function userRegions(): array
     {
-        $user           = Auth::user();
-        $this->isHQ     = $user->region === 'HQ' || $user->authority === RoleEnum::super_admin()->value;
-        $this->userRegion = $this->isHQ ? '' : $user->region;
+        $user = Auth::user();
+        $isHQ = $user->region === 'HQ' || $user->authority === RoleEnum::super_admin()->value;
+
+        return $isHQ ? [] : $this->regionGroup($user->region);
     }
 
     public function updatedFilterSearch()   { $this->resetPage(); }
@@ -95,8 +94,8 @@ class ReportUpdate extends Component
             ->whereNotNull('upload_houses.dss')
             ->whereNotNull('upload_houses.lecan_link');
 
-        if (!empty($this->userRegion)) {
-            $query->where('upload_houses.region', $this->userRegion);
+        if (!empty($regions = $this->userRegions())) {
+            $query->whereIn('upload_houses.region', $regions);
         }
 
         if (!empty($this->filterSearch)) {
@@ -135,8 +134,8 @@ class ReportUpdate extends Component
             ->whereNull('upload_houses.account_no')
             ->whereNull('upload_houses.deleted_at');
 
-        if (!empty($this->userRegion)) {
-            $q->where('upload_houses.region', $this->userRegion);
+        if (!empty($regions = $this->userRegions())) {
+            $q->whereIn('upload_houses.region', $regions);
         }
 
         if (!empty($this->filterSearch)) {
@@ -171,6 +170,17 @@ class ReportUpdate extends Component
                         AND upload_houses.paid_for_meter IN ('Yes', 'Old')
                    THEN 1 END) AS ready_for_account
         ")->first();
+    }
+
+
+     private function regionGroup($region)
+    {
+        return match ($region) {
+            'OGUN' => ['OGUN', 'OGUN WEST'],
+            'OYO' => ['OYO', 'NEW OYO'],
+            'OSUN' => ['OSUN', 'NEW OSUN'],
+            default => empty($region) ? [] : [$region],
+        };
     }
 
     public function render()

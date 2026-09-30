@@ -197,8 +197,11 @@ class ProgrammeOldAccounts extends Command
 
         if (!empty($errorRows)) {
             try {
-               // Mail::mailer('alerts')->to('Basirat.Opoola@ibedc.com')
-                Mail::to([ 'AllBHMs@ibedc.com', 'olumide.adeoye@ibedc.com',  'Eyinade.Wintope@ibedc.com',
+              
+              //  Mail::to([ 'AllBHMs@ibedc.com', 'olumide.adeoye@ibedc.com',  'Eyinade.Wintope@ibedc.com',
+               // 'oluwasegun.ukana@ibedc.com', 'AllRegionalHeads@ibedc.com', 'adebayo.olanipekun@ibedc.com'])
+                //    ->
+                Mail::mailer('alerts')->to([ 'AllBHMs@ibedc.com', 'olumide.adeoye@ibedc.com',  'Eyinade.Wintope@ibedc.com',
                 'oluwasegun.ukana@ibedc.com', 'AllRegionalHeads@ibedc.com', 'adebayo.olanipekun@ibedc.com'])
                     ->cc([
                         'victor.ogiogio@ibedc.com',
@@ -212,8 +215,7 @@ class ProgrammeOldAccounts extends Command
                         'Charles.Edeigba@ibedc.com',
                         'john.essien@ibedc.com',
                         'grace.odejayi@ibedc.com',
-                         'customercare@ibedc.com'
-                        
+                        'customercare@ibedc.com'
                     ])
                     ->send(new OldAccountsErrorReportMail($errorRows));
                 $this->info("📧 Error report email queued for " . count($errorRows) . " failed allocation(s).");

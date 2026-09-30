@@ -216,49 +216,47 @@ class AccountController extends BaseAPIController
 
         $data = $request->validated();
 
-         $names = collect([
-            strtolower(trim($data['landlord_surname'])),
-            strtolower(trim($data['landlord_othernames'])),
-        ]);
+        $surname = strtolower(trim($data['landlord_surname']));
+        $othernames = strtolower(trim($data['landlord_othernames']));
 
-        $sortedInputNames = $names->sort()->values()->toArray(); // e.g. ['john', 'michael', 'smith']
+         // Search existing accounts where the (unordered) combination of names match,
+         // done at the database level to avoid loading the whole table into memory.
+        $hasPotentialMatch = ContinueAccountCreation::where(function ($query) use ($surname, $othernames) {
+                $query->whereRaw('LOWER(TRIM(landlord_surname)) = ?', [$surname])
+                      ->whereRaw('LOWER(TRIM(landlord_othernames)) = ?', [$othernames]);
+            })
+            ->orWhere(function ($query) use ($surname, $othernames) {
+                $query->whereRaw('LOWER(TRIM(landlord_surname)) = ?', [$othernames])
+                      ->whereRaw('LOWER(TRIM(landlord_othernames)) = ?', [$surname]);
+            })
+            ->exists();
 
-         // Search existing accounts where the sorted combination of names match
-        $potentialMatches = ContinueAccountCreation::all()->filter(function ($user) use ($sortedInputNames) {
-            $existingNames = collect([
-                strtolower(trim($user->landlord_surname)),
-                strtolower(trim($user->landlord_othernames)),
-            ]);
-
-            return $existingNames->sort()->values()->toArray() === $sortedInputNames;
-        });
-
-        if ($potentialMatches->isNotEmpty()) {
+        if ($hasPotentialMatch) {
               $data['duplicate'] = 1; // ✅ mark as suspected
             // return $this->sendError('Landlord Information already exist. Please use your tracking ID to continue.', 'ERROR', Response::HTTP_UNAUTHORIZED);
          }
 
 
-         $checkEMS = ZoneCustomers::where('Surname', $data['landlord_surname'])->where('FirstName', $data['landlord_othernames'])->first();
+        //  $checkEMS = ZoneCustomers::where('Surname', $data['landlord_surname'])->where('FirstName', $data['landlord_othernames'])->first();
 
-        if($checkEMS){
-             $buid = BusinessUnit::where("BUID", $checkEMS->BUID)->first();
+        // if($checkEMS){
+        //      $buid = BusinessUnit::where("BUID", $checkEMS->BUID)->first();
 
-             if($buid) {
-                $data['duplicate'] = 1; // ✅ mark as suspected
-                $data['suspected_account'] =  $checkEMS->AccountNo ?? null;  // $buid->Name ?? null;
-               // return $this->sendError($buid, 'ERROR - ACCOUNT EXIST, VISIT OUR BILLING OFFICE FOR SUPPORT', Response::HTTP_UNAUTHORIZED);
-            }
+        //      if($buid) {
+        //         $data['duplicate'] = 1; // ✅ mark as suspected
+        //         $data['suspected_account'] =  $checkEMS->AccountNo ?? null;  // $buid->Name ?? null;
+        //        // return $this->sendError($buid, 'ERROR - ACCOUNT EXIST, VISIT OUR BILLING OFFICE FOR SUPPORT', Response::HTTP_UNAUTHORIZED);
+        //     }
 
-            //check the address if it is the same
-            $locationExists = UploadHouses::where(['full_address' => $checkEMS->Address1, "business_hub" => $buid->Name])->first();
+        //     //check the address if it is the same
+        //     $locationExists = UploadHouses::where(['full_address' => $checkEMS->Address1, "business_hub" => $buid->Name])->first();
             
-            if($locationExists) {
-                 $data['duplicate'] = 1; // keep suspected flag true
-                 $data['suspected_account'] = $checkEMS->AccountNo ?? null;
-               // return $this->sendError($checkEMS, 'ERROR - ACCOUNT NO ALREADY EXIST VISIT OUR BILLING OFFICE FOR SUPPORT', Response::HTTP_UNAUTHORIZED);
-            }
-        }
+        //     if($locationExists) {
+        //          $data['duplicate'] = 1; // keep suspected flag true
+        //          $data['suspected_account'] = $checkEMS->AccountNo ?? null;
+        //        // return $this->sendError($checkEMS, 'ERROR - ACCOUNT NO ALREADY EXIST VISIT OUR BILLING OFFICE FOR SUPPORT', Response::HTTP_UNAUTHORIZED);
+        //     }
+        // }
 
         //Before you create check if the tracking ID already exist in the continue application model |  // Check if already continued
          $continueCustomer = ContinueAccountCreation::where('tracking_id', $request->tracking_id)->first();
@@ -875,7 +873,8 @@ class AccountController extends BaseAPIController
             $request['picture'] = $picturePath;
         }
 
-
+        $tariff = $request['tarrif'] === '1' ? '2' : $request['tarrif'];
+       
         $checkUpdate = UploadHouses::where("id", $request->id)->update([
             'picture' => $picturePath,
             'latitude' => $request['latitude'],
@@ -884,7 +883,7 @@ class AccountController extends BaseAPIController
             'business_hub' => $request['business_hub'], 
             'service_center' => $request['service_center'], 
             'dss' => $request['dss'], 
-            'tarrif' => $request['tarrif'], 
+            'tarrif' => $tariff, //?? $request['tarrif'], 
             'status' => isset(Auth::user()->id) ? 2 : 1,  // 3 is rico-compliance, while 1 is still started   isset(Auth::user()->id) ? 3 : 1,
             'validated_by' => isset(Auth::user()->id) ? Auth::user()->email : $request->email,  // use the code to validate the email
             'comment' => $request->email
@@ -1173,24 +1172,22 @@ class AccountController extends BaseAPIController
 
          if (!empty($data['landlord_surname']) && !empty($data['landlord_othernames'])) {
 
-            $names = collect([
-                strtolower(trim($data['landlord_surname'])),
-                strtolower(trim($data['landlord_othernames'])),
-            ]);
+            $surname = strtolower(trim($data['landlord_surname']));
+            $othernames = strtolower(trim($data['landlord_othernames']));
 
-            $sortedInputNames = $names->sort()->values()->toArray(); // e.g. ['john', 'michael', 'smith']
+            // Search existing accounts where the (unordered) combination of names match,
+            // done at the database level to avoid loading the whole table into memory.
+            $hasPotentialMatch = ContinueAccountCreation::where(function ($query) use ($surname, $othernames) {
+                    $query->whereRaw('LOWER(TRIM(landlord_surname)) = ?', [$surname])
+                          ->whereRaw('LOWER(TRIM(landlord_othernames)) = ?', [$othernames]);
+                })
+                ->orWhere(function ($query) use ($surname, $othernames) {
+                    $query->whereRaw('LOWER(TRIM(landlord_surname)) = ?', [$othernames])
+                          ->whereRaw('LOWER(TRIM(landlord_othernames)) = ?', [$surname]);
+                })
+                ->exists();
 
-            // Search existing accounts where the sorted combination of names match
-            $potentialMatches = ContinueAccountCreation::all()->filter(function ($user) use ($sortedInputNames) {
-                $existingNames = collect([
-                    strtolower(trim($user->landlord_surname)),
-                    strtolower(trim($user->landlord_othernames)),
-                ]);
-
-                return $existingNames->sort()->values()->toArray() === $sortedInputNames;
-            });
-
-            if ($potentialMatches->isNotEmpty()) {
+            if ($hasPotentialMatch) {
                 //Add a flag for suspected account
                // return $this->sendError('Landlord Information already exist. Please use your tracking ID to continue.', 'ERROR', Response::HTTP_UNAUTHORIZED);
             }

@@ -2,37 +2,37 @@
 
 namespace App\Console\Commands;
 
-use App\Mail\DisrepMetersErrorReportMail;
+use App\Mail\MafMetersErrorReportMail;
 use App\Models\StoreDisrepMeter;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 
-class ProgrammeDirespMeters extends Command
+class ProgrammeMafMeters extends Command
 {
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'app:programme-disrep-meters';
+    protected $signature = 'app:programme-maf-meters';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Fetch not-programmed DISREP meters from MSMS, validate via UBVS lookup, programme the meter, store the record, then notify MSMS';
+    protected $description = 'Fetch not-programmed MAF meters from MSMS, validate via UBVS lookup, programme the meter, store the record, then notify MSMS';
 
     protected string $msmsToken = 'LIVEKEY_0XJLDYJZOQWF8UQ9XWVTH';
     protected string $lookupToken = 'muK2zwbzuZtzwKnCQBvSBHVfu7sDOWf3x0ci4Ekbd4767537';
     protected string $programToken = 'muK2zwbzuZtzwKnCQBvSBHVfu7sDOWf3x0ci4Ekbd4767537';
 
-    protected string $disrepListUrl = 'https://msms.ibedc.com/api/v2/disrep/notprogrammed';
+    protected string $mafListUrl = 'https://msms.ibedc.com/api/v2/maf/notprogrammed';
     protected string $lookupUrl = 'https://ubvs.ibedc.com/api/integration/lookup_customer';
     protected string $programUrl = 'https://ubvs.ibedc.com/api/integration/preprogram_meter';
-    protected string $notifyUrl = 'https://msms.ibedc.com/api/v2/disrep/program';
+    protected string $notifyUrl = 'https://msms.ibedc.com/api/v2/maf/program';
 
     protected int $totalFound = 0;
     protected int $programmed = 0;
@@ -45,9 +45,9 @@ class ProgrammeDirespMeters extends Command
      */
     public function handle()
     {
-        $this->info('🚀 STARTING DISREP METER PROGRAMMING PROCESS ***********************');
+        $this->info('🚀 STARTING MAF METER PROGRAMMING PROCESS ***********************');
 
-        $records = $this->fetchDisrepRecords();
+        $records = $this->fetchMafRecords();
 
         $this->totalFound = count($records);
 
@@ -64,7 +64,7 @@ class ProgrammeDirespMeters extends Command
         }
 
         $this->info('***********************************************************');
-        $this->info('✅ DISREP METER PROGRAMMING PROCESS COMPLETE');
+        $this->info('✅ MAF METER PROGRAMMING PROCESS COMPLETE');
         $this->info("   Found:      {$this->totalFound}");
         $this->info("   Programmed: {$this->programmed}");
         $this->info("   Skipped:    {$this->skipped}");
@@ -73,24 +73,11 @@ class ProgrammeDirespMeters extends Command
 
         if (!empty($this->errorRows)) {
             try {
-                 Mail::mailer('alerts')->to([ 'AllBHMs@ibedc.com', 'olumide.adeoye@ibedc.com',  'Eyinade.Wintope@ibedc.com',
-                'oluwasegun.ukana@ibedc.com', 'AllRegionalHeads@ibedc.com', 'adebayo.olanipekun@ibedc.com'])
+                 Mail::mailer('alerts')->to(['victor.ogiogio@ibedc.com'])
                     ->cc([
-                        'victor.ogiogio@ibedc.com',
-                        'babatunde.bodunde@ibedc.com',
-                        'Fatima.Ayandeko@ibedc.com',
-                        'adebayo.oyebamiji@ibedc.com',
-                        'Ademola.Adewumi@ibedc.com',
-                        'Basirat.Opoola@ibedc.com',
-                        'Akintunde.Akinlabi@ibedc.com',
-                        'frank.obasogie@ibedc.com',
-                        'Charles.Edeigba@ibedc.com',
-                        'john.essien@ibedc.com',
-                        'grace.odejayi@ibedc.com',
-                        'customercare@ibedc.com',
                         'sandra.agudosi@ibedc.com'
                     ])
-                    ->send(new DisrepMetersErrorReportMail($this->errorRows));
+                    ->send(new MafMetersErrorReportMail($this->errorRows));
                 $this->info("📧 Error report email queued for " . count($this->errorRows) . " failed record(s).");
             } catch (\Throwable $e) {
                 $this->error("   ❌ Failed to send error report email: " . $e->getMessage());
@@ -101,27 +88,27 @@ class ProgrammeDirespMeters extends Command
     }
 
     /**
-     * Fetch the list of not-yet-programmed DISREP meters from MSMS.
+     * Fetch the list of not-yet-programmed MAF meters from MSMS.
      */
-    protected function fetchDisrepRecords(): array
+    protected function fetchMafRecords(): array
     {
-        $this->info("📡 Fetching DISREP list from MSMS: {$this->disrepListUrl}");
+        $this->info("📡 Fetching MAF list from MSMS: {$this->mafListUrl}");
 
         $response = Http::withToken($this->msmsToken)
             ->acceptJson()
             ->timeout(60)
             ->retry(3, 3000, throw: false)
-            ->get($this->disrepListUrl);
+            ->get($this->mafListUrl);
 
         $this->info("   📥 MSMS Response [{$response->status()}]: " . json_encode($response->json()));
 
-        Log::info('ProgrammeDirespMeters: MSMS notprogrammed response', [
+        Log::info('ProgrammeMafMeters: MSMS notprogrammed response', [
             'status' => $response->status(),
             'response' => $response->json(),
         ]);
 
         if (!$response->successful()) {
-            $this->error("❌ Failed to fetch DISREP list: " . $response->body());
+            $this->error("❌ Failed to fetch MAF list: " . $response->body());
 
             return [];
         }
@@ -129,7 +116,7 @@ class ProgrammeDirespMeters extends Command
         $data = $response->json();
 
         if (!($data['status'] ?? false) || !isset($data['data']) || !is_array($data['data'])) {
-            $this->warn('⚠️  No DISREP data returned');
+            $this->warn('⚠️  No MAF data returned');
 
             return [];
         }
@@ -177,7 +164,7 @@ class ProgrammeDirespMeters extends Command
 
             $this->info("   📥 UBVS Lookup Response [{$lookupResponse->status()}]: " . json_encode($lookupData));
 
-            Log::info('ProgrammeDirespMeters: UBVS lookup_customer response', [
+            Log::info('ProgrammeMafMeters: UBVS lookup_customer response', [
                 'account_no' => $accountNo,
                 'meter_no' => $meterNo,
                 'status' => $lookupResponse->status(),
@@ -215,7 +202,7 @@ class ProgrammeDirespMeters extends Command
 
             $this->info("   📥 UBVS Programme Response [{$programResponse->status()}]: " . json_encode($programData));
 
-            Log::info('ProgrammeDirespMeters: UBVS preprogram_meter response', [
+            Log::info('ProgrammeMafMeters: UBVS preprogram_meter response', [
                 'account_no' => $accountNo,
                 'meter_no' => $meterNo,
                 'payload' => $programPayload,
@@ -257,6 +244,7 @@ class ProgrammeDirespMeters extends Command
             StoreDisrepMeter::create([
                 'account_no' => $accountNo,
                 'meter_no' => $meterNo,
+                'customer_name' => isset($record['CustomerName']) ? trim($record['CustomerName']) : null,
                 'address' => $record['Address'] ?? null,
                 'phone' => $record['PhoneNo'] ?? null,
                 'date_installed' => $record['DateInstalled'] ?? null,
@@ -264,7 +252,7 @@ class ProgrammeDirespMeters extends Command
                 'business_hub' => $record['BHub'] ?? null,
             ]);
 
-            $this->info("   💾 Stored DISREP meter record for Account No: {$accountNo}");
+            $this->info("   💾 Stored MAF meter record for Account No: {$accountNo}");
 
             // 4. Notify MSMS that the meter has been programmed
             $notifyPayload = [
@@ -284,7 +272,7 @@ class ProgrammeDirespMeters extends Command
 
             $this->info("   📥 MSMS Notify Response [{$notifyResponse->status()}]: " . json_encode($notifyData));
 
-            Log::info('ProgrammeDirespMeters: MSMS disrep/program response', [
+            Log::info('ProgrammeMafMeters: MSMS maf/program response', [
                 'account_no' => $accountNo,
                 'meter_no' => $meterNo,
                 'payload' => $notifyPayload,
@@ -314,7 +302,7 @@ class ProgrammeDirespMeters extends Command
         } catch (\Throwable $e) {
             $this->failed++;
 
-            Log::error('ProgrammeDirespMeters: Exception', [
+            Log::error('ProgrammeMafMeters: Exception', [
                 'account_no' => $accountNo,
                 'meter_no' => $meterNo,
                 'message' => $e->getMessage(),

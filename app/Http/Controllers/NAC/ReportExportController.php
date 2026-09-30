@@ -289,7 +289,7 @@ class ReportExportController extends Controller
             ->whereNull('upload_houses.deleted_at');
 
         if (!empty($userRegion)) {
-            $query->where('upload_houses.region', $userRegion);
+            $query->whereIn('upload_houses.region', $this->regionGroup($userRegion));
         }
 
         if (!empty($search)) {
@@ -332,7 +332,7 @@ class ReportExportController extends Controller
             ->whereNull('upload_houses.deleted_at');
 
         if (!empty($userRegion)) {
-            $query->where('upload_houses.region', $userRegion);
+            $query->whereIn('upload_houses.region', $this->regionGroup($userRegion));
         }
 
         return $query->select([
@@ -344,6 +344,16 @@ class ReportExportController extends Controller
             'upload_houses.billing_comment', 'upload_houses.created_at',
             'ac.firstname', 'ac.other_name',
         ])->orderBy('upload_houses.region')->orderBy('upload_houses.business_hub');
+    }
+
+    private function regionGroup(string $region): array
+    {
+        return match ($region) {
+            'OGUN' => ['OGUN', 'OGUN WEST'],
+            'OYO' => ['OYO', 'NEW OYO'],
+            'OSUN' => ['OSUN', 'NEW OSUN'],
+            default => [$region],
+        };
     }
 
     private function sendDownload(Spreadsheet $spreadsheet, string $prefix)

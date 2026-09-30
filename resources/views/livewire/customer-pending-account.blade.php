@@ -322,6 +322,7 @@
                                                         <option value="status">Status</option>
                                                         <option value="email">Email</option>
                                                         <option value="account_no">Account No</option>
+                                                        <option value="map_id">Map ID</option>
                                                     </select>
                                                 </div>
                                                 <div>

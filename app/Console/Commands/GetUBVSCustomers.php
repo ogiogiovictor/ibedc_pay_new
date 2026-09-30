@@ -34,7 +34,6 @@ class GetUBVSCustomers extends Command
      */
     protected $description = 'Fetch UBVS transactions weekly and store new records';
 
-
      /**
      * API Base URL
      */
@@ -141,7 +140,7 @@ class GetUBVSCustomers extends Command
                 }
 
                 $transactions = $data['response']['payload']['transactions'];
-                $pagination = $data['pagination'] ?? [];
+                $pagination = $data['response']['payload']['pagination'] ?? [];
 
                 if (empty($transactions)) {
                     $hasMorePages = false;

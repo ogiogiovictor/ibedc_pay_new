@@ -56,6 +56,10 @@ return [
             'username' => env('MAIL_ALERTS_USERNAME'),
             'password' => env('MAIL_ALERTS_PASSWORD'),
             'timeout' => null,
+            'from' => [
+                'address' => env('MAIL_ALERTS_FROM_ADDRESS'),
+                'name' => env('MAIL_ALERTS_FROM_NAME'),
+            ],
         ],
 
         'ses' => [

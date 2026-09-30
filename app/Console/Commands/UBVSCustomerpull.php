@@ -123,24 +123,39 @@ class UBVSCustomerpull extends Command
 
         $page = $savedProgress['page'] ?? 1;
 
+        $afterId = $savedProgress['after_id'] ?? null;
+
+        $useCursorPagination = $savedProgress['use_cursor'] ?? false;
+
         $hasMorePages = true;
 
         while ($hasMorePages) {
 
-            $this->info("📄 Fetching page {$page}...");
+            if ($useCursorPagination) {
+                $this->info("📄 Fetching cursor page after_id={$afterId}...");
+            } else {
+                $this->info("📄 Fetching page {$page}...");
+            }
 
             try {
+
+                $query = [
+                    'start_date' => date('Ymd', strtotime($startDate)),
+                    'end_date'   => date('Ymd', strtotime($endDate)),
+                    'per_page'   => 100,
+                ];
+
+                if ($useCursorPagination) {
+                    $query['after_id'] = $afterId;
+                } else {
+                    $query['page'] = $page;
+                }
 
                 $response = Http::withToken('muK2zwbzuZtzwKnCQBvSBHVfu7sDOWf3x0ci4Ekbd4767537')
                     ->acceptJson()
                     ->timeout(180)
                     ->retry(3, 5000)
-                    ->get($this->apiUrl, [
-                        'start_date' => date('Ymd', strtotime($startDate)),
-                        'end_date'   => date('Ymd', strtotime($endDate)),
-                        'page'       => $page,
-                        'per_page'   => 100,
-                    ]);
+                    ->get($this->apiUrl, $query);
 
                 if (!$response->successful()) {
 
@@ -162,7 +177,7 @@ class UBVSCustomerpull extends Command
 
                 $transactions = $data['response']['payload']['transactions'];
 
-                $pagination = $data['pagination'] ?? [];
+                $pagination = $data['response']['payload']['pagination'] ?? [];
 
                 if (empty($transactions)) {
 
@@ -173,6 +188,29 @@ class UBVSCustomerpull extends Command
 
                 $this->processTransactions($transactions);
 
+                if (array_key_exists('has_more', $pagination) || array_key_exists('next_after_id', $pagination)) {
+
+                    $useCursorPagination = true;
+
+                    $hasMorePages = (bool) ($pagination['has_more'] ?? false);
+
+                    $afterId = $pagination['next_after_id'] ?? null;
+
+                    if ($hasMorePages && $afterId === null) {
+                        $this->warn('⚠️ Pagination indicates more items but missing next_after_id. Stopping fetch.');
+                        $hasMorePages = false;
+                    }
+                } else {
+
+                    $currentPage = $pagination['current_page'] ?? $page;
+
+                    $lastPage = $pagination['last_page'] ?? 1;
+
+                    $hasMorePages = $currentPage < $lastPage;
+
+                    $page++;
+                }
+
                 /*
                 |--------------------------------------------------------------------------
                 | SAVE PAGE PROGRESS
@@ -180,16 +218,10 @@ class UBVSCustomerpull extends Command
                 */
                 Cache::put($this->progressKey, [
                     'current_start' => $startDate,
-                    'page' => $page + 1,
+                    'page' => $page,
+                    'after_id' => $afterId,
+                    'use_cursor' => $useCursorPagination,
                 ], now()->addDays(7));
-
-                $currentPage = $pagination['current_page'] ?? $page;
-
-                $lastPage = $pagination['last_page'] ?? 1;
-
-                $hasMorePages = $currentPage < $lastPage;
-
-                $page++;
 
                 if ($hasMorePages) {
 
